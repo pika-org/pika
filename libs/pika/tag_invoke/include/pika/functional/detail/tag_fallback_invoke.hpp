@@ -19,7 +19,7 @@ namespace pika::functional::detail {
         /// The evaluation of the expression
         /// `pika::functional::detail::tag_fallback_invoke(tag, args...)` is
         /// equivalent to evaluating the unqualified call to
-        /// `tag_fallback_invoke(decay-copy(tag), PIKA_FORWARD(Args, args)...)`.
+        /// `tag_fallback_invoke(decay-copy(tag), std::forward<Args>(args)...)`.
         ///
         /// `pika::functional::detail::tag_fallback_invoke` is implemented against P1895.
         ///
@@ -119,10 +119,10 @@ namespace pika::functional::detail {
             template <typename Tag, typename... Ts>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
             PIKA_STATIC_CALL_OPERATOR(Tag tag, Ts&&... ts) noexcept(
-                noexcept(tag_fallback_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                -> decltype(tag_fallback_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+                noexcept(tag_fallback_invoke(std::declval<Tag>(), std::forward<Ts>(ts)...)))
+                -> decltype(tag_fallback_invoke(std::declval<Tag>(), std::forward<Ts>(ts)...))
             {
-                return tag_fallback_invoke(tag, PIKA_FORWARD(Ts, ts)...);
+                return tag_fallback_invoke(tag, std::forward<Ts>(ts)...);
             }
 
             friend constexpr bool operator==(tag_fallback_invoke_t, tag_fallback_invoke_t)
@@ -253,7 +253,7 @@ namespace pika::functional::detail {
             PIKA_STATIC_CALL_OPERATOR(Args&&... args) noexcept(
                 is_nothrow_tag_invocable_v<Tag, Args...>) -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
             // is not tag-dispatchable
@@ -264,7 +264,7 @@ namespace pika::functional::detail {
                 Args&&... args) noexcept(is_nothrow_tag_fallback_invocable_v<Tag, Args...>)
                 -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(Tag{}, std::forward<Args>(args)...);
             }
         };
 
@@ -290,7 +290,7 @@ namespace pika::functional::detail {
             tag_fallback_invoke_impl(std::true_type,
                 Args&&... args) noexcept -> tag_fallback_invoke_result_t<Tag, Args&&...>
             {
-                return tag_fallback_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_fallback_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
         public:
@@ -301,7 +301,7 @@ namespace pika::functional::detail {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
                 Args&&... args) noexcept -> tag_invoke_result_t<Tag, Args&&...>
             {
-                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, std::forward<Args>(args)...);
             }
 
             // is not nothrow tag-dispatchable
@@ -312,10 +312,10 @@ namespace pika::functional::detail {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
             PIKA_STATIC_CALL_OPERATOR(Args&&... args) noexcept -> decltype(tag_fallback_invoke_impl(
                                                                    IsFallbackDispatchable{},
-                                                                   PIKA_FORWARD(Args, args)...))
+                                                                   std::forward<Args>(args)...))
             {
                 return tag_fallback_invoke_impl(
-                    IsFallbackDispatchable{}, PIKA_FORWARD(Args, args)...);
+                    IsFallbackDispatchable{}, std::forward<Args>(args)...);
             }
         };
     }    // namespace tag_base_ns

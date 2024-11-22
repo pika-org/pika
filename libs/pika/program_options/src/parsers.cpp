@@ -127,7 +127,7 @@ namespace pika::program_options {
             if (!option_name.empty())
             {
                 option n;
-                n.string_key = PIKA_MOVE(option_name);
+                n.string_key = std::move(option_name);
                 n.value.push_back(i->second);
                 result.options.push_back(n);
             }

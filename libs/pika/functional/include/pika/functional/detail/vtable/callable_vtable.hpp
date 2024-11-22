@@ -69,7 +69,7 @@ namespace pika::util::detail {
         template <typename T>
         PIKA_FORCEINLINE static R _invoke(void* f, Ts&&... vs)
         {
-            return PIKA_INVOKE_R(R, vtable::get<T>(f), PIKA_FORWARD(Ts, vs)...);
+            return PIKA_INVOKE_R(R, vtable::get<T>(f), std::forward<Ts>(vs)...);
         }
         R (*invoke)(void*, Ts&&...);
 

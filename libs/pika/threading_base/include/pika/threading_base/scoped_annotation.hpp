@@ -21,6 +21,7 @@
 
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace pika {
     namespace detail {
@@ -55,7 +56,7 @@ namespace pika {
         }
 
         explicit scoped_annotation(std::string annotation)
-          : annotation(detail::store_function_annotation(PIKA_MOVE(annotation)))
+          : annotation(detail::store_function_annotation(std::move(annotation)))
         {
         }
 
@@ -113,7 +114,7 @@ namespace pika {
 #  if defined(PIKA_HAVE_APEX)
                     detail::store_function_annotation(name);
 #  else
-                    detail::store_function_annotation(PIKA_MOVE(name));
+                    detail::store_function_annotation(std::move(name));
 #  endif
                 desc_ = threads::detail::get_thread_id_data(self->get_thread_id())
                             ->set_description(name_c_str);
@@ -122,7 +123,7 @@ namespace pika {
 #  if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
-                threads::detail::get_self_timer_data(), PIKA_MOVE(name)));
+                threads::detail::get_self_timer_data(), std::move(name)));
 #  endif
         }
 

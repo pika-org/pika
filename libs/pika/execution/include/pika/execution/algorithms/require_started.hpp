@@ -109,23 +109,23 @@ namespace pika {
             {
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Error, error));
+                    std::move(r.op_state->receiver), std::forward<Error>(error));
             }
 
             friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                 require_started_receiver_type r) noexcept
             {
                 PIKA_ASSERT(r.op_state != nullptr);
-                pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
+                pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
             };
 
             template <typename... Ts>
             void set_value(Ts&&... ts) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_value(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
+                    std::move(r.op_state->receiver), std::forward<Ts>(ts)...);
             }
 
             friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -166,9 +166,9 @@ namespace pika {
                 require_started_mode mode
 #endif
                 )
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
               , op_state(pika::detail::with_result_of([&]() {
-                  return pika::execution::experimental::connect(PIKA_MOVE(sender),
+                  return pika::execution::experimental::connect(std::move(sender),
                       require_started_receiver<require_started_op_state_type>{this});
               }))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
@@ -257,7 +257,7 @@ namespace pika {
                 require_started_mode mode = require_started_mode::terminate_on_unstarted
 #endif
                 )
-              : sender(PIKA_FORWARD(Sender_, sender))
+              : sender(std::forward<Sender_>(sender))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(mode)
 #endif
@@ -381,7 +381,7 @@ namespace pika {
 
                 s.connected = true;
                 return {// NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                    *std::exchange(s.sender, std::nullopt), PIKA_FORWARD(Receiver, receiver)
+                    *std::exchange(s.sender, std::nullopt), std::forward<Receiver>(receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                                                                 ,
                     s.mode
@@ -408,7 +408,7 @@ namespace pika {
                 }
 
                 s.connected = true;
-                return {*s.sender, PIKA_FORWARD(Receiver, receiver)
+                return {*s.sender, std::forward<Receiver>(receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                                        ,
                     s.mode
@@ -442,7 +442,7 @@ namespace pika {
             PIKA_STATIC_CALL_OPERATOR(Sender&& sender PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER)
             {
                 return require_started_detail::require_started_sender<Sender>{
-                    PIKA_FORWARD(Sender, sender) PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT};
+                    std::forward<Sender>(sender) PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT};
             }
 
             constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR()

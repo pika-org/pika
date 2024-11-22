@@ -83,7 +83,7 @@ PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Dat
             });
         try
         {
-            tt::sync_wait(PIKA_MOVE(s));
+            tt::sync_wait(std::move(s));
         }
         catch (std::runtime_error const& e)
         {
@@ -170,7 +170,7 @@ int pika_main()
                 int data = 0, count = 1;
                 if (rank == 0) { data = 42; }
                 auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 
@@ -183,7 +183,7 @@ int pika_main()
                         MPI_Request* request) {
                         return MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 
@@ -196,7 +196,7 @@ int pika_main()
                         MPI_Request* request) {
                         MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 
@@ -209,7 +209,7 @@ int pika_main()
                                            MPI_Request* request) {
                         MPI_Ibcast(data.data(), data.size(), datatype, i, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
             }
 
             {
@@ -220,7 +220,7 @@ int pika_main()
                                            MPI_Request* request) {
                         MPI_Ibcast(&data.x, 1, datatype, i, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
             }
 
             // transform_mpi should be able to handle reference types (by copying
@@ -233,7 +233,7 @@ int pika_main()
                         PIKA_TEST(&count_transform_mpi != &count);
                         MPI_Ibcast(&data, count_transform_mpi, datatype, 0, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 

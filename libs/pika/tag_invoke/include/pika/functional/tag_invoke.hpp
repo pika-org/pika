@@ -17,7 +17,7 @@ namespace pika::functional::detail {
         ///
         /// The evaluation of the expression `pika::tag_invoke(tag, args...)` is
         /// equivalent to evaluating the unqualified call to
-        /// `tag_invoke(decay-copy(tag), PIKA_FORWARD(Args, args)...)`.
+        /// `tag_invoke(decay-copy(tag), std::forward<Args>(args)...)`.
         ///
         /// `pika::functional::detail::tag_invoke` is implemented against P1895.
         ///
@@ -117,10 +117,10 @@ namespace pika::functional::detail {
             template <typename Tag, typename... Ts>
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto
             PIKA_STATIC_CALL_OPERATOR(Tag tag, Ts&&... ts) noexcept(
-                noexcept(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...)))
-                -> decltype(tag_invoke(std::declval<Tag>(), PIKA_FORWARD(Ts, ts)...))
+                noexcept(tag_invoke(std::declval<Tag>(), std::forward<Ts>(ts)...)))
+                -> decltype(tag_invoke(std::declval<Tag>(), std::forward<Ts>(ts)...))
             {
-                return tag_invoke(tag, PIKA_FORWARD(Ts, ts)...);
+                return tag_invoke(tag, std::forward<Ts>(ts)...);
             }
 
             friend constexpr bool operator==(tag_invoke_t, tag_invoke_t) { return true; }
@@ -208,7 +208,7 @@ namespace pika::functional::detail {
             PIKA_STATIC_CALL_OPERATOR(Args&&... args) noexcept(
                 is_nothrow_tag_invocable_v<Tag, Args...>) -> tag_invoke_result_t<Tag, Args...>
             {
-                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, std::forward<Args>(args)...);
             }
         };
 
@@ -221,7 +221,7 @@ namespace pika::functional::detail {
             PIKA_HOST_DEVICE PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(
                 Args&&... args) noexcept -> tag_invoke_result_t<Tag, decltype(args)...>
             {
-                return tag_invoke(Tag{}, PIKA_FORWARD(Args, args)...);
+                return tag_invoke(Tag{}, std::forward<Args>(args)...);
             }
         };
     }    // namespace tag_base_ns

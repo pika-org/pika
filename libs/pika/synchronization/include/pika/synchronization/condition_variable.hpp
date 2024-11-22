@@ -65,13 +65,13 @@ namespace pika {
         void notify_one(error_code& ec = throws)
         {
             std::unique_lock<mutex_type> l(data_->mtx_);
-            data_->cond_.notify_one(PIKA_MOVE(l), ec);
+            data_->cond_.notify_one(std::move(l), ec);
         }
 
         void notify_all(error_code& ec = throws)
         {
             std::unique_lock<mutex_type> l(data_->mtx_);
-            data_->cond_.notify_all(PIKA_MOVE(l), ec);
+            data_->cond_.notify_all(std::move(l), ec);
         }
 
         template <typename Mutex>
@@ -154,7 +154,7 @@ namespace pika {
         bool wait_for(std::unique_lock<Mutex>& lock, pika::chrono::steady_duration const& rel_time,
             Predicate pred, error_code& ec = throws)
         {
-            return wait_until(lock, rel_time.from_now(), PIKA_MOVE(pred), ec);
+            return wait_until(lock, rel_time.from_now(), std::move(pred), ec);
         }
 
     private:
@@ -196,13 +196,13 @@ namespace pika {
         void notify_one(error_code& ec = throws)
         {
             std::unique_lock<mutex_type> l(data_->mtx_);
-            data_->cond_.notify_one(PIKA_MOVE(l), ec);
+            data_->cond_.notify_one(std::move(l), ec);
         }
 
         void notify_all(error_code& ec = throws)
         {
             std::unique_lock<mutex_type> l(data_->mtx_);
-            data_->cond_.notify_all(PIKA_MOVE(l), ec);
+            data_->cond_.notify_all(std::move(l), ec);
         }
 
         template <typename Lock>
@@ -284,7 +284,7 @@ namespace pika {
         bool wait_for(Lock& lock, pika::chrono::steady_duration const& rel_time, Predicate pred,
             error_code& ec = throws)
         {
-            return wait_until(lock, rel_time.from_now(), PIKA_MOVE(pred), ec);
+            return wait_until(lock, rel_time.from_now(), std::move(pred), ec);
         }
 
         // 32.6.4.2, interruptible waits
@@ -297,9 +297,9 @@ namespace pika {
 
             auto f = [&data, &ec] {
                 std::unique_lock<mutex_type> l(data->mtx_);
-                data->cond_.notify_all(PIKA_MOVE(l), ec);
+                data->cond_.notify_all(std::move(l), ec);
             };
-            stop_callback<decltype(f)> cb(stoken, PIKA_MOVE(f));
+            stop_callback<decltype(f)> cb(stoken, std::move(f));
 
             while (!pred())
             {
@@ -336,9 +336,9 @@ namespace pika {
 
             auto f = [&data, &ec] {
                 std::unique_lock<mutex_type> l(data->mtx_);
-                data->cond_.notify_all(PIKA_MOVE(l), ec);
+                data->cond_.notify_all(std::move(l), ec);
             };
-            stop_callback<decltype(f)> cb(stoken, PIKA_MOVE(f));
+            stop_callback<decltype(f)> cb(stoken, std::move(f));
 
             while (!pred())
             {
@@ -379,7 +379,7 @@ namespace pika {
         bool wait_for(Lock& lock, stop_token stoken, pika::chrono::steady_duration const& rel_time,
             Predicate pred, error_code& ec = throws)
         {
-            return wait_until(lock, stoken, rel_time.from_now(), PIKA_MOVE(pred), ec);
+            return wait_until(lock, stoken, rel_time.from_now(), std::move(pred), ec);
         }
 
     private:

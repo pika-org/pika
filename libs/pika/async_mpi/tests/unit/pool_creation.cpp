@@ -51,7 +51,7 @@ int pika_main(std::string const& pool_name)
             int data = 0, count = 1;
             if (rank == 0) { data = 42; }
             auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
-            tt::sync_wait(PIKA_MOVE(s));
+            tt::sync_wait(std::move(s));
             PIKA_TEST_EQ(data, 42);
         }
     }    // let the polling go out of scope

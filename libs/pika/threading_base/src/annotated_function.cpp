@@ -17,7 +17,7 @@ namespace pika::detail {
     char const* store_function_annotation(std::string name)
     {
         static thread_local std::unordered_set<std::string> names;
-        auto r = names.emplace(PIKA_MOVE(name));
+        auto r = names.emplace(std::move(name));
         return (*std::get<0>(r)).c_str();
     }
 }    // namespace pika::detail

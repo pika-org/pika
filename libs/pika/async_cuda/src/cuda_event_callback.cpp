@@ -138,9 +138,9 @@ namespace pika::cuda::experimental::detail {
                                     dec<3>(get_number_of_enqueued_events()), "active events",
                                     dec<3>(get_number_of_active_events())));
                             // save callback to ready queue
-                            ready_events.enqueue({status, PIKA_MOVE(continuation.f)});
+                            ready_events.enqueue({status, std::move(continuation.f)});
                             // release the event handle
-                            pool.push(PIKA_MOVE(continuation.event));
+                            pool.push(std::move(continuation.event));
                             // this item can be removed from the vector
                             return true;
                         }),
@@ -156,7 +156,7 @@ namespace pika::cuda::experimental::detail {
                     {
                         if (!whip::event_ready(continuation.event))
                         {
-                            add_to_event_callback_vector(PIKA_MOVE(continuation));
+                            add_to_event_callback_vector(std::move(continuation));
                             continue;
                         }
                     }
@@ -171,9 +171,9 @@ namespace pika::cuda::experimental::detail {
                             debug::detail::dec<3>(get_number_of_enqueued_events()), "active events",
                             debug::detail::dec<3>(get_number_of_active_events())));
                     // save callback to ready queue
-                    ready_events.enqueue({status, PIKA_MOVE(continuation.f)});
+                    ready_events.enqueue({status, std::move(continuation.f)});
                     // release the event handle
-                    pool.push(PIKA_MOVE(continuation.event));
+                    pool.push(std::move(continuation.event));
                 }
             }    // end locked region
 
@@ -210,7 +210,7 @@ namespace pika::cuda::experimental::detail {
 
             pika::threads::detail::increment_global_activity_count();
 
-            event_callback_queue.enqueue({event, PIKA_MOVE(f)});
+            event_callback_queue.enqueue({event, std::move(f)});
         }
 
         std::size_t get_work_count() const noexcept
@@ -234,7 +234,7 @@ namespace pika::cuda::experimental::detail {
 
         void add_to_event_callback_vector(event_callback&& continuation)
         {
-            event_callback_vector.push_back(PIKA_MOVE(continuation));
+            event_callback_vector.push_back(std::move(continuation));
             ++active_events_counter;
 
             PIKA_DETAIL_DP(cud_debug<5>,

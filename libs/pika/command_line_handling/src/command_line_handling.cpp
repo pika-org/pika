@@ -96,7 +96,7 @@ namespace pika::detail {
     inline std::string encode_and_enquote(std::string str)
     {
         encode(str, '\"', "\\\"", 2);
-        return enquote(PIKA_MOVE(str));
+        return enquote(std::move(str));
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -741,7 +741,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     std::vector<std::string> prepend_options(std::vector<std::string>&& args, std::string&& options)
     {
-        if (options.empty()) { return PIKA_MOVE(args); }
+        if (options.empty()) { return std::move(args); }
 
         using tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
         boost::escaped_list_separator<char> sep('\\', ' ', '\"');
@@ -780,7 +780,7 @@ namespace pika::detail {
         // real command line.
         std::string prepend_command_line = rtcfg_.get_entry("pika.commandline.prepend_options");
 
-        args = prepend_options(PIKA_MOVE(args), PIKA_MOVE(prepend_command_line));
+        args = prepend_options(std::move(args), std::move(prepend_command_line));
 
         // Initial analysis of the command line options. This is
         // preliminary as it will not take into account any aliases as

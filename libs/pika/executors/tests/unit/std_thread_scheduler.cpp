@@ -228,7 +228,7 @@ struct callback_receiver
     template <typename... Ts>
     void set_value(Ts&&...) && noexcept
     {
-        auto r = PIKA_MOVE(*this);
+        auto r = std::move(*this);
         r.f();
         std::lock_guard l{r.mtx};
         r.executed = true;

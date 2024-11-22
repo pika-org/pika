@@ -147,7 +147,7 @@ namespace pika::detail {
         template <typename U, typename... Args>
         void construct(U* p, Args&&... args)
         {
-            ::new ((void*) p) U(PIKA_FORWARD(Args, args)...);
+            ::new ((void*) p) U(std::forward<Args>(args)...);
         }
 
         template <typename U>

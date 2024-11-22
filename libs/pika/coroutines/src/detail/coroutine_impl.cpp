@@ -88,7 +88,7 @@ namespace pika::threads::coroutines::detail {
                 this->bind_result(result_last);
             }
 
-            this->do_return(status, PIKA_MOVE(tinfo));
+            this->do_return(status, std::move(tinfo));
         } while (this->m_state == super_type::ctx_running);
 
         // should not get here, never

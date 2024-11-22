@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <pika/config/forward.hpp>
-
 #include <utility>
 
 namespace pika::detail {
@@ -29,16 +27,16 @@ namespace pika::detail {
         using type = decltype(std::declval<F&&>()());
 
         explicit with_result_of_t(F&& f)
-          : f(PIKA_FORWARD(F, f))
+          : f(std::forward<F>(f))
         {
         }
 
-        operator type() { return PIKA_FORWARD(F, f)(); }
+        operator type() { return std::forward<F>(f)(); }
     };
 
     template <typename F>
     inline with_result_of_t<F> with_result_of(F&& f)
     {
-        return with_result_of_t<F>(PIKA_FORWARD(F, f));
+        return with_result_of_t<F>(std::forward<F>(f));
     }
 }    // namespace pika::detail

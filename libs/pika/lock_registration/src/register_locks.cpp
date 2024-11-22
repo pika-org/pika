@@ -63,10 +63,10 @@ namespace pika::util {
             std::unique_ptr<held_locks_data> release()
             {
                 PIKA_ASSERT(!!data_);
-                return PIKA_MOVE(data_);
+                return std::move(data_);
             }
 
-            void set(std::unique_ptr<held_locks_data>&& data) { data_ = PIKA_MOVE(data); }
+            void set(std::unique_ptr<held_locks_data>&& data) { data_ = std::move(data); }
 
             std::unique_ptr<held_locks_data> data_;
         };
@@ -127,7 +127,7 @@ namespace pika::util {
     // set the current thread_local data about held locks
     void set_held_locks_data(std::unique_ptr<held_locks_data>&& data)
     {
-        detail::register_locks::get_held_locks().set(PIKA_MOVE(data));
+        detail::register_locks::get_held_locks().set(std::move(data));
     }
 
     ///////////////////////////////////////////////////////////////////////////

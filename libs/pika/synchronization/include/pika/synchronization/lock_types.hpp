@@ -84,7 +84,7 @@ namespace pika {
 
         upgrade_lock& operator=(upgrade_lock<Mutex>&& other) noexcept
         {
-            upgrade_lock temp(PIKA_MOVE(other));
+            upgrade_lock temp(std::move(other));
             swap(temp);
             return *this;
         }
@@ -190,19 +190,19 @@ namespace pika {
         }
         ~upgrade_to_unique_lock()
         {
-            if (source != nullptr) { *source = upgrade_lock<Mutex>(PIKA_MOVE(exclusive)); }
+            if (source != nullptr) { *source = upgrade_lock<Mutex>(std::move(exclusive)); }
         }
 
         upgrade_to_unique_lock(upgrade_to_unique_lock<Mutex>&& other) noexcept
           : source(other.source)
-          , exclusive(PIKA_MOVE(other.exclusive))
+          , exclusive(std::move(other.exclusive))
         {
             other.source = nullptr;
         }
 
         upgrade_to_unique_lock& operator=(upgrade_to_unique_lock<Mutex>&& other) noexcept
         {
-            upgrade_to_unique_lock temp(PIKA_MOVE(other));
+            upgrade_to_unique_lock temp(std::move(other));
             swap(temp);
             return *this;
         }

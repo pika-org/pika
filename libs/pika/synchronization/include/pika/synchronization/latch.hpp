@@ -98,7 +98,7 @@ namespace pika {
                 // relinquishes the lock before resuming the waiting thread
                 // which avoids suspension of this thread when it tries to
                 // re-lock the mutex while exiting from condition_variable::wait
-                while (cond_.data_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost))
+                while (cond_.data_.notify_one(std::move(l), execution::thread_priority::boost))
                 {
                     l = std::unique_lock(mtx_.data_);
                 }
@@ -155,7 +155,7 @@ namespace pika {
                 // relinquishes the lock before resuming the waiting thread
                 // which avoids suspension of this thread when it tries to
                 // re-lock the mutex while exiting from condition_variable::wait
-                while (cond_.data_.notify_one(PIKA_MOVE(l), execution::thread_priority::boost))
+                while (cond_.data_.notify_one(std::move(l), execution::thread_priority::boost))
                 {
                     l = std::unique_lock(mtx_.data_);
                 }

@@ -96,7 +96,7 @@ namespace pika::threads::detail {
     scheduled_thread_pool<Scheduler>::scheduled_thread_pool(
         std::unique_ptr<Scheduler> sched, thread_pool_init_parameters const& init)
       : thread_pool_base(init)
-      , sched_(PIKA_MOVE(sched))
+      , sched_(std::move(sched))
       , thread_count_(0)
       , max_idle_loop_count_(init.max_idle_loop_count_)
       , max_busy_loop_count_(init.max_busy_loop_count_)
@@ -578,7 +578,7 @@ namespace pika::threads::detail {
     template <typename InIter, typename T, typename Proj>
     T accumulate_projected(InIter first, InIter last, T init, Proj&& proj)
     {
-        while (first != last) { init = PIKA_MOVE(init) + PIKA_INVOKE(proj, (first++)->data_); }
+        while (first != last) { init = std::move(init) + PIKA_INVOKE(proj, (first++)->data_); }
         return init;
     }
 
@@ -1312,7 +1312,7 @@ namespace pika::threads::detail {
         PIKA_ASSERT(oldstate == runtime_state::stopped || oldstate == runtime_state::initialized);
 
         threads_[virt_core] = std::thread(
-            &scheduled_thread_pool::thread_func, this, virt_core, thread_num, PIKA_MOVE(startup));
+            &scheduled_thread_pool::thread_func, this, virt_core, thread_num, std::move(startup));
 
         if (&ec != &throws) ec = make_success_code();
     }

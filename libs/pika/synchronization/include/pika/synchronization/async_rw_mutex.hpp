@@ -68,7 +68,7 @@ namespace pika::execution::experimental {
                     // wrapped value, so we move the value to the next state.
                     PIKA_ASSERT(value.has_value());
                     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                    next_state->set_value(PIKA_MOVE(*value));
+                    next_state->set_value(std::move(*value));
 
                     for (auto& continuation : continuations) { continuation(next_state); }
                 }
@@ -78,7 +78,7 @@ namespace pika::execution::experimental {
             void set_value(U&& u)
             {
                 PIKA_ASSERT(!value);
-                value.emplace(PIKA_FORWARD(U, u));
+                value.emplace(std::forward<U>(u));
                 value_set.store(true, std::memory_order_release);
             }
 
@@ -96,14 +96,14 @@ namespace pika::execution::experimental {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
                 PIKA_ASSERT(state);
-                next_state = PIKA_MOVE(state);
+                next_state = std::move(state);
             }
 
             template <typename F>
             void add_continuation(F&& continuation)
             {
                 std::lock_guard<mutex_type> l(mtx);
-                continuations.emplace_back(PIKA_FORWARD(F, continuation));
+                continuations.emplace_back(std::forward<F>(continuation));
             }
         };
 
@@ -137,14 +137,14 @@ namespace pika::execution::experimental {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
                 PIKA_ASSERT(state);
-                next_state = PIKA_MOVE(state);
+                next_state = std::move(state);
             }
 
             template <typename F>
             void add_continuation(F&& continuation)
             {
                 std::lock_guard<mutex_type> l(mtx);
-                continuations.emplace_back(PIKA_FORWARD(F, continuation));
+                continuations.emplace_back(std::forward<F>(continuation));
             }
         };
     }    // namespace detail
@@ -170,7 +170,7 @@ namespace pika::execution::experimental {
     public:
         async_rw_mutex_access_wrapper() = delete;
         async_rw_mutex_access_wrapper(shared_state_type state)
-          : state(PIKA_MOVE(state))
+          : state(std::move(state))
         {
         }
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
@@ -202,7 +202,7 @@ namespace pika::execution::experimental {
     public:
         async_rw_mutex_access_wrapper() = delete;
         async_rw_mutex_access_wrapper(shared_state_type state)
-          : state(PIKA_MOVE(state))
+          : state(std::move(state))
         {
         }
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
@@ -230,7 +230,7 @@ namespace pika::execution::experimental {
     public:
         async_rw_mutex_access_wrapper() = delete;
         explicit async_rw_mutex_access_wrapper(shared_state_type state)
-          : state(PIKA_MOVE(state))
+          : state(std::move(state))
         {
         }
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
@@ -249,7 +249,7 @@ namespace pika::execution::experimental {
     public:
         async_rw_mutex_access_wrapper() = delete;
         explicit async_rw_mutex_access_wrapper(shared_state_type state)
-          : state(PIKA_MOVE(state))
+          : state(std::move(state))
         {
         }
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
@@ -353,7 +353,7 @@ namespace pika::execution::experimental {
         {
             if (prev_access == async_rw_mutex_access_type::readwrite)
             {
-                auto shared_prev_state = PIKA_MOVE(state);
+                auto shared_prev_state = std::move(state);
                 state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
                 prev_access = async_rw_mutex_access_type::read;
 
@@ -373,7 +373,7 @@ namespace pika::execution::experimental {
 
         sender<async_rw_mutex_access_type::readwrite> readwrite()
         {
-            auto shared_prev_state = PIKA_MOVE(state);
+            auto shared_prev_state = std::move(state);
             state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
             prev_access = async_rw_mutex_access_type::readwrite;
 
@@ -422,9 +422,9 @@ namespace pika::execution::experimental {
                 template <typename R_>
                 operation_state(
                     R_&& r, shared_state_weak_ptr_type prev_state, shared_state_ptr_type state)
-                  : r(PIKA_FORWARD(R_, r))
-                  , prev_state(PIKA_MOVE(prev_state))
-                  , state(PIKA_MOVE(state))
+                  : r(std::forward<R_>(r))
+                  , prev_state(std::move(prev_state))
+                  , state(std::move(state))
                 {
                 }
 
@@ -444,12 +444,12 @@ namespace pika::execution::experimental {
                         try
                         {
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.r), access_type{PIKA_MOVE(state)});
+                                std::move(os.r), access_type{std::move(state)});
                         }
                         catch (...)
                         {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(os.r), std::current_exception());
+                                std::move(os.r), std::current_exception());
                         }
                     };
 
@@ -458,7 +458,7 @@ namespace pika::execution::experimental {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
-                        p->add_continuation(PIKA_MOVE(continuation));
+                        p->add_continuation(std::move(continuation));
                         os.state.reset();
                         os.prev_state.reset();
                     }
@@ -467,7 +467,7 @@ namespace pika::execution::experimental {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation(PIKA_MOVE(os.state));
+                        continuation(std::move(os.state));
                     }
                 }
             };
@@ -476,7 +476,7 @@ namespace pika::execution::experimental {
             friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
                 return operation_state<R>{
-                    PIKA_FORWARD(R, r), PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
+                    std::forward<R>(r), std::move(s.prev_state), std::move(s.state)};
             }
         };
 
@@ -518,7 +518,7 @@ namespace pika::execution::experimental {
         template <typename U,
             typename = std::enable_if_t<!std::is_same<std::decay_t<U>, async_rw_mutex>::value>>
         explicit async_rw_mutex(U&& u, allocator_type const& alloc = {})
-          : value(PIKA_FORWARD(U, u))
+          : value(std::forward<U>(u))
           , alloc(alloc)
         {
         }
@@ -531,7 +531,7 @@ namespace pika::execution::experimental {
         {
             if (prev_access == async_rw_mutex_access_type::readwrite)
             {
-                auto shared_prev_state = PIKA_MOVE(state);
+                auto shared_prev_state = std::move(state);
                 state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
                 prev_access = async_rw_mutex_access_type::read;
 
@@ -545,7 +545,7 @@ namespace pika::execution::experimental {
                     shared_prev_state->set_next_state(state);
                     prev_state = shared_prev_state;
                 }
-                else { state->set_value(PIKA_MOVE(value)); }
+                else { state->set_value(std::move(value)); }
             }
 
             return {prev_state, state};
@@ -553,7 +553,7 @@ namespace pika::execution::experimental {
 
         sender<async_rw_mutex_access_type::readwrite> readwrite()
         {
-            auto shared_prev_state = PIKA_MOVE(state);
+            auto shared_prev_state = std::move(state);
             state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
             prev_access = async_rw_mutex_access_type::readwrite;
 
@@ -566,7 +566,7 @@ namespace pika::execution::experimental {
                 shared_prev_state->set_next_state(state);
                 prev_state = shared_prev_state;
             }
-            else { state->set_value(PIKA_MOVE(value)); }
+            else { state->set_value(std::move(value)); }
 
             return {prev_state, state};
         }
@@ -614,9 +614,9 @@ namespace pika::execution::experimental {
                 template <typename R_>
                 operation_state(
                     R_&& r, shared_state_weak_ptr_type prev_state, shared_state_ptr_type state)
-                  : r(PIKA_FORWARD(R_, r))
-                  , prev_state(PIKA_MOVE(prev_state))
-                  , state(PIKA_MOVE(state))
+                  : r(std::forward<R_>(r))
+                  , prev_state(std::move(prev_state))
+                  , state(std::move(state))
                 {
                 }
 
@@ -636,12 +636,12 @@ namespace pika::execution::experimental {
                         try
                         {
                             pika::execution::experimental::set_value(
-                                PIKA_MOVE(os.r), access_type{PIKA_MOVE(state)});
+                                std::move(os.r), access_type{std::move(state)});
                         }
                         catch (...)
                         {
                             pika::execution::experimental::set_error(
-                                PIKA_MOVE(os.r), std::current_exception());
+                                std::move(os.r), std::current_exception());
                         }
                     };
 
@@ -650,7 +650,7 @@ namespace pika::execution::experimental {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
-                        p->add_continuation(PIKA_MOVE(continuation));
+                        p->add_continuation(std::move(continuation));
                         os.state.reset();
                         os.prev_state.reset();
                     }
@@ -659,7 +659,7 @@ namespace pika::execution::experimental {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation(PIKA_MOVE(os.state));
+                        continuation(std::move(os.state));
                     }
                 }
             };
@@ -668,7 +668,7 @@ namespace pika::execution::experimental {
             friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
             {
                 return operation_state<R>{
-                    PIKA_FORWARD(R, r), PIKA_MOVE(s.prev_state), PIKA_MOVE(s.state)};
+                    std::forward<R>(r), std::move(s.prev_state), std::move(s.state)};
             }
 
             template <typename R>
@@ -681,7 +681,7 @@ namespace pika::execution::experimental {
                         "connectable");
                 }
 
-                return operation_state<R>{PIKA_FORWARD(R, r), s.prev_state, s.state};
+                return operation_state<R>{std::forward<R>(r), s.prev_state, s.state};
             }
         };
 

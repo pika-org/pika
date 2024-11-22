@@ -39,7 +39,7 @@ namespace pika::detail {
         }
         void set_affinity_masks(std::vector<threads::detail::mask_type>&& affinity_masks)
         {
-            affinity_masks_ = PIKA_MOVE(affinity_masks);
+            affinity_masks_ = std::move(affinity_masks);
         }
 
         std::size_t get_num_threads() const { return num_threads_; }
@@ -60,7 +60,7 @@ namespace pika::detail {
             return pu_nums_[num_thread];
         }
         void set_pu_nums(std::vector<std::size_t> const& pu_nums) { pu_nums_ = pu_nums; }
-        void set_pu_nums(std::vector<std::size_t>&& pu_nums) { pu_nums_ = PIKA_MOVE(pu_nums); }
+        void set_pu_nums(std::vector<std::size_t>&& pu_nums) { pu_nums_ = std::move(pu_nums); }
 
         void add_punit(std::size_t virt_core, std::size_t thread_num);
         void init_cached_pu_nums(std::size_t hardware_concurrency);

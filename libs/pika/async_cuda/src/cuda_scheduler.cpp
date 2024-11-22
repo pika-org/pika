@@ -7,9 +7,11 @@
 #include <pika/async_cuda/cuda_pool.hpp>
 #include <pika/async_cuda/cuda_scheduler.hpp>
 
+#include <utility>
+
 namespace pika::cuda::experimental {
     cuda_scheduler::cuda_scheduler(cuda_pool pool)
-      : pool(PIKA_MOVE(pool))
+      : pool(std::move(pool))
       , priority(pika::execution::thread_priority::default_)
     {
     }
@@ -31,7 +33,7 @@ namespace pika::cuda::experimental {
 
     namespace detail {
         cuda_scheduler_sender::cuda_scheduler_sender(cuda_scheduler scheduler)
-          : scheduler(PIKA_MOVE(scheduler))
+          : scheduler(std::move(scheduler))
         {
         }
     }    // namespace detail
