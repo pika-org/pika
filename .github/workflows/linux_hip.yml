@@ -1,0 +1,57 @@
+# Copyright (c) 2021 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+name: Linux CI (HIP, Debug)
+
+on:
+  merge_group:
+  pull_request:
+  push:
+    branches:
+      # Development and release branches
+      - main
+      - release**
+
+jobs:
+  build:
+    name: github/linux/hip/fast
+    if: ${{ github.event_name == 'merge_group' }}
+    runs-on: ubuntu-24.04
+    container: pikaorg/pika-ci-hip:18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update apt repositories for ccache
+        run: apt update
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-hip
+      - name: Configure
+        shell: bash
+        run: |
+            cmake \
+                . \
+                -Bbuild \
+                -GNinja \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DPIKA_WITH_MALLOC=system \
+                -DPIKA_WITH_HIP=ON \
+                -DPIKA_WITH_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS=ON \
+                -DPIKA_WITH_TESTS_UNIT=ON \
+                -DPIKA_WITH_TESTS_BENCHMARKS=ON \
+                -DPIKA_WITH_TESTS_REGRESSIONS=ON \
+                -DPIKA_WITH_TESTS_EXAMPLES=ON \
+                -DPIKA_WITH_TESTS_MAX_THREADS=$(nproc) \
+                -DPIKA_WITH_COMPILER_WARNINGS=ON \
+                -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
+                -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
+      - name: Build
+        shell: bash
+        run: |
+            cmake --build build --target all
+            cmake --build build --target tests.{examples,unit,regressions,performance}.modules.async_cuda
