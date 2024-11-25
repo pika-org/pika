@@ -138,6 +138,15 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+.. doxygenclass:: pika::execution::experimental::unique_any_sender
+.. doxygenclass:: pika::execution::experimental::any_sender
+.. doxygenfunction:: pika::execution::experimental::make_unique_any_sender
+.. doxygenfunction:: pika::execution::experimental::make_any_sender
+
+.. literalinclude:: ../examples/documentation/any_sender_documentation.cpp
+   :language: c++
+   :start-at: #include
+
 .. _header_pika_cuda:
 
 CUDA/HIP support (``pika/cuda.hpp``)
