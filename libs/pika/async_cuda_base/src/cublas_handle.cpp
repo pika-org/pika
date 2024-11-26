@@ -65,7 +65,7 @@ namespace pika::cuda::experimental {
     cublas_handle::cublas_handle(cublas_handle const& other)
       : device(other.device)
       , stream(other.stream)
-      , handle(other.handle != 0 ? create_handle(device, stream) : 0)
+      , handle(other.valid() ? create_handle(device, stream) : 0)
     {
     }
 
@@ -73,20 +73,20 @@ namespace pika::cuda::experimental {
     {
         device = other.device;
         stream = other.stream;
-        handle = other.handle != 0 ? create_handle(device, stream) : 0;
+        handle = other.valid() ? create_handle(device, stream) : 0;
 
         return *this;
     }
 
     cublas_handle::~cublas_handle()
     {
-        if (handle != 0) { check_cublas_error(cublasDestroy(handle)); }
+        if (valid()) { check_cublas_error(cublasDestroy(handle)); }
     }
 
+    bool cublas_handle::valid() const noexcept { return bool(handle); }
+    cublas_handle::operator bool() const noexcept { return bool(handle); }
     cublasHandle_t cublas_handle::get() const noexcept { return handle; }
-
     int cublas_handle::get_device() const noexcept { return device; }
-
     whip::stream_t cublas_handle::get_stream() const noexcept { return stream; }
 
     void cublas_handle::set_stream(cuda_stream const& stream)

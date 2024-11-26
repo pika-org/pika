@@ -67,6 +67,7 @@ pika optionally depends on:
   ``nvc++``.
 * `HIP <https://rocmdocs.amd.com/en/latest/index.html>`__ 5.2.0 or greater. HIP support can be
   enabled with ``PIKA_WITH_HIP=ON``.
+* `whip <https://github.com/eth-cscs/whip>`__  when CUDA or HIP support is enabled.
 * `MPI <https://www.mpi-forum.org/>`__. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
 * `Boost.Context <https://boost.org>`__ on macOS or exotic platforms which are not supported by the
   default user-level thread implementations in pika. This can be enabled with

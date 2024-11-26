@@ -15,8 +15,24 @@ set(example_programs
     when_all_vector_documentation
 )
 
+if(PIKA_WITH_GPU_SUPPORT)
+  list(APPEND example_programs cuda_overview_documentation then_with_cublas_documentation
+       then_with_stream_documentation
+  )
+  set(cuda_overview_documentation_GPU ON)
+  set(then_with_stream_documentation_GPU ON)
+  set(then_with_cublas_documentation_GPU ON)
+  set(cuda_overview_documentation_PARAMETERS RUN_SERIAL)
+  set(then_with_stream_documentation_PARAMETERS RUN_SERIAL)
+  set(then_with_cublas_documentation_PARAMETERS RUN_SERIAL)
+endif()
+
 foreach(example_program ${example_programs})
-  set(sources ${example_program}.cpp)
+  if(${${example_program}_GPU})
+    set(sources ${example_program}.cu)
+  else()
+    set(sources ${example_program}.cpp)
+  endif()
 
   source_group("Source Files" FILES ${sources})
 

@@ -5,6 +5,8 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+:tocdepth: 3
+
 .. _api:
 
 =============
@@ -32,7 +34,6 @@ These headers are part of the public API, but are currently undocumented.
 - ``pika/async_rw_mutex.hpp``
 - ``pika/barrier.hpp``
 - ``pika/condition_variable.hpp``
-- ``pika/cuda.hpp``
 - ``pika/latch.hpp``
 - ``pika/mpi.hpp``
 - ``pika/mutex.hpp``
@@ -47,8 +48,8 @@ is to stabilize those APIs over time.
 
 .. _header_pika_init:
 
-``pika/init.hpp``
-=================
+Runtime management (``pika/init.hpp``)
+======================================
 
 The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
@@ -71,8 +72,8 @@ The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
 .. _header_pika_execution:
 
-``pika/execution.hpp``
-======================
+``std::execution`` support (``pika/execution.hpp``)
+===================================================
 
 The ``pika/execution.hpp`` header provides functionality related to ``std::execution``.
 ``std::execution`` functionality, including extensions provided by pika, is defined in the
@@ -136,3 +137,91 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/when_all_vector_documentation.cpp
    :language: c++
    :start-at: #include
+
+.. _header_pika_cuda:
+
+CUDA/HIP support (``pika/cuda.hpp``)
+====================================
+
+The ``pika/cuda.hpp`` header provides functionality related to CUDA and HIP. All functionality is
+under the ``pika::cuda::experimental`` namespace and class and function names contain ``cuda``, even
+when HIP support is enabled. CUDA and HIP functionality can be enabled with the CMake options
+``PIKA_WITH_CUDA`` and ``PIKA_WITH_HIP``, respectively, but they are mutually exclusive. In the
+following, whenever CUDA is mentioned, it refers to to CUDA and HIP interchangeably.
+
+.. note::
+   https://github.com/pika-org/pika/issues/116 tracks a potential renaming of the functionality
+   to avoid using ``cuda`` even when HIP is enabled. If you have feedback on a rename or just want
+   to follow along, please see that issue.
+
+.. note::
+   pika uses `whip <https://github.com/eth-cscs/whip>`__ internally for portability between CUDA and
+   HIP. However, users of pika are not forced to use whip as whip only creates aliases for CUDA/HIP
+   types and enumerations. whip is thus compatible with directly using the types and enumerations
+   provided by CUDA/HIP. For cuBLAS, cuSOLVER, rocBLAS, and rocSOLVER support pika does not use a
+   portability library, but simply uses the appropriate types depending on if CUDA or HIP support is
+   enabled.
+
+.. warning::
+   At the moment, ``nvcc`` can not compile stdexec headers. Of the CUDA compilers, only ``nvc++`` is
+   able to compile stdexec headers. If you have stdexec support enabled in pika, either ensure that
+   ``.cu`` files do not include stdexec headers, or use ``nvc++`` to compile your application.
+   However, ``nvc++`` does not officially support compiling device code. Use at your own risk.
+
+   For HIP there are no known restrictions.
+
+The CUDA support in pika relies on four major components:
+
+1. A pool of CUDA streams as well as cuBLAS and cuSOLVER handles
+   (:cpp:class:`pika::cuda::experimental::cuda_pool`). These streams and handles are used in a
+   round-robin fashion by various sender adaptors.
+2. A CUDA scheduler, in the ``std::execution`` sense
+   (:cpp:class:`pika::cuda::experimental::cuda_scheduler`). This uses the CUDA pool to schedule work
+   on a GPU.
+3. Sender adaptors (:cpp:var:`pika::cuda::experimental::then_with_stream` etc.). A few
+   special-purpose sender adaptors, as well as customizations of a few ``std::execution`` adaptors
+   are provided to help schedule different types of work on a GPU.
+4. Polling of CUDA events integrated into the pika scheduling loop
+   (:cpp:class:`pika::cuda::experimental::enable_user_polling`). This integration is essential to
+   avoid calling e.g. ``cudaStreamSynchronize`` on a pika task, which would block the underlying
+   worker thread and thus block progress of other work.
+
+The following example gives an overview of using the above CUDA functionalities in pika:
+
+.. literalinclude:: ../examples/documentation/cuda_overview_documentation.cu
+   :language: c++
+   :start-at: #include
+
+While :cpp:class:`pika::cuda::experimental::cuda_pool` gives direct access to streams and handles,
+the recommended way to access them is through the
+:cpp:class:`pika::cuda::experimental::cuda_scheduler` and the sender adaptors available below.
+
+.. doxygenclass:: pika::cuda::experimental::cuda_scheduler
+.. doxygenstruct:: pika::cuda::experimental::then_with_stream_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_stream
+
+.. literalinclude:: ../examples/documentation/then_with_stream_documentation.cu
+    :language: c++
+    :start-at: #include
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_cublas_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_cublas
+
+.. literalinclude:: ../examples/documentation/then_with_cublas_documentation.cu
+    :language: c++
+    :start-at: #include
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_cusolver_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_cusolver
+
+See :cpp:var:`pika::cuda::experimental::then_with_cublas` for an example of what can be done with
+:cpp:var:`pika::cuda::experimental::then_with_cusolver`. The interfaces are identical except for the
+type of handle passed to the callable.
+
+.. doxygenclass:: pika::cuda::experimental::enable_user_polling
+.. doxygenclass:: pika::cuda::experimental::cuda_pool
+.. doxygenclass:: pika::cuda::experimental::cuda_stream
+.. doxygenclass:: pika::cuda::experimental::cublas_handle
+.. doxygenclass:: pika::cuda::experimental::locked_cublas_handle
+.. doxygenclass:: pika::cuda::experimental::cusolver_handle
+.. doxygenclass:: pika::cuda::experimental::locked_cusolver_handle
