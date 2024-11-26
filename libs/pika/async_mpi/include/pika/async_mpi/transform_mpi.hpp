@@ -52,7 +52,6 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
-            using pika::execution::experimental::unique_any_sender;
             using pika::execution::experimental::unpack;
 
             // get mpi completion mode settings
@@ -64,35 +63,40 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
-                if (!completions_inline)    // not inline : a transfer is required
-                {
-                    if (request == MPI_REQUEST_NULL)
-                    {
-                        return ex::schedule(default_pool_scheduler(p));
-                    }
-                    return just(request) | trigger_mpi(mode) |
-                        ex::continues_on(default_pool_scheduler(p));
-                }
-                if (request == MPI_REQUEST_NULL) { return just(); }
-                return just(request) | trigger_mpi(mode);
-            };
-
-            if (requests_inline)
+            if (completions_inline)
             {
-                return std::forward<Sender>(sender) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                            dispatch_mpi(std::move(f)) | let_value(completion_snd);
-                    });
+                auto f_completion = [mode, f = std::forward<F>(f)](auto&... args) mutable {
+                    return just(std::forward_as_tuple(args...)) | unpack() |
+                        dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                };
+
+                if (requests_inline)
+                {
+                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
+                }
+                else
+                {
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value(std::move(f_completion));
+                }
             }
             else
             {
-                return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                            dispatch_mpi(std::move(f)) | let_value(completion_snd);
-                    });
+                auto f_completion = [mode, p, f = std::forward<F>(f)](auto&... args) mutable {
+                    return just(std::forward_as_tuple(args...)) | unpack() |
+                        dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
+                        continues_on(default_pool_scheduler(p));
+                };
+
+                if (requests_inline)
+                {
+                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
+                }
+                else
+                {
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value(std::move(f_completion));
+                }
             }
         }
 

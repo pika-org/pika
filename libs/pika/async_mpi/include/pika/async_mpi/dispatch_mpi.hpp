@@ -158,18 +158,8 @@ namespace pika::mpi::experimental::detail {
                                         mpi::exception(status, "dispatch mpi")));
                                 return;
                             }
-                            // early poll just in case the request completed immediately
-                            if (poll_request(request))
-                            {
-#ifdef PIKA_HAVE_APEX
-                                apex::scoped_timer apex_invoke("pika::mpi::trigger");
-#endif
-                                PIKA_DETAIL_DP(mpi_tran<7>,
-                                    debug(
-                                        str<>("dispatch_mpi_recv"), "eager poll ok", ptr(request)));
-                                ex::set_value(std::move(r.op_state.receiver), MPI_REQUEST_NULL);
-                            }
-                            else { ex::set_value(std::move(r.op_state.receiver), request); }
+
+                            ex::set_value(std::move(r.op_state.receiver), request);
                         },
                         [&](std::exception_ptr ep) {
                             ex::set_error(std::move(r.op_state.receiver), std::move(ep));
