@@ -688,13 +688,13 @@ namespace pika::execution::experimental::detail {
 namespace pika::execution::experimental {
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
     namespace detail {
-        // This helper only exists to make it possible to use any_(unique_)sender in global
+        // This helper only exists to make it possible to use (unique_)any_sender in global
         // variables or in general static that may be created before main. When used as a base for
-        // any_(unique_)_sender, this ensures that the empty vtables for any_operation_state are
-        // created as the first thing when creating an any_(unique_)sender. The empty vtables for
+        // (unique_)any_sender, this ensures that the empty vtables for any_operation_state are
+        // created as the first thing when creating an (unique_)any_sender. The empty vtables for
         // any_operation_state may otherwise be created much later (when the sender is connected and
-        // started), and thus destroyed before the any_(unique_)sender is destroyed. This would be
-        // problematic since the any_(unique_)sender can hold previously created
+        // started), and thus destroyed before the (unique_)any_sender is destroyed. This would be
+        // problematic since the (unique_)any_sender can hold previously created
         // any_operation_states indirectly.
         template <typename... Ts>
         struct any_sender_static_empty_vtable_helper
