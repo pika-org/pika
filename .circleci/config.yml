@@ -170,13 +170,13 @@ jobs:
           at: /pika
       - run:
           name: Check that shell scripts are correctly formatted with shfmt
+          working_directory: /pika/source
           command: |
-              cd /pika/source && shopt -s globstar # to activate the ** globbing
               shfmt --version
-              shfmt -w **/*.sh
-              git diff --exit-code > /tmp/modified_black_files.txt
+              fd --hidden --extension sh --exec shfmt --write
+              git diff --exit-code > /tmp/modified_shfmt_files.txt
       - store_artifacts:
-          path: /tmp/modified_black_files.txt
+          path: /tmp/modified_shfmt_files.txt
           destination: /pika/artifacts/modified_black_files.txt
 
   configure:
