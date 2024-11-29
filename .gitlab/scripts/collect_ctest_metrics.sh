@@ -17,6 +17,7 @@ metadata_file=$(mktemp --tmpdir metadata.XXXXXXXXXX.json)
 create_metadata_file "${metadata_file}"
 
 # Submit individual test data
+result_file_all=$(mktemp --tmpdir "ctest.XXXXXXXXXX.json")
 num_tests=$(xq . "${ctest_xml}" | jq '.testsuite.testcase | length')
 for i in $(seq 1 ${num_tests}); do
     result_file=$(mktemp --tmpdir "ctest_${i}.XXXXXXXXXX.json")
@@ -27,8 +28,9 @@ for i in $(seq 1 ${num_tests}); do
     json_add_value_json "${result_file}" "ctest.testcase" "${ctest_object}"
 
     json_merge "${metadata_file}" "${result_file}" "${result_file}"
-    submit_logstash "${result_file}"
+    cat "${result_file}" >>"${result_file_all}"
 done
+submit_logstash "${result_file_all}"
 
 result_file=$(mktemp --tmpdir "ctest.XXXXXXXXXX.json")
 echo '{}' >"${result_file}"

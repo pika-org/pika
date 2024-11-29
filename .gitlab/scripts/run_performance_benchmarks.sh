@@ -111,6 +111,7 @@ pika_test_options=(
 
 index=0
 failures=0
+result_file_all=$(mktemp --tmpdir "benchmarks.XXXXXXXXXX.json")
 for executable in "${pika_targets[@]}"; do
     test_opts=${pika_test_options[$index]}
     raw_result_file=$(mktemp --tmpdir "${executable}_raw.XXXXXXXXXX.json")
@@ -140,11 +141,12 @@ for executable in "${pika_targets[@]}"; do
         json_add_value_json "${result_file}" "metric.benchmark.series" "${benchmark_series}"
 
         json_merge "${metadata_file}" "${result_file}" "${result_file}"
-        submit_logstash "${result_file}"
+        cat "${result_file}" >>"${result_file_all}"
     fi
 
     index=$((index + 1))
 done
+submit_logstash "${result_file_all}"
 
 if ((failures > 0)); then
     exit 1
