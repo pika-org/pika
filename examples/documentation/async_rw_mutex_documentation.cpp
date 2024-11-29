@@ -22,6 +22,16 @@ int main(int argc, char* argv[])
     ex::thread_pool_scheduler sched{};
 
     {
+        // Below we will access the value proteced by the mutex with the
+        // following implied dependency graph:
+        //
+        //             /--> ro_access1 --\
+        // rw_access1 +---> ro_access2 ---+---> rw_access2
+        //             \--> ro_access3 --/
+        //
+        // Note that the senders themselves don't depend on each other
+        // explicitly as above, but the senders provided by the mutex enforce
+        // the given order.
         ex::async_rw_mutex<int> m{0};
 
         // This read-write access is guaranteed to not run concurrently with any
