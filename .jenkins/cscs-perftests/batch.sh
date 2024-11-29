@@ -30,7 +30,7 @@ build_dir="/dev/shm/pika/build"
 mkdir -p ${build_dir}/tools
 # Copy source directory to /dev/shm for faster builds and copy the perftest
 # utility in the build dir
-cp -r "${orig_src_dir}" "${src_dir}" && \
+cp -r "${orig_src_dir}" "${src_dir}" &&
     cp -r ${src_dir}/tools/perftests_ci ${build_dir}/tools &
 
 # Variables
