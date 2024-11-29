@@ -287,7 +287,7 @@ int pika_main(pika::program_options::variables_map& vm)
     sizeMult = (std::min)(sizeMult, std::size_t(100));
     sizeMult = (std::max)(sizeMult, std::size_t(1));
     //
-    int block_size = 32;
+    std::size_t block_size = 32;
 
     sMatrixSize matrix_size;
     matrix_size.uiWA = 2 * block_size * sizeMult;
