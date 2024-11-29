@@ -10,6 +10,7 @@ function submit_logstash {
         jq . "${1}"
     fi
 
+    echo "[$(date)] submitting to logstash"
     curl \
         --silent \
         --show-error \
@@ -18,6 +19,7 @@ function submit_logstash {
         --data "@${1}" \
         "${CSCS_LOGSTASH_URL}" \
         || true
+    echo
 }
 
 function json_merge {
