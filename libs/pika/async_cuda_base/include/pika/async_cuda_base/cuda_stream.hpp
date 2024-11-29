@@ -34,7 +34,7 @@ namespace pika::cuda::experimental {
         int device;
         pika::execution::thread_priority priority;
         unsigned int flags;
-        whip::stream_t stream = 0;
+        whip::stream_t stream{};
 
         struct priorities
         {
