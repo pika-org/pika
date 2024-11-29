@@ -13,9 +13,9 @@ include:
     SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
     COMPILER: gcc@9.3.0
     CXXSTD: 17
-    GPU_TARGET: '60'
+    GPU_TARGET: '80'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system
-      cxxstd=$CXXSTD ^boost@1.75.0 ^hwloc@2.0.3 ^cuda@11.2.0 ^fmt@9"
+      cxxstd=$CXXSTD ^boost@1.75.0 ^hwloc@2.0.3 ^cuda@11.8 ^fmt@9"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_EXAMPLES_OPENMP=ON -DCMAKE_CUDA_ARCHITECTURES=${GPU_TARGET}"
 
