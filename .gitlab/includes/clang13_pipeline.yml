@@ -11,6 +11,7 @@ include:
 .variables_clang13_config:
   variables:
     SPACK_ARCH: linux-ubuntu24.04-zen2
+    BASE_COMPILER: gcc@10
     COMPILER: clang@13.0.1
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} cxxflags=-stdlib=libc++ malloc=system \
