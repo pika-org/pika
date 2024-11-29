@@ -24,85 +24,85 @@ metadata_file=$(mktemp --tmpdir metadata.XXXXXXXXXX.json)
 create_metadata_file "${metadata_file}"
 
 pika_targets=(
-"task_overhead_report_test"
-"task_size_test"
-"task_size_test"
-"task_size_test"
-"task_size_test"
-"task_size_test"
-"task_latency_test"
-"task_latency_test"
-"task_latency_test"
-"task_latency_test"
-"task_yield_test"
-"task_yield_test"
-"condition_variable_overhead_test"
+    "task_overhead_report_test"
+    "task_size_test"
+    "task_size_test"
+    "task_size_test"
+    "task_size_test"
+    "task_size_test"
+    "task_latency_test"
+    "task_latency_test"
+    "task_latency_test"
+    "task_latency_test"
+    "task_yield_test"
+    "task_yield_test"
+    "condition_variable_overhead_test"
 )
 pika_test_options=(
-"--pika:ini=pika.thread_queue.init_threads_count=100 \
+    "--pika:ini=pika.thread_queue.init_threads_count=100 \
 --pika:queuing=local-priority \
 --repetitions=100 \
 --tasks=500000"
 
-"--method=task
+    "--method=task
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.9 \
 --perftest-json"
 
-"--method=task-hierarchical
+    "--method=task-hierarchical
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.9 \
 --perftest-json"
 
-"--method=task-yield
+    "--method=task-yield
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.9 \
 --perftest-json"
 
-"--method=barrier
+    "--method=barrier
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.9 \
 --perftest-json"
 
-"--method=bulk
+    "--method=bulk
 --tasks-per-thread=1000 \
 --task-size-growth-factor=1.05 \
 --target-efficiency=0.5 \
 --perftest-json"
 
-"--repetitions=1000000
+    "--repetitions=1000000
 --pika:threads=1
 --perftest-json"
 
-"--repetitions=1000000
+    "--repetitions=1000000
 --nostack
 --pika:threads=1
 --perftest-json"
 
-"--repetitions=1000000
+    "--repetitions=1000000
 --pika:threads=2
 --perftest-json"
 
-"--repetitions=1000000
+    "--repetitions=1000000
 --nostack
 --pika:threads=2
 --perftest-json"
 
-"--repetitions=100
+    "--repetitions=100
 --num-yields=100000
 --pika:threads=1
 --perftest-json"
 
-"--repetitions=100
+    "--repetitions=100
 --num-yields=100000
 --pika:threads=2
 --perftest-json"
 
-"--loops=1000000
+    "--loops=1000000
 --repetitions=3
 --pika:threads=2
 --perftest-json"
@@ -114,8 +114,8 @@ failures=0
 for executable in "${pika_targets[@]}"; do
     test_opts=${pika_test_options[$index]}
     raw_result_file=$(mktemp --tmpdir "${executable}_raw.XXXXXXXXXX.json")
-    result_file=$(mktemp --tmpdir "${executable}_raw.XXXXXXXXXX.json")
-    echo '{}' > "${result_file}"
+    result_file=$(mktemp --tmpdir "${executable}.XXXXXXXXXX.json")
+    echo '{}' >"${result_file}"
 
     echo
     echo

@@ -32,7 +32,7 @@ function submit_filesizes {
 
         json_merge "${metadata_file}" "${result_file}" "${result_file}"
         submit_logstash "${result_file}"
-done
+    done
 }
 
 # Submit file name and size for files under lib and bin in the build directory
