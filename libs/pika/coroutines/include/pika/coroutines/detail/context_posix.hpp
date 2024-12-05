@@ -188,20 +188,22 @@ namespace pika::threads::coroutines {
             ~ucontext_context_impl_base() { PIKA_COROUTINE_DESTROY_CONTEXT(m_ctx); }
 
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
-            void start_switch_fiber(void** fake_stack)
+            PIKA_NO_SANITIZE_ADDRESS void start_switch_fiber(void** fake_stack)
             {
                 __sanitizer_start_switch_fiber(fake_stack, asan_stack_bottom, asan_stack_size);
             }
-            void start_yield_fiber(void** fake_stack, ucontext_context_impl_base& caller)
+            PIKA_NO_SANITIZE_ADDRESS void start_yield_fiber(
+                void** fake_stack, ucontext_context_impl_base& caller)
             {
                 __sanitizer_start_switch_fiber(
                     fake_stack, caller.asan_stack_bottom, caller.asan_stack_size);
             }
-            void finish_yield_fiber(void* fake_stack)
+            PIKA_NO_SANITIZE_ADDRESS void finish_yield_fiber(void* fake_stack)
             {
                 __sanitizer_finish_switch_fiber(fake_stack, &asan_stack_bottom, &asan_stack_size);
             }
-            void finish_switch_fiber(void* fake_stack, ucontext_context_impl_base& caller)
+            PIKA_NO_SANITIZE_ADDRESS void finish_switch_fiber(
+                void* fake_stack, ucontext_context_impl_base& caller)
             {
                 __sanitizer_finish_switch_fiber(
                     fake_stack, &caller.asan_stack_bottom, &caller.asan_stack_size);
