@@ -10,6 +10,7 @@
 #include <fmt/printf.h>
 
 #include <chrono>
+#include <cstddef>
 #include <string_view>
 #include <thread>
 #include <utility>
@@ -54,6 +55,20 @@ int main(int argc, char* argv[])
     {
         fmt::print("Caught exception: {}\n", e.what());
     }
+
+    // We can also use a type-erased sender to chain work. The type of the
+    // sender remains the same each iteration thanks to the type-erasure, but
+    // the work it represents grows.
+    //
+    // However, note that using a specialized algorithm like repeat_n from
+    // stdexec may be more efficient.
+    ex::unique_any_sender<int> chain{ex::just(0)};
+    for (std::size_t i = 0; i < 42; ++i)
+    {
+        chain = std::move(chain) | ex::continues_on(sched) |
+            ex::then([](int x) { return x + 1; });
+    }
+    print_answer("Final answer", std::move(chain));
 
     pika::finalize();
     pika::stop();
