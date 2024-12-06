@@ -532,8 +532,6 @@ namespace pika::execution::experimental {
         /// \brief The type of read-write types accessed through the mutex.
         using readwrite_type = std::decay_t<ReadWriteT>;
 
-        using value_type = readwrite_type;
-
         /// \brief The wrapper type sent by read-only-access senders.
         using read_access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type,
             async_rw_mutex_access_type::read>;
@@ -613,7 +611,7 @@ namespace pika::execution::experimental {
         }
 
     private:
-        using shared_state_type = detail::async_rw_mutex_shared_state<value_type>;
+        using shared_state_type = detail::async_rw_mutex_shared_state<readwrite_type>;
         using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
 
         // nvc++ is not able to see this typedef unless it's public
@@ -726,7 +724,7 @@ namespace pika::execution::experimental {
             }
         };
 
-        PIKA_NO_UNIQUE_ADDRESS value_type value;
+        PIKA_NO_UNIQUE_ADDRESS readwrite_type value;
         PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
 
         async_rw_mutex_access_type prev_access = async_rw_mutex_access_type::readwrite;
