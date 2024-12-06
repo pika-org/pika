@@ -42,6 +42,8 @@ gcc9_cuda11_build:
     - .variables_gcc9_cuda11_config
     - .test_common_daint_gh200
     - .test_template
+  variables:
+    TEST_TIMEOUT: 600
 
 gcc9_cuda11_test_release:
   extends: [.gcc9_cuda11_test_common]
