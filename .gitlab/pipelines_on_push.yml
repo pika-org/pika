@@ -6,6 +6,6 @@
 
 include:
   - local: '.gitlab/includes/gcc13_pipeline.yml'
-  - local: '.gitlab/includes/clang14_cuda11_pipeline.yml'
+  - local: '.gitlab/includes/clang17_cuda12_pipeline.yml'
   - local: '.gitlab/includes/gcc12_hip6_pipeline.yml'
   - local: '.gitlab/includes/sloc.yml'
