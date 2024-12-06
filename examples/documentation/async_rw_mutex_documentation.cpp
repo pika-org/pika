@@ -25,9 +25,9 @@ int main(int argc, char* argv[])
         // Below we will access the value proteced by the mutex with the
         // following implied dependency graph:
         //
-        //             /--> ro_access1 --\
-        // rw_access1 +---> ro_access2 ---+---> rw_access2
-        //             \--> ro_access3 --/
+        //              ┌──► ro_access1 ──┐
+        // rw_access1 ──┼──► ro_access2 ──┼──► rw_access2
+        //              └──► ro_access3 ──┘
         //
         // Note that the senders themselves don't depend on each other
         // explicitly as above, but the senders provided by the mutex enforce
