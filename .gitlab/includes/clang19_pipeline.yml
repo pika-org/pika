@@ -20,7 +20,7 @@ include:
                  ^fmt cxxflags=-stdlib=libc++ cxxflags=-DLIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG \
                  ^spdlog cxxflags=-stdlib=libc++ cxxflags=-DLIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG \
                  ^stdexec@24.09"
-    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD \
+    CMAKE_FLAGS: "-DCMAKE_CXX_CLANG_TIDY=clang-tidy -DPIKA_WITH_CXX_STANDARD=$CXXSTD \
                   -DCMAKE_CXX_FLAGS='-stdlib=libc++ -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG' \
                   -DPIKA_WITH_MALLOC=system -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
                   -DPIKA_WITH_STDEXEC=ON"

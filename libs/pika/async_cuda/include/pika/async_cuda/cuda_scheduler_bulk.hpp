@@ -133,7 +133,7 @@ namespace pika::cuda::experimental {
             std::decay_t<T> operator()(T&& t, whip::stream_t stream) const
             {
                 launch_bulk_function(f, shape, t, stream);
-                return std::move(t);
+                return std::forward<T>(t);
             }
         };
     }    // namespace detail
