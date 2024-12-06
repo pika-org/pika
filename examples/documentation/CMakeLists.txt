@@ -5,6 +5,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(example_programs
+    any_sender_documentation
     drop_operation_state_documentation
     drop_value_documentation
     hello_world_documentation
