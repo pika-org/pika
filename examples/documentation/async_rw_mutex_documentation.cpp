@@ -31,7 +31,12 @@ int main(int argc, char* argv[])
         //
         // Note that the senders themselves don't depend on each other
         // explicitly as above, but the senders provided by the mutex enforce
-        // the given order.
+        // the given order. Because of this enforced order, it is possible to
+        // create deadlocks with the mutex. For example, starting and waiting
+        // for the sender of ro_access1 without ever starting the sender of
+        // rw_access1 would lead to a deadlock. Similarly, it is not sufficient
+        // to only start the last sender accessed from the mutex. It will not
+        // automatically start the senders of previous accesses.
         ex::async_rw_mutex<int> m{0};
 
         // This read-write access is guaranteed to not run concurrently with any
