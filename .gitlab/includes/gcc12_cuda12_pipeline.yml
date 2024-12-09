@@ -10,7 +10,7 @@ include:
 
 .variables_gcc12_cuda12_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu24.04-haswell
     COMPILER: gcc@12.1.0
     CXXSTD: 20
     GPU_TARGET: "60"
