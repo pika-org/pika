@@ -73,8 +73,6 @@ namespace pika::execution::experimental {
     ///       overload resolution performed in a context that include the declaration
     ///       `void set_error();`
     ///     * Otherwise, the expression is ill-formed.
-    ///
-    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename E>
     void set_error(R&& r, E&& e);
 # endif
@@ -135,8 +133,17 @@ namespace pika::execution::experimental {
     } set_value{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_error_t : pika::functional::detail::tag_noexcept<set_error_t>
+    struct set_error_t
     {
+        template <typename Receiver, typename Error>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver, Error&& error) noexcept
+        {
+            static_assert(
+                noexcept(std::forward<Receiver>(receiver).set_error(std::forward<Error>(error))),
+                "std::execution receiver set_error member function must be noexcept");
+            return std::forward<Receiver>(receiver).set_error(std::forward<Error>(error));
+        }
     } set_error{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE

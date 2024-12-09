@@ -166,9 +166,9 @@ namespace pika::let_error_detail {
                 };
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
-                    let_error_predecessor_receiver&& r, Error&& error) noexcept
+                void set_error(Error&& error) && noexcept
                 {
+                    auto r = std::move(*this);
                     pika::detail::try_catch_exception_ptr(
                         [&]() {
                             r.op_state.predecessor_error.template emplace<std::decay_t<Error>>(

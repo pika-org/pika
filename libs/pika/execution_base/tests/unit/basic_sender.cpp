@@ -70,7 +70,7 @@ struct receiver
 {
     PIKA_STDEXEC_RECEIVER_CONCEPT
 
-    friend void tag_invoke(ex::set_error_t, receiver&&, std::exception_ptr) noexcept {}
+    void set_error(std::exception_ptr) && noexcept {}
 
     friend void tag_invoke(ex::set_stopped_t, receiver&&) noexcept {}
 
@@ -152,7 +152,7 @@ struct void_receiver
 {
     PIKA_STDEXEC_RECEIVER_CONCEPT
 
-    friend void tag_invoke(ex::set_error_t, void_receiver&&, std::exception_ptr) noexcept {}
+    void set_error(std::exception_ptr) && noexcept {}
 
     friend void tag_invoke(ex::set_stopped_t, void_receiver&&) noexcept {}
 

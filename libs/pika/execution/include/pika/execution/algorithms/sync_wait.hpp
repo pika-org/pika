@@ -161,9 +161,9 @@ namespace pika::sync_wait_detail {
         void signal_set_called() noexcept { state.sem.release(); }
 
         template <typename Error>
-        friend void tag_invoke(pika::execution::experimental::set_error_t,
-            sync_wait_receiver_type&& r, Error&& error) noexcept
+        void set_error(Error&& error) && noexcept
         {
+            auto r = std::move(*this);
             r.state.value.template emplace<error_type>(std::forward<Error>(error));
             r.signal_set_called();
         }
