@@ -710,6 +710,23 @@ namespace pika::execution::experimental {
     template <typename... Ts>
     class any_sender;
 
+    /// \brief Type-erased move-only sender.
+    ///
+    /// This class wraps senders that send types \p Ts in the value channel. This wrapper class does
+    /// not support arbitrary completion signatures, but requires a single value and error
+    /// completion signature. The value completion signature must send types \p Ts. The error
+    /// completion must send a \p std::exception_ptr. The wrapped sender may have a stopped
+    /// completion signature.
+    ///
+    /// The \ref unique_any_sender requires senders that are move-constructible and connectable with
+    /// r-value references to the sender. The \ref unique_any_sender itself must also be connected
+    /// with an r-value reference (i.e. moved when passing into sender adaptors or consumers).
+    ///
+    /// Sending references in the completion signature is not supported.
+    ///
+    /// An empty \ref unique_any_sender throws when connected to a receiver.
+    ///
+    /// \tparam Ts types sent in the value channel.
     template <typename... Ts>
     class unique_any_sender
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
@@ -727,8 +744,11 @@ namespace pika::execution::experimental {
 
     public:
         PIKA_STDEXEC_SENDER_CONCEPT
+
+        /// \brief Default-construct an empty \ref unique_any_sender.
         unique_any_sender() = default;
 
+        /// \brief Construct a \ref unique_any_sender containing \p sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender(Sender&& sender)
@@ -736,6 +756,7 @@ namespace pika::execution::experimental {
             storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
         }
 
+        /// \brief Assign \p sender to the \ref unique_any_sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender& operator=(Sender&& sender)
@@ -750,6 +771,7 @@ namespace pika::execution::experimental {
         unique_any_sender& operator=(unique_any_sender&&) = default;
         unique_any_sender& operator=(unique_any_sender const&) = delete;
 
+        /// \brief Construct a \ref unique_any_sender from an \ref any_sender.
         // cppcheck-suppress noExplicitConstructor
         unique_any_sender(any_sender<Ts...>&& other)
           : storage(std::move(other.storage))
@@ -757,6 +779,7 @@ namespace pika::execution::experimental {
             other.reset();
         }
 
+        /// \brief Assign a \ref any_sender to a \ref unique_any_sender.
         unique_any_sender& operator=(any_sender<Ts...>&& other)
         {
             storage = std::move(other.storage);
@@ -800,6 +823,7 @@ namespace pika::execution::experimental {
             PIKA_UNREACHABLE;
         }
 
+        /// \brief Assign \p sender to the \ref unique_any_sender.
         template <typename Sender>
         void reset(Sender&& sender)
         {
@@ -810,13 +834,31 @@ namespace pika::execution::experimental {
             else { storage.template store<impl_type<Sender>>(std::forward<Sender>(sender)); }
         }
 
+        /// \brief Empty the \ref unique_any_sender.
         void reset() { storage.reset(); }
 
+        /// \brief Check if the \ref unique_any_sender is empty.
+        ///
+        /// \return True if the \ref unique_any_sender is empty, i.e. default-constructed or
+        /// moved-from.
         bool empty() const noexcept { return storage.empty(); }
 
+        /// \brief Check if the \ref unique_any_sender is non-empty.
+        ///
+        /// See \ref empty().
         explicit operator bool() const noexcept { return !empty(); }
     };
 
+    /// \brief Type-erased copyable sender.
+    ///
+    /// See \ref unique_any_sender for an overview. Compared to \ref unique_any_sender, the \ref
+    /// any_sender requires the wrapped senders to be l-value reference connectable and copyable.
+    /// The \ref any_sender itself is also l-value reference connectable and copyable. Otherwise it
+    /// behaves the same as \ref unique_any_sender.
+    ///
+    /// A \ref unique_any_sender can be constructed from a \ref any_sender, but not vice-versa.
+    ///
+    /// \tparam Ts types sent in the value channel.
     template <typename... Ts>
     class any_sender
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
@@ -836,8 +878,11 @@ namespace pika::execution::experimental {
 
     public:
         PIKA_STDEXEC_SENDER_CONCEPT
+
+        /// \brief Default-construct an empty \ref any_sender.
         any_sender() = default;
 
+        /// \brief Construct a \ref any_sender containing \p sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender(Sender&& sender)
@@ -849,6 +894,7 @@ namespace pika::execution::experimental {
             storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
         }
 
+        /// \brief Assign \p sender to the \ref any_sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender& operator=(Sender&& sender)
@@ -899,6 +945,7 @@ namespace pika::execution::experimental {
             return {std::move(moved_storage.get()), std::forward<Receiver>(receiver)};
         }
 
+        /// \brief Assign \p sender to the \ref any_sender.
         template <typename Sender>
         void reset(Sender&& sender)
         {
@@ -916,10 +963,18 @@ namespace pika::execution::experimental {
             }
         }
 
+        /// \brief Empty the \ref any_sender.
         void reset() { storage.reset(); }
 
+        /// \brief Check if the \ref any_sender is empty.
+        ///
+        /// \return True if the \ref any_sender is empty, i.e. default-constructed or
+        /// moved-from.
         bool empty() const noexcept { return storage.empty(); }
 
+        /// \brief Check if the \ref any_sender is non-empty.
+        ///
+        /// See \ref empty().
         explicit operator bool() const noexcept { return !empty(); }
     };
 
@@ -948,12 +1003,20 @@ namespace pika::execution::experimental {
         }
     }    // namespace detail
 
+    /// \brief Helper function to construct a \ref unique_any_sender.
+    ///
+    /// The template parameters for \ref unique_any_sender are inferred from the value types sent by
+    /// the given sender \p sender.
     template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
     auto make_unique_any_sender(Sender&& sender)
     {
         return detail::make_any_sender_impl<unique_any_sender>(std::forward<Sender>(sender));
     }
 
+    /// \brief Helper function to construct a \ref any_sender.
+    ///
+    /// The template parameters for \ref any_sender are inferred from the value types
+    /// sent by the given sender \p sender.
     template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
     auto make_any_sender(Sender&& sender)
     {
