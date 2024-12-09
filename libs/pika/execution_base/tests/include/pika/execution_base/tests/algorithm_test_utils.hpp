@@ -138,8 +138,7 @@ struct callback_receiver
     std::atomic<bool>& set_value_called;
 
     template <typename E>
-    friend void
-    tag_invoke(pika::execution::experimental::set_error_t, callback_receiver&&, E&&) noexcept
+    void set_error(E&&) && noexcept
     {
         PIKA_TEST(false);
     }
@@ -176,9 +175,9 @@ struct error_callback_receiver
     bool expect_set_value = false;
 
     template <typename E>
-    friend void tag_invoke(
-        pika::execution::experimental::set_error_t, error_callback_receiver&& r, E&& e) noexcept
+    void set_error(E&& e) && noexcept
     {
+        auto r = std::move(*this);
         PIKA_INVOKE(r.f, std::forward<E>(e));
         r.set_error_called = true;
     }

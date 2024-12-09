@@ -81,9 +81,9 @@ namespace pika::bulk_detail {
             }
 
             template <typename Error>
-            friend void tag_invoke(pika::execution::experimental::set_error_t, bulk_receiver&& r,
-                Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
+                auto r = std::move(*this);
                 pika::execution::experimental::set_error(
                     std::move(r.receiver), std::forward<Error>(error));
             }
