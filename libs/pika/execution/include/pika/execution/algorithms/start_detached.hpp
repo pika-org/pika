@@ -43,9 +43,9 @@ namespace pika::start_detached_detail {
 #if !defined(__NVCC__)
             [[noreturn]]
 #endif
-            friend void tag_invoke(pika::execution::experimental::set_error_t,
-                start_detached_receiver&& r, Error error) noexcept
+            void set_error(Error&& error) && noexcept
             {
+                auto r = std::move(*this);
                 r.op_state.release();
 
                 if constexpr (std::is_same_v<std::decay_t<Error>, std::exception_ptr>)
