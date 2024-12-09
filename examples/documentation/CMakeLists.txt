@@ -6,6 +6,7 @@
 
 set(example_programs
     any_sender_documentation
+    async_rw_mutex_documentation
     drop_operation_state_documentation
     drop_value_documentation
     hello_world_documentation

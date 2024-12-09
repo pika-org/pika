@@ -31,7 +31,6 @@ headers are internal implementation details.
 
 These headers are part of the public API, but are currently undocumented.
 
-- ``pika/async_rw_mutex.hpp``
 - ``pika/barrier.hpp``
 - ``pika/condition_variable.hpp``
 - ``pika/latch.hpp``
@@ -144,6 +143,32 @@ All sender adaptors are `customization point objects (CPOs)
 .. doxygenfunction:: pika::execution::experimental::make_any_sender
 
 .. literalinclude:: ../examples/documentation/any_sender_documentation.cpp
+   :language: c++
+   :start-at: #include
+
+.. _header_pika_async_rw_mutex:
+
+Asynchronous read-write mutex (``pika/async_rw_mutex.hpp``)
+===========================================================
+
+This header provides access to a sender-based asynchronous mutex, allowing both shared and exclusive
+access to a wrapped value. The functionality is in the namespace ``pika::execution::experimental``.
+
+Unlike typical mutexes, this one provides access exactly in the order that it is requested in
+synchronous code. This allows writing algorithms that mostly look like synchronous code, but can run
+asynchronously. This mutex is used extensively in `DLA-Future
+<https://github.com/eth-cscs/DLA-Future>`__, where it forms the basis for asynchronous access to
+blocks of distributed matrices.
+
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex
+.. doxygenenum:: pika::execution::experimental::async_rw_mutex_access_type
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::readwrite >
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::read >
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::read >
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::readwrite >
+
+.. literalinclude:: ../examples/documentation/async_rw_mutex_documentation.cpp
    :language: c++
    :start-at: #include
 
