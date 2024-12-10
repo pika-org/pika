@@ -47,17 +47,6 @@ namespace pika::execution::experimental {
 namespace pika::execution::experimental {
 
 # if defined(DOXYGEN)
-    /// set_value is a customization point object. The expression
-    /// `pika::execution::set_value(r, as...)` is equivalent to:
-    ///     * `r.set_value(as...)`, if that expression is valid. If the function selected
-    ///       does not send the value(s) `as...` to the Receiver `r`'s value channel,
-    ///       the program is ill-formed (no diagnostic required).
-    ///     * Otherwise, `set_value(r, as...), if that expression is valid, with
-    ///       overload resolution performed in a context that include the declaration
-    ///       `void set_value();`
-    ///     * Otherwise, the expression is ill-formed.
-    ///
-    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename... As>
     void set_value(R&& r, As&&... as);
 
