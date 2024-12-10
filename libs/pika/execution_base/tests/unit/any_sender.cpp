@@ -217,9 +217,10 @@ struct error_receiver
 
     std::atomic<bool>& set_error_called;
 
-    friend void tag_invoke(pika::execution::experimental::set_error_t, error_receiver&& r,
-        std::exception_ptr&& e) noexcept
+    // Note: constexpr with try catch block only available from C++20
+    void set_error(std::exception_ptr&& e) && noexcept
     {
+        auto r = std::move(*this);
         try
         {
             std::rethrow_exception(std::move(e));
