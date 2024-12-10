@@ -22,6 +22,7 @@ static std::size_t tag_invoke_connect_calls = 0;
 
 struct non_sender_1
 {
+    void set_error(std::exception_ptr) && noexcept {}
 };
 
 struct non_sender_2
