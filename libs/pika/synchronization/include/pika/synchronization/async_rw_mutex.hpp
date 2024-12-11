@@ -17,6 +17,7 @@
 #include <pika/functional/unique_function.hpp>
 
 #include <atomic>
+#include <cstddef>
 #include <exception>
 #include <memory>
 #include <mutex>
@@ -72,7 +73,15 @@ namespace pika::execution::experimental {
                     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                     next_state->set_value(std::move(*value));
 
-                    for (auto& continuation : continuations) { continuation(next_state); }
+                    if (!continuations.empty())
+                    {
+                        auto const size = continuations.size();
+                        for (std::size_t i = 0; i < size - 1; ++i) { continuations[i](next_state); }
+
+                        // Move shared state into the last continuation to ensure that the
+                        // continuations release the last reference and not this destructor.
+                        continuations[size - 1](std::move(next_state));
+                    }
                 }
             }
 
@@ -131,7 +140,15 @@ namespace pika::execution::experimental {
                 // If there is no next state the continuations must be empty.
                 PIKA_ASSERT(next_state || continuations.empty());
 
-                for (auto& continuation : continuations) { continuation(next_state); }
+                if (!continuations.empty())
+                {
+                    auto const size = continuations.size();
+                    for (std::size_t i = 0; i < size - 1; ++i) { continuations[i](next_state); }
+
+                    // Move shared state into the last continuation to ensure that the continuations
+                    // release the last reference and not this destructor.
+                    continuations[size - 1](std::move(next_state));
+                }
             }
 
             void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
