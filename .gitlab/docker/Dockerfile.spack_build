@@ -14,7 +14,7 @@ ARG CMAKE_FLAGS
 COPY . ${SOURCE_DIR}
 
 # Print spack spec since not printed if the compiler image is found on jfrog
-RUN spack -e pika_ci spec -lI $spack_spec
+RUN spack -e pika_ci spec -lI
 
 # Configure & Build
 RUN spack -e pika_ci config add "config:flags:keep_werror:all" && \
