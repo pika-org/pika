@@ -10,7 +10,8 @@ include:
 
 .variables_clang14_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu24.04-haswell
+    BASE_COMPILER: gcc@11
     COMPILER: clang@14.0.6
     CXXSTD: 17
     GPU_TARGET: '60'
