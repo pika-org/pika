@@ -267,7 +267,6 @@ namespace pika::util {
             "process_mask = ${PIKA_PROCESS_MASK:}",
             "os_threads = ${PIKA_THREADS:cores}",
             "cores = ${PIKA_CORES:all}",
-            "first_pu = ${PIKA_FIRST_PU:0}",
             "scheduler = ${PIKA_SCHEDULER:local-priority-fifo}",
 #if defined(__APPLE__)
             "bind = ${PIKA_BIND:none}",
