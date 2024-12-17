@@ -6,6 +6,24 @@
 
 # Changelog
 
+## 0.31.0 (2024-12-18)
+
+### New features
+
+- The `require_started` sender adaptor, `any_sender` and `unique_any_sender`, `async_rw_mutex`, and CUDA functionality have been documented. ([#1297](https://github.com/pika-org/pika/pull/1297), [#1309](https://github.com/pika-org/pika/pull/1309), [#1355](https://github.com/pika-org/pika/pull/1355), [#1356](https://github.com/pika-org/pika/pull/1356))
+- The type-erased receiver used internally by `any_sender` no longer requires heap allocation. ([#1354](https://github.com/pika-org/pika/pull/1354))
+
+### Breaking changes
+
+- Support for ittnotify has been removed. ([#1290](https://github.com/pika-org/pika/pull/1290))
+- The CUDA and HIP pools now create a fixed number of streams instead of creating streams based on the number of worker threads. **This is a silent breaking API change**. If you are creating pools with a custom number of streams make sure that the values are reasonable with the new behaviour. See the [API documentation](https://pikacpp.org/api.html#_CPPv4N4pika4cuda12experimental9cuda_poolE) for more details. ([#1294](https://github.com/pika-org/pika/pull/1294))
+- The `set_value` CPO now uses member functions instead of `tag_invoke` to better align with P2300. ([#1295](https://github.com/pika-org/pika/pull/1295))
+- `zip_iterator` has been removed. ([#1347](https://github.com/pika-org/pika/pull/1347))
+
+### Bugfixes
+
+- pika no longer sets the pthread name of the main thread. ([#1329](https://github.com/pika-org/pika/pull/1329))
+
 ## 0.30.1 (2024-11-19)
 
 ### New features
