@@ -6,6 +6,7 @@
 
 set(tests
     async_rw_mutex
+    async_rw_mutex_yielding
     barrier
     binary_semaphore
     condition_variable
@@ -19,6 +20,7 @@ set(tests
 )
 
 set(async_rw_mutex_PARAMETERS THREADS 4)
+set(async_rw_mutex_yielding_PARAMETERS THREADS 4)
 set(barrier_cpp20_PARAMETERS THREADS 4)
 set(binary_semaphore_cpp20_PARAMETERS THREADS 4)
 
