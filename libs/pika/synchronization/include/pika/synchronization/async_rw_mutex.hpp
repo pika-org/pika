@@ -45,8 +45,7 @@ namespace pika::execution::experimental {
             value_ptr_type value{nullptr};
             shared_state_ptr_type next_state{nullptr};
             mutex_type mtx{};
-            pika::detail::small_vector<
-                pika::util::detail::unique_function<void(shared_state_ptr_type)>, 1>
+            pika::detail::small_vector<pika::util::detail::unique_function<void()>, 1>
                 continuations{};
 
             async_rw_mutex_shared_state() = default;
@@ -57,18 +56,7 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
-                // If there is no next state the continuations must be empty.
-                PIKA_ASSERT(next_state || continuations.empty());
-
-                // This state must always have the value set by the time it is
-                // destructed. If there is no next state the value is destructed
-                // with this state.
-                PIKA_ASSERT(value);
-
-                if (PIKA_LIKELY(next_state))
-                {
-                    for (auto& continuation : continuations) { continuation(next_state); }
-                }
+                for (auto& continuation : continuations) { continuation(); }
             }
 
             void set_value(value_ptr_type v)
@@ -108,8 +96,7 @@ namespace pika::execution::experimental {
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             shared_state_ptr_type next_state{nullptr};
             mutex_type mtx{};
-            pika::detail::small_vector<
-                pika::util::detail::unique_function<void(shared_state_ptr_type)>, 1>
+            pika::detail::small_vector<pika::util::detail::unique_function<void()>, 1>
                 continuations{};
 
             async_rw_mutex_shared_state() = default;
@@ -120,18 +107,7 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
-                // If there is no next state the continuations must be empty.
-                PIKA_ASSERT(next_state || continuations.empty());
-
-                if (!continuations.empty())
-                {
-                    auto const size = continuations.size();
-                    for (std::size_t i = 0; i < size - 1; ++i) { continuations[i](next_state); }
-
-                    // Move shared state into the last continuation to ensure that the continuations
-                    // release the last reference and not this destructor.
-                    continuations[size - 1](std::move(next_state));
-                }
+                for (auto& continuation : continuations) { continuation(); }
             }
 
             void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
@@ -462,7 +438,7 @@ namespace pika::execution::experimental {
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [&](shared_state_ptr_type state) mutable {
+                    auto continuation = [&]() mutable {
                         try
                         {
                             pika::execution::experimental::set_value(
@@ -470,6 +446,7 @@ namespace pika::execution::experimental {
                         }
                         catch (...)
                         {
+                            os.state.reset();
                             pika::execution::experimental::set_error(
                                 std::move(r), std::current_exception());
                         }
@@ -481,7 +458,6 @@ namespace pika::execution::experimental {
                         // add a continuation to be triggered when the previous
                         // state is released.
                         p->add_continuation(std::move(continuation));
-                        state.reset();
                         prev_state.reset();
                     }
                     else
@@ -489,7 +465,7 @@ namespace pika::execution::experimental {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation(std::move(state));
+                        continuation();
                     }
                 }
             };
@@ -663,7 +639,7 @@ namespace pika::execution::experimental {
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [&](shared_state_ptr_type state) mutable {
+                    auto continuation = [&]() mutable {
                         try
                         {
                             pika::execution::experimental::set_value(
@@ -671,6 +647,7 @@ namespace pika::execution::experimental {
                         }
                         catch (...)
                         {
+                            os.state.reset();
                             pika::execution::experimental::set_error(
                                 std::move(r), std::current_exception());
                         }
@@ -682,7 +659,6 @@ namespace pika::execution::experimental {
                         // add a continuation to be triggered when the previous
                         // state is released.
                         p->add_continuation(std::move(continuation));
-                        state.reset();
                         prev_state.reset();
                     }
                     else
@@ -690,7 +666,7 @@ namespace pika::execution::experimental {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation(std::move(state));
+                        continuation();
                     }
                 }
             };
