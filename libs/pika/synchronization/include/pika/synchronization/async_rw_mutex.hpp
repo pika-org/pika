@@ -56,6 +56,11 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
+                if (next_state) { next_state->done(); }
+            }
+
+            void done()
+            {
                 for (auto& continuation : continuations) { continuation(); }
             }
 
@@ -106,6 +111,11 @@ namespace pika::execution::experimental {
             async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state const&) = delete;
 
             ~async_rw_mutex_shared_state()
+            {
+                if (next_state) { next_state->done(); }
+            }
+
+            void done()
             {
                 for (auto& continuation : continuations) { continuation(); }
             }
@@ -457,7 +467,10 @@ namespace pika::execution::experimental {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
-                        p->add_continuation(std::move(continuation));
+                        state->add_continuation(std::move(continuation));
+
+                        // Holding on to the previous state acts as a lock to ensure the
+                        // continuations aren't triggered while the continuation is added.
                         prev_state.reset();
                     }
                     else
@@ -658,7 +671,10 @@ namespace pika::execution::experimental {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
-                        p->add_continuation(std::move(continuation));
+                        state->add_continuation(std::move(continuation));
+
+                        // Holding on to the previous state acts as a lock to ensure the
+                        // continuations aren't triggered while the continuation is added.
                         prev_state.reset();
                     }
                     else
