@@ -14,7 +14,6 @@
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/functional/unique_function.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -36,6 +35,11 @@ namespace pika::execution::experimental {
     };
 
     namespace detail {
+        struct async_rw_mutex_operation_state_base
+        {
+            virtual void continuation() = 0;
+        };
+
         template <typename T>
         struct async_rw_mutex_shared_state
         {
@@ -45,8 +49,7 @@ namespace pika::execution::experimental {
             value_ptr_type value{nullptr};
             shared_state_ptr_type next_state{nullptr};
             mutex_type mtx{};
-            pika::detail::small_vector<pika::util::detail::unique_function<void()>, 1>
-                continuations{};
+            pika::detail::small_vector<async_rw_mutex_operation_state_base*, 1> op_states{};
 
             async_rw_mutex_shared_state() = default;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
@@ -61,7 +64,7 @@ namespace pika::execution::experimental {
 
             void done()
             {
-                for (auto& continuation : continuations) { continuation(); }
+                for (auto* op_state : op_states) { op_state->continuation(); }
             }
 
             void set_value(value_ptr_type v)
@@ -86,11 +89,10 @@ namespace pika::execution::experimental {
                 next_state = std::move(state);
             }
 
-            template <typename F>
-            void add_continuation(F&& continuation)
+            void add_op_state(async_rw_mutex_operation_state_base* op_state)
             {
                 std::lock_guard<mutex_type> l(mtx);
-                continuations.emplace_back(std::forward<F>(continuation));
+                op_states.emplace_back(op_state);
             }
         };
 
@@ -101,8 +103,7 @@ namespace pika::execution::experimental {
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             shared_state_ptr_type next_state{nullptr};
             mutex_type mtx{};
-            pika::detail::small_vector<pika::util::detail::unique_function<void()>, 1>
-                continuations{};
+            pika::detail::small_vector<async_rw_mutex_operation_state_base*, 1> op_states{};
 
             async_rw_mutex_shared_state() = default;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
@@ -117,7 +118,7 @@ namespace pika::execution::experimental {
 
             void done()
             {
-                for (auto& continuation : continuations) { continuation(); }
+                for (auto* op_state : op_states) { op_state->continuation(); }
             }
 
             void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
@@ -128,11 +129,10 @@ namespace pika::execution::experimental {
                 next_state = std::move(state);
             }
 
-            template <typename F>
-            void add_continuation(F&& continuation)
+            void add_op_state(async_rw_mutex_operation_state_base* op_state)
             {
                 std::lock_guard<mutex_type> l(mtx);
-                continuations.emplace_back(std::forward<F>(continuation));
+                op_states.emplace_back(op_state);
             }
         };
     }    // namespace detail
@@ -422,7 +422,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename R>
-            struct operation_state
+            struct operation_state : detail::async_rw_mutex_operation_state_base
             {
                 std::decay_t<R> r;
                 shared_state_weak_ptr_type prev_state;
@@ -442,6 +442,21 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
+                void continuation() override
+                {
+                    try
+                    {
+                        pika::execution::experimental::set_value(
+                            std::move(r), access_type{std::move(state)});
+                    }
+                    catch (...)
+                    {
+                        state.reset();
+                        pika::execution::experimental::set_error(
+                            std::move(r), std::current_exception());
+                    }
+                }
+
                 friend void tag_invoke(
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
@@ -449,26 +464,12 @@ namespace pika::execution::experimental {
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [&os]() mutable {
-                        try
-                        {
-                            pika::execution::experimental::set_value(
-                                std::move(os.r), access_type{std::move(os.state)});
-                        }
-                        catch (...)
-                        {
-                            os.state.reset();
-                            pika::execution::experimental::set_error(
-                                std::move(os.r), std::current_exception());
-                        }
-                    };
-
                     if (auto p = os.prev_state.lock())
                     {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
-                        os.state->add_continuation(std::move(continuation));
+                        os.state->add_op_state(&os);
 
                         // Holding on to the previous state acts as a lock to ensure the
                         // continuations aren't triggered while the continuation is added.
@@ -479,7 +480,7 @@ namespace pika::execution::experimental {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation();
+                        os.continuation();
                     }
                 }
             };
@@ -627,7 +628,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename R>
-            struct operation_state
+            struct operation_state : detail::async_rw_mutex_operation_state_base
             {
                 std::decay_t<R> r;
                 shared_state_weak_ptr_type prev_state;
@@ -647,6 +648,21 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
+                void continuation() override
+                {
+                    try
+                    {
+                        pika::execution::experimental::set_value(
+                            std::move(r), access_type{std::move(state)});
+                    }
+                    catch (...)
+                    {
+                        state.reset();
+                        pika::execution::experimental::set_error(
+                            std::move(r), std::current_exception());
+                    }
+                }
+
                 friend void tag_invoke(
                     pika::execution::experimental::start_t, operation_state& os) noexcept
                 {
@@ -654,26 +670,12 @@ namespace pika::execution::experimental {
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [&os]() mutable {
-                        try
-                        {
-                            pika::execution::experimental::set_value(
-                                std::move(os.r), access_type{std::move(os.state)});
-                        }
-                        catch (...)
-                        {
-                            os.state.reset();
-                            pika::execution::experimental::set_error(
-                                std::move(os.r), std::current_exception());
-                        }
-                    };
-
                     if (auto p = os.prev_state.lock())
                     {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
-                        os.state->add_continuation(std::move(continuation));
+                        os.state->add_op_state(&os);
 
                         // Holding on to the previous state acts as a lock to ensure the
                         // continuations aren't triggered while the continuation is added.
@@ -684,7 +686,7 @@ namespace pika::execution::experimental {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation();
+                        os.continuation();
                     }
                 }
             };
