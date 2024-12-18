@@ -37,6 +37,7 @@ namespace pika::execution::experimental {
     namespace detail {
         struct async_rw_mutex_operation_state_base
         {
+            async_rw_mutex_operation_state_base* next{nullptr};
             virtual void continuation() = 0;
         };
 
@@ -46,10 +47,10 @@ namespace pika::execution::experimental {
             using mutex_type = pika::concurrency::detail::spinlock;
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             using value_ptr_type = std::shared_ptr<T>;
+
             value_ptr_type value{nullptr};
             shared_state_ptr_type next_state{nullptr};
-            mutex_type mtx{};
-            pika::detail::small_vector<async_rw_mutex_operation_state_base*, 1> op_states{};
+            std::atomic<void*> op_state_head{nullptr};
 
             async_rw_mutex_shared_state() = default;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
@@ -62,9 +63,32 @@ namespace pika::execution::experimental {
                 if (next_state) { next_state->done(); }
             }
 
-            void done()
+            void done() noexcept
             {
-                for (auto* op_state : op_states) { op_state->continuation(); }
+                while (true)
+                {
+                    void* expected = op_state_head.load(std::memory_order_relaxed);
+                    // TODO: memory order
+                    // this is not an async_rw_mutex_operation_state_base*, but is a known value to
+                    // signal that the queue has been processed
+                    if (op_state_head.compare_exchange_strong(expected, static_cast<void*>(this)))
+                    {
+                        // We have now successfully acquired the head of the queue, and signaled to
+                        // other threads that they can't add any more items to the queue. We can now
+                        // process the queue without further synchronization.
+                        async_rw_mutex_operation_state_base* current =
+                            static_cast<async_rw_mutex_operation_state_base*>(expected);
+
+                        while (current != nullptr)
+                        {
+                            async_rw_mutex_operation_state_base* next = current->next;
+                            current->continuation();
+                            current = next;
+                        }
+
+                        break;
+                    }
+                }
             }
 
             void set_value(value_ptr_type v)
@@ -91,8 +115,18 @@ namespace pika::execution::experimental {
 
             void add_op_state(async_rw_mutex_operation_state_base* op_state)
             {
-                std::lock_guard<mutex_type> l(mtx);
-                op_states.emplace_back(op_state);
+                while (true)
+                {
+                    void* expected = op_state_head.load(std::memory_order_relaxed);
+                    PIKA_ASSERT(expected != static_cast<void*>(this));
+                    op_state->next = static_cast<async_rw_mutex_operation_state_base*>(expected);
+                    // TODO: memory order
+                    if (op_state_head.compare_exchange_strong(
+                            expected, static_cast<void*>(op_state)))
+                    {
+                        break;
+                    }
+                }
             }
         };
 
@@ -101,9 +135,9 @@ namespace pika::execution::experimental {
         {
             using mutex_type = pika::concurrency::detail::spinlock;
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
+
             shared_state_ptr_type next_state{nullptr};
-            mutex_type mtx{};
-            pika::detail::small_vector<async_rw_mutex_operation_state_base*, 1> op_states{};
+            std::atomic<void*> op_state_head{nullptr};
 
             async_rw_mutex_shared_state() = default;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
@@ -116,9 +150,32 @@ namespace pika::execution::experimental {
                 if (next_state) { next_state->done(); }
             }
 
-            void done()
+            void done() noexcept
             {
-                for (auto* op_state : op_states) { op_state->continuation(); }
+                while (true)
+                {
+                    void* expected = op_state_head.load(std::memory_order_relaxed);
+                    // TODO: memory order
+                    // this is not an async_rw_mutex_operation_state_base*, but is a known value to
+                    // signal that the queue has been processed
+                    if (op_state_head.compare_exchange_strong(expected, static_cast<void*>(this)))
+                    {
+                        // We have now successfully acquired the head of the queue, and signaled to
+                        // other threads that they can't add any more items to the queue. We can now
+                        // process the queue without further synchronization.
+                        async_rw_mutex_operation_state_base* current =
+                            static_cast<async_rw_mutex_operation_state_base*>(expected);
+
+                        while (current != nullptr)
+                        {
+                            async_rw_mutex_operation_state_base* next = current->next;
+                            current->continuation();
+                            current = next;
+                        }
+
+                        break;
+                    }
+                }
             }
 
             void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
@@ -131,8 +188,18 @@ namespace pika::execution::experimental {
 
             void add_op_state(async_rw_mutex_operation_state_base* op_state)
             {
-                std::lock_guard<mutex_type> l(mtx);
-                op_states.emplace_back(op_state);
+                while (true)
+                {
+                    void* expected = op_state_head.load(std::memory_order_relaxed);
+                    PIKA_ASSERT(expected != static_cast<void*>(this));
+                    op_state->next = static_cast<async_rw_mutex_operation_state_base*>(expected);
+                    // TODO: memory order
+                    if (op_state_head.compare_exchange_strong(
+                            expected, static_cast<void*>(op_state)))
+                    {
+                        break;
+                    }
+                }
             }
         };
     }    // namespace detail
