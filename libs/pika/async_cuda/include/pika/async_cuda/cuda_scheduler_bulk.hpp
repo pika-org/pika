@@ -22,6 +22,7 @@
 #include <whip.hpp>
 
 #include <type_traits>
+#include <utility>
 
 namespace pika::cuda::experimental {
     namespace detail {
@@ -36,14 +37,14 @@ namespace pika::cuda::experimental {
         template <typename Shape>
         auto shape_size_impl(std::false_type, Shape&& shape)
         {
-            return pika::util::size(PIKA_FORWARD(Shape, shape));
+            return pika::util::size(std::forward<Shape>(shape));
         }
 
         template <typename Shape>
         auto shape_size(Shape&& shape)
         {
             return shape_size_impl(
-                std::is_integral<std::decay_t<Shape>>{}, PIKA_FORWARD(Shape, shape));
+                std::is_integral<std::decay_t<Shape>>{}, std::forward<Shape>(shape));
         }
 
 #if defined(PIKA_COMPUTE_CODE)
@@ -65,7 +66,7 @@ namespace pika::cuda::experimental {
         PIKA_DEVICE auto shape_dereference(Shape&& shape, int i)
         {
             return shape_dereference_impl(
-                std::is_integral<std::decay_t<Shape>>{}, PIKA_FORWARD(Shape, shape), i);
+                std::is_integral<std::decay_t<Shape>>{}, std::forward<Shape>(shape), i);
         }
 
         template <typename F, typename Shape, typename Size, typename... Ts>
@@ -132,7 +133,7 @@ namespace pika::cuda::experimental {
             std::decay_t<T> operator()(T&& t, whip::stream_t stream) const
             {
                 launch_bulk_function(f, shape, t, stream);
-                return PIKA_MOVE(t);
+                return std::forward<T>(t);
             }
         };
     }    // namespace detail
@@ -142,7 +143,7 @@ namespace pika::cuda::experimental {
     decltype(auto) tag_invoke(pika::execution::experimental::bulk_t, cuda_scheduler,
         Sender&& sender, Shape&& shape, F&& f)
     {
-        return then_with_stream(PIKA_FORWARD(Sender, sender),
-            detail::bulk_launcher<Shape, F>{PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)});
+        return then_with_stream(std::forward<Sender>(sender),
+            detail::bulk_launcher<Shape, F>{std::forward<Shape>(shape), std::forward<F>(f)});
     }
 }    // namespace pika::cuda::experimental

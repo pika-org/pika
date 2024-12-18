@@ -340,8 +340,11 @@ namespace pika::detail {
                 "no cross boundary stealing is allowed (default value: 0)")
 #if defined(PIKA_HAVE_MPI)
             ("pika:mpi-completion-mode", value<std::size_t>(),
-                "the pika MPI polling completion mode (only available if MPI "
-                "built with MPI support)")
+                "the pika MPI polling completion/handler mode "
+                "(only available if MPI built with MPI support)")
+            ("pika:mpi-enable-pool",
+                "enable the creation of a dedicated pool for mpi-polling "
+                "(only available if MPI built with MPI support and available threads>1).")
 #endif
         ;
 

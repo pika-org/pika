@@ -23,7 +23,7 @@ namespace pika::detail {
     }
 
     void handle_assert(
-        source_location const& loc, const char* expr, std::string const& msg) noexcept
+        source_location const& loc, char const* expr, std::string const& msg) noexcept
     {
         if (get_handler() == nullptr)
         {

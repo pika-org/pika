@@ -153,7 +153,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     }
 
     ipaddr::ipaddr(std::uint32_t a)
-      : data_(reinterpret_cast<const uint8_t*>(&ipdata_))
+      : data_(reinterpret_cast<uint8_t const*>(&ipdata_))
       , ipdata_(a)
     {
     }
@@ -211,7 +211,7 @@ namespace PIKA_DETAIL_NS_DEBUG {
     }
 
     mem_crc32::mem_crc32(void const* a, std::size_t len)
-      : addr_(reinterpret_cast<const uint64_t*>(a))
+      : addr_(reinterpret_cast<uint64_t const*>(a))
       , len_(len)
     {
     }

@@ -10,14 +10,14 @@ include:
 
 .variables_gcc9_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu24.04-haswell
     COMPILER: gcc@9.3.0
     CXXSTD: 17
     GPU_TARGET: '60'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system
-      cxxstd=$CXXSTD ^boost@1.75.0 ^hwloc@2.0.3 ^cuda@11.2.0 ^fmt@9"
+      cxxstd=$CXXSTD ^boost@1.75.0 ^hwloc@2.0.3 ^cuda@11 ^fmt@9"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
-                  -DPIKA_WITH_EXAMPLES_OPENMP=ON"
+                  -DPIKA_WITH_EXAMPLES_OPENMP=ON -DCMAKE_CUDA_ARCHITECTURES=${GPU_TARGET}"
 
 gcc9_cuda11_spack_compiler_image:
   extends:

@@ -6,6 +6,65 @@
 
 # Changelog
 
+## 0.31.0 (2024-12-18)
+
+### New features
+
+- The `require_started` sender adaptor, `any_sender` and `unique_any_sender`, `async_rw_mutex`, and CUDA functionality have been documented. ([#1297](https://github.com/pika-org/pika/pull/1297), [#1309](https://github.com/pika-org/pika/pull/1309), [#1355](https://github.com/pika-org/pika/pull/1355), [#1356](https://github.com/pika-org/pika/pull/1356))
+- The type-erased receiver used internally by `any_sender` no longer requires heap allocation. ([#1354](https://github.com/pika-org/pika/pull/1354))
+
+### Breaking changes
+
+- Support for ittnotify has been removed. ([#1290](https://github.com/pika-org/pika/pull/1290))
+- The CUDA and HIP pools now create a fixed number of streams instead of creating streams based on the number of worker threads. **This is a silent breaking API change**. If you are creating pools with a custom number of streams make sure that the values are reasonable with the new behaviour. See the [API documentation](https://pikacpp.org/api.html#_CPPv4N4pika4cuda12experimental9cuda_poolE) for more details. ([#1294](https://github.com/pika-org/pika/pull/1294))
+- The `set_value` CPO now uses member functions instead of `tag_invoke` to better align with P2300. ([#1295](https://github.com/pika-org/pika/pull/1295))
+- `zip_iterator` has been removed. ([#1347](https://github.com/pika-org/pika/pull/1347))
+
+### Bugfixes
+
+- pika no longer sets the pthread name of the main thread. ([#1329](https://github.com/pika-org/pika/pull/1329))
+
+## 0.30.1 (2024-11-19)
+
+### New features
+
+### Breaking changes
+
+### Bugfixes
+
+- A parameter lifetime issue in `transform_mpi` that affects almost all MPI modes was fixed. ([#1321](https://github.com/pika-org/pika/pull/1321))
+
+## 0.30.0 (2024-11-08)
+
+### New features
+
+- pika can now automatically create a custom thread pool used for MPI work. ([#1267](https://github.com/pika-org/pika/pull/1267))
+- All uses of `std::aligned_storage_t` have been removed, allowing for builds without deprecation warnings with C++23. ([#1280](https://github.com/pika-org/pika/pull/1280))
+- Documentation has been expanded, with many sender adaptors unique to pika now documented. ([#1279](https://github.com/pika-org/pika/pull/1279), [#1286](https://github.com/pika-org/pika/pull/1286), [#1287](https://github.com/pika-org/pika/pull/1287), [#1292](https://github.com/pika-org/pika/pull/1292), [#1304](https://github.com/pika-org/pika/pull/1304), [#1310](https://github.com/pika-org/pika/pull/1310))
+
+### Breaking changes
+
+- The default MPI mode used for creating and waiting for MPI requests has been changed. ([#1143](https://github.com/pika-org/pika/pull/1143))
+- Support for clang 11 and clang 12 has been dropped. Use of these versions is not disallowed but no attempt will be made to fix issues for those compilers. ([#1284](https://github.com/pika-org/pika/pull/1284))
+
+### Bugfixes
+
+- Builds with clang 19 have been fixed. ([#1283](https://github.com/pika-org/pika/pull/1283))
+- Detection for when libatomic is required has been improved. ([#1315](https://github.com/pika-org/pika/pull/1315))
+
+## 0.29.0 (2024-10-04)
+
+### New features
+
+- The CUDA/HIP pool uses fewer, and a user-controllable number of, cuBLAS/SOLVER and rocBLAS/SOLVER handles. This can significantly reduce GPU memory usage, especially on high core count systems. ([#1234](https://github.com/pika-org/pika/pull/1234))
+- The sender adaptor `transfer` has been renamed to `continues_on`, with a deprecation warning, to match the latest P2300 proposal. `transfer_just` and `transfer_when_all` have been deprecated. ([#1235](https://github.com/pika-org/pika/pull/1235))
+
+### Breaking changes
+
+### Bugfixes
+
+- An initialization issue when setting an explicit process mask on a process that has a limited number of cores available due to cgroups restrictions has been fixed. ([#1251](https://github.com/pika-org/pika/pull/1251))
+
 ## 0.28.0 (2024-09-04)
 
 ### New features

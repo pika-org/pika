@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <pika/config/forward.hpp>
-
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
@@ -60,6 +58,6 @@ namespace pika::detail {
     void split(Container& container, char const* str, Predicate&& pred,
         token_compress_mode compress_mode = token_compress_mode::off)
     {
-        split(container, std::string{str}, PIKA_FORWARD(Predicate, pred), compress_mode);
+        split(container, std::string{str}, std::forward<Predicate>(pred), compress_mode);
     }
 }    // namespace pika::detail

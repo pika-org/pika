@@ -25,14 +25,14 @@ namespace pika::threads::detail {
         using thread_state_ex_type = std::int8_t;
         using tag_type = std::int64_t;
 
-        static const std::size_t state_shift = 56;       // 8th byte
-        static const std::size_t state_ex_shift = 48;    // 7th byte
+        static std::size_t const state_shift = 56;       // 8th byte
+        static std::size_t const state_ex_shift = 48;    // 7th byte
 
-        static const tagged_state_type state_mask = 0xffull;
-        static const tagged_state_type state_ex_mask = 0xffull;
+        static tagged_state_type const state_mask = 0xffull;
+        static tagged_state_type const state_ex_mask = 0xffull;
 
         // (1L << 48L) - 1;
-        static const tagged_state_type tag_mask = 0x0000'ffff'ffff'ffffull;
+        static tagged_state_type const tag_mask = 0x0000'ffff'ffff'ffffull;
 
         static tag_type extract_tag(tagged_state_type const& i) { return i & tag_mask; }
 

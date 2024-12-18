@@ -102,10 +102,10 @@ void matrixMultiply(sMatrixSize& matrix_size, std::size_t device, std::size_t it
     }));
 
     std::cout << "Small matrix multiply tests using CUBLAS...\n\n";
-    const T alpha = 1.0f;
-    const T beta = 0.0f;
+    T const alpha = 1.0f;
+    T const beta = 0.0f;
 
-    auto test_function = [&](cu::cuda_scheduler& cuda_sched, const std::string& msg,
+    auto test_function = [&](cu::cuda_scheduler& cuda_sched, std::string const& msg,
                              std::size_t n_iters) {
         // time many cuda kernels spawned one after each other when they complete
         pika::chrono::detail::high_resolution_timer t1;

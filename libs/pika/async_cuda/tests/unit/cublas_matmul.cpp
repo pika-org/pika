@@ -67,14 +67,14 @@ struct sMatrixSize
 // -------------------------------------------------------------------------
 // Compute reference data set matrix multiply on CPU
 // C = A * B
-// @param C          reference data, computed but preallocated
-// @param A          matrix A as provided to device
-// @param B          matrix B as provided to device
-// @param hA         height of matrix A
-// @param wB         width of matrix B
+// \param C          reference data, computed but preallocated
+// \param A          matrix A as provided to device
+// \param B          matrix B as provided to device
+// \param hA         height of matrix A
+// \param wB         width of matrix B
 // -------------------------------------------------------------------------
 template <typename T>
-void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA, unsigned int wA, unsigned int wB)
+void matrixMulCPU(T* C, T const* A, T const* B, unsigned int hA, unsigned int wA, unsigned int wB)
 {
     for (unsigned int i = 0; i < hA; ++i)
     {
@@ -95,7 +95,7 @@ void matrixMulCPU(T* C, const T* A, const T* B, unsigned int hA, unsigned int wA
 // -------------------------------------------------------------------------
 // Compute the L2 norm difference between two arrays
 inline bool compare_L2_err(
-    const float* reference, const float* data, const unsigned int len, const float epsilon)
+    float const* reference, float const* data, unsigned int const len, float const epsilon)
 {
     PIKA_ASSERT(epsilon >= 0);
 
@@ -157,8 +157,8 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     tt::sync_wait(std::move(copy_AB));
 
     std::cout << "Computing result using CUBLAS...\n";
-    const T alpha = 1.0f;
-    const T beta = 0.0f;
+    T const alpha = 1.0f;
+    T const beta = 0.0f;
 
     // Perform warmup operation with cublas
     // note cublas is column major ordering : transpose the order
@@ -287,7 +287,7 @@ int pika_main(pika::program_options::variables_map& vm)
     sizeMult = (std::min)(sizeMult, std::size_t(100));
     sizeMult = (std::max)(sizeMult, std::size_t(1));
     //
-    int block_size = 32;
+    std::size_t block_size = 32;
 
     sMatrixSize matrix_size;
     matrix_size.uiWA = 2 * block_size * sizeMult;

@@ -13,7 +13,6 @@
 #include <pika/threading_base/thread_data.hpp>
 //
 #include <pika/thread_support/unlock_guard.hpp>
-#include <pika/type_support/unused.hpp>
 //
 #include <pika/schedulers/queue_holder_thread.hpp>
 //

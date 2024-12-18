@@ -19,11 +19,15 @@ on:
 jobs:
   build:
     name: github/linux/sanitizers/address-undefined-leak
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
-      image: pikaorg/pika-ci-base:27
+      image: pikaorg/pika-ci-base:29
       # --privileged is enabled for sysctl further down.
       options: --privileged
+
+    strategy:
+      matrix:
+        build_type: ["Debug", "RelWithDebInfo"]
 
     steps:
       - uses: actions/checkout@v4
@@ -32,25 +36,19 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-linux-sanitizers-address-undefined-leak
-      - name: Switch OpenMPI to MPICH
-        shell: bash
-        run: |
-            apt-get update
-            apt-get remove --yes mpi-default-dev
-            apt-get autoremove --yes
-            apt-get install --no-install-recommends --yes libmpich-dev
+          key: ccache-linux-sanitizers-address-undefined-leak-${{ matrix.build_type }}
       - name: Configure
         shell: bash
         run: |
+            # MPI is disabled because of https://github.com/pika-org/pika/issues/1348
             cmake \
                 . \
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_BUILD_TYPE= ${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
-                -DPIKA_WITH_MPI=ON \
+                -DPIKA_WITH_MPI=OFF \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
@@ -80,8 +78,14 @@ jobs:
             # https://github.com/actions/runner-images/issues/9491
             sysctl --write vm.mmap_rnd_bits=28
 
+            # We are certain that we want to run mpiexec as root despite warnings as that is the
+            # only user available in the container. Mistakes will only affect the current step.
+            export OMPI_ALLOW_RUN_AS_ROOT=1
+            export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
             export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
+            export LSAN_OPTIONS=suppressions=$PWD/tools/lsan.supp
             cd build
             ctest \
               --timeout 120 \
@@ -95,8 +99,14 @@ jobs:
             # See above.
             sysctl --write vm.mmap_rnd_bits=28
 
+            # We are certain that we want to run mpiexec as root despite warnings as that is the
+            # only user available in the container. Mistakes will only affect the current step.
+            export OMPI_ALLOW_RUN_AS_ROOT=1
+            export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
             export ASAN_OPTIONS=fast_unwind_on_malloc=0:strict_string_checks=1:detect_leaks=1:detect_stack_use_after_return=0:check_initialization_order=1:strict_init_order=1:suppressions=$PWD/tools/asan.supp
             export UBSAN_OPTIONS=print_stacktrace=1:suppressions=$PWD/tools/ubsan.supp
+            export LSAN_OPTIONS=suppressions=$PWD/tools/lsan.supp
             cd build
             ctest \
               --timeout 120 \

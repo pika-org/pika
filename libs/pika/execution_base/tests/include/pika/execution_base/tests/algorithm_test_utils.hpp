@@ -151,10 +151,10 @@ struct callback_receiver
     };
 
     template <typename... Ts>
-    friend auto tag_invoke(
-        pika::execution::experimental::set_value_t, callback_receiver&& r, Ts&&... ts) noexcept
+    auto set_value(Ts&&... ts) && noexcept
         -> decltype(PIKA_INVOKE(std::declval<std::decay_t<F>>(), std::forward<Ts>(ts)...), void())
     {
+        auto r = std::move(*this);
         PIKA_INVOKE(r.f, std::forward<Ts>(ts)...);
         r.set_value_called = true;
     }
@@ -190,9 +190,9 @@ struct error_callback_receiver
     };
 
     template <typename... Ts>
-    friend void tag_invoke(
-        pika::execution::experimental::set_value_t, error_callback_receiver&& r, Ts&&...) noexcept
+    void set_value(Ts&&...) && noexcept
     {
+        auto r = std::move(*this);
         PIKA_TEST(r.expect_set_value);
     }
 
@@ -225,7 +225,7 @@ void check_exception_ptr(std::exception_ptr eptr)
     {
         std::rethrow_exception(eptr);
     }
-    catch (const std::runtime_error& e)
+    catch (std::runtime_error const& e)
     {
         PIKA_TEST_EQ(std::string(e.what()), std::string("error"));
     }

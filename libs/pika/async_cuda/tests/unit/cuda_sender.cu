@@ -36,7 +36,7 @@ auto launch_saxpy_kernel(pika::cuda::experimental::cuda_scheduler& cuda_sched, S
     unsigned int& blocks, unsigned int& threads, void** args)
 {
     return ex::when_all(std::forward<Sender>(predecessor),
-               ex::just(reinterpret_cast<const void*>(&saxpy), dim3(blocks), dim3(threads), args,
+               ex::just(reinterpret_cast<void const*>(&saxpy), dim3(blocks), dim3(threads), args,
                    std::size_t(0))) |
         ex::continues_on(cuda_sched) | cu::then_with_stream(whip::launch_kernel);
 }
@@ -157,8 +157,7 @@ int pika_main(pika::program_options::variables_map& vm)
     double testd2 = 3.1415;
     std::cout << "then_with_stream/continuation : " << testd2 << std::endl;
     tt::sync_wait(ex::just(testd2) | ex::continues_on(cuda_sched) |
-        cu::then_with_stream(&cuda_trivial_kernel<double>) |
-        cu::then_on_host([] { std::cout << "continuation triggered\n"; }));
+        cu::then_with_stream(&cuda_trivial_kernel<double>));
 
     // --------------------
     // test using a copy of a cuda executor
@@ -166,8 +165,7 @@ int pika_main(pika::program_options::variables_map& vm)
     std::cout << "Copying executor : " << testd2 + 1 << std::endl;
     auto cuda_sched_copy = cuda_sched;
     tt::sync_wait(ex::just(testd2 + 1) | ex::continues_on(cuda_sched_copy) |
-        cu::then_with_stream(&cuda_trivial_kernel<double>) |
-        cu::then_on_host([] { std::cout << "copy continuation triggered\n"; }));
+        cu::then_with_stream(&cuda_trivial_kernel<double>));
 
     // --------------------
     // test a full kernel example

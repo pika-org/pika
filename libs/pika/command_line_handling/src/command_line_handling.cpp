@@ -10,6 +10,7 @@
 #include <pika/command_line_handling/parse_command_line.hpp>
 #include <pika/debugging/attach_debugger.hpp>
 #include <pika/functional/detail/reset_function.hpp>
+#include <pika/logging.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/program_options/options_description.hpp>
 #include <pika/program_options/variables_map.hpp>
@@ -95,7 +96,7 @@ namespace pika::detail {
     inline std::string encode_and_enquote(std::string str)
     {
         encode(str, '\"', "\\\"", 2);
-        return enquote(PIKA_MOVE(str));
+        return enquote(std::move(str));
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -117,7 +118,7 @@ namespace pika::detail {
 
         if (!mask_string.empty())
         {
-            fmt::print(std::cerr,
+            PIKA_LOG(warn,
                 "Explicit process mask is set with --pika:process-mask or PIKA_PROCESS_MASK, but "
                 "thread binding is not supported on macOS. The process mask will be ignored.");
             mask_string = "";
@@ -125,9 +126,9 @@ namespace pika::detail {
 #else
         if (!mask_string.empty() && !use_process_mask)
         {
-            fmt::print(std::cerr,
+            PIKA_LOG(warn,
                 "Explicit process mask is set with --pika:process-mask or PIKA_PROCESS_MASK, but "
-                "--pika:ignore-process-mask is also set. The process mask will be ignored.\n");
+                "--pika:ignore-process-mask is also set. The process mask will be ignored.");
         }
 #endif
 
@@ -257,8 +258,8 @@ namespace pika::detail {
     {
         // If using the process mask we override "cores" and "all" options but
         // keep explicit numeric values.
-        const std::size_t init_threads = get_number_of_default_threads(use_process_mask);
-        const std::size_t init_cores = get_number_of_default_cores(use_process_mask);
+        std::size_t const init_threads = get_number_of_default_threads(use_process_mask);
+        std::size_t const init_cores = get_number_of_default_cores(use_process_mask);
 
         std::size_t default_threads = init_threads;
 
@@ -396,6 +397,16 @@ namespace pika::detail {
     }
 
 #if defined(PIKA_HAVE_MPI)
+    bool handle_enable_mpi_pool(detail::manage_config& cfgmap,
+        pika::util::runtime_configuration const& rtcfg, pika::program_options::variables_map& vm)
+    {
+        bool enable_mpi_pool = cfgmap.get_value<bool>("pika.mpi.enable_pool",
+            pika::detail::get_entry_as<bool>(rtcfg, "pika.mpi.enable_pool", false));
+
+        enable_mpi_pool |= vm.count("pika:mpi-enable-pool");
+        return enable_mpi_pool;
+    }
+
     std::size_t handle_mpi_completion_mode(detail::manage_config& cfgmap,
         pika::util::runtime_configuration const& rtcfg, pika::program_options::variables_map& vm)
     {
@@ -457,9 +468,10 @@ namespace pika::detail {
 #if defined(__APPLE__)
             if (affinity_bind_ != "none")
             {
-                std::cerr << "Warning: thread binding set to \"" << affinity_bind_
-                          << "\" but thread binding is not supported on macOS. Ignoring option."
-                          << std::endl;
+                PIKA_LOG(warn,
+                    "Thread binding set to \"{}\" but thread binding is not supported on macOS. "
+                    "Ignoring option.",
+                    affinity_bind_);
             }
             affinity_bind_ = "";
 #else
@@ -471,9 +483,10 @@ namespace pika::detail {
 #if defined(__APPLE__)
         if (pu_step_ != 1)
         {
-            std::cerr << "Warning: PU step set to \"" << pu_step_
-                      << "\" but thread binding is not supported on macOS. Ignoring option."
-                      << std::endl;
+            PIKA_LOG(warn,
+                "PU step set to \"{}\" but thread binding is not supported on macOS. "
+                "Ignoring option.",
+                pu_step_);
             pu_step_ = 1;
         }
 #endif
@@ -487,9 +500,10 @@ namespace pika::detail {
         if (pu_offset_ != std::size_t(-1))
         {
 #if defined(__APPLE__)
-            std::cerr << "Warning: PU offset set to \"" << pu_offset_
-                      << "\" but thread binding is not supported on macOS. Ignoring option."
-                      << std::endl;
+            PIKA_LOG(warn,
+                "PU offset set to \"{}\" but thread binding is not supported on macOS. Ignoring "
+                "option.",
+                pu_offset_);
             pu_offset_ = std::size_t(-1);
             ini_config.emplace_back("pika.pu_offset=0");
 #else
@@ -550,6 +564,9 @@ namespace pika::detail {
         }
 
 #if defined(PIKA_HAVE_MPI)
+        bool enable_mpi_pool = detail::handle_enable_mpi_pool(cfgmap, rtcfg_, vm);
+        ini_config.emplace_back("pika.mpi.enable_pool=" + std::to_string(enable_mpi_pool));
+
         std::size_t const mpi_completion_mode =
             detail::handle_mpi_completion_mode(cfgmap, rtcfg_, vm);
         ini_config.emplace_back("pika.mpi.completion_mode=" + std::to_string(mpi_completion_mode));
@@ -590,7 +607,7 @@ namespace pika::detail {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void command_line_handling::store_command_line(int argc, const char* const* argv)
+    void command_line_handling::store_command_line(int argc, char const* const* argv)
     {
         // Collect the command line for diagnostic purposes.
         std::string command;
@@ -667,12 +684,11 @@ namespace pika::detail {
             if (option != "off" && option != "startup" && option != "exception" &&
                 option != "test-failure")
             {
-                // clang-format off
-                std::cerr <<
-                    "pika::init: command line warning: --pika:attach-debugger: "
-                    "invalid option: " << option << ". Allowed values are "
-                    "'off', 'startup', 'exception' or 'test-failure'" << std::endl;
-                // clang-format on
+                PIKA_LOG(warn,
+                    "pika::init: command line warning: --pika:attach-debugger: invalid option: "
+                    "\"{}\". Allowed values are \"off\", \"startup\", \"exception\" or "
+                    "\"test-failure\"",
+                    option);
             }
             else
             {
@@ -693,7 +709,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     // separate command line arguments from configuration settings
     std::vector<std::string> command_line_handling::preprocess_config_settings(
-        int argc, const char* const* argv)
+        int argc, char const* const* argv)
     {
         std::vector<std::string> options;
         options.reserve(static_cast<std::size_t>(argc) + ini_config_.size());
@@ -725,7 +741,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     std::vector<std::string> prepend_options(std::vector<std::string>&& args, std::string&& options)
     {
-        if (options.empty()) { return PIKA_MOVE(args); }
+        if (options.empty()) { return std::move(args); }
 
         using tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
         boost::escaped_list_separator<char> sep('\\', ' ', '\"');
@@ -739,7 +755,7 @@ namespace pika::detail {
     ///////////////////////////////////////////////////////////////////////////
     command_line_handling_result command_line_handling::call(
         pika::program_options::options_description const& desc_cmdline, int argc,
-        const char* const* argv)
+        char const* const* argv)
     {
         // set the flag signaling that command line parsing has been done
         cmd_line_parsed_ = true;
@@ -764,7 +780,7 @@ namespace pika::detail {
         // real command line.
         std::string prepend_command_line = rtcfg_.get_entry("pika.commandline.prepend_options");
 
-        args = prepend_options(PIKA_MOVE(args), PIKA_MOVE(prepend_command_line));
+        args = prepend_options(std::move(args), std::move(prepend_command_line));
 
         // Initial analysis of the command line options. This is
         // preliminary as it will not take into account any aliases as
@@ -871,22 +887,22 @@ namespace pika::detail {
             if (num_threads_ == 1 && get_number_of_default_threads(false) != 1 &&
                 !command_line_arguments_given)
             {
-                std::cerr
-                    << "The pika runtime will be started with only one worker thread because the "
-                       "process mask has restricted the available resources to only one thread. If "
-                       "this is unintentional make sure the process mask contains the resources "
-                       "you need or use --pika:ignore-process-mask to use all resources. Use "
-                       "--pika:print-bind to print the thread bindings used by pika.\n";
+                PIKA_LOG(warn,
+                    "The pika runtime will be started with only one worker thread because the "
+                    "process mask has restricted the available resources to only one thread. If "
+                    "this is unintentional make sure the process mask contains the resources "
+                    "you need or use --pika:ignore-process-mask to use all resources. Use "
+                    "--pika:print-bind to print the thread bindings used by pika.");
             }
             else if (num_cores_ == 1 && get_number_of_default_cores(false) != 1 &&
                 !command_line_arguments_given)
             {
-                fmt::print(std::cerr,
+                PIKA_LOG(warn,
                     "The pika runtime will be started on only one core with {} worker threads "
                     "because the process mask has restricted the available resources to only one "
                     "core. If this is unintentional make sure the process mask contains the "
                     "resources you need or use --pika:ignore-process-mask to use all resources. "
-                    "Use --pika:print-bind to print the thread bindings used by pika.\n",
+                    "Use --pika:print-bind to print the thread bindings used by pika.",
                     num_threads_);
             }
         }

@@ -71,7 +71,7 @@ namespace pika::threads::coroutines::detail {
           , m_result(
                 threads::detail::thread_schedule_state::unknown, threads::detail::invalid_thread_id)
           , m_arg(nullptr)
-          , m_fun(PIKA_MOVE(f))
+          , m_fun(std::move(f))
         {
         }
 
@@ -124,7 +124,7 @@ namespace pika::threads::coroutines::detail {
             m_result = result_type(threads::detail::thread_schedule_state::unknown,
                 threads::detail::invalid_thread_id);
             m_arg = nullptr;
-            m_fun = PIKA_MOVE(f);
+            m_fun = std::move(f);
             this->super_type::rebind_base(id);
         }
 

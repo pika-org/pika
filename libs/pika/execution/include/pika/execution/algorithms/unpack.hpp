@@ -46,22 +46,22 @@ namespace pika::unpack_detail {
             Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
-                PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
+                std::move(r.receiver), std::forward<Error>(error));
         }
 
         friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, unpack_receiver_type&& r) noexcept
         {
-            pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
+            pika::execution::experimental::set_stopped(std::move(r.receiver));
         }
 
         template <typename Ts>
-        friend void tag_invoke(
-            pika::execution::experimental::set_value_t, unpack_receiver_type&& r, Ts&& ts) noexcept
+        void set_value(Ts&& ts) && noexcept
         {
+            auto r = std::move(*this);
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, PIKA_MOVE(r.receiver)),
-                PIKA_FORWARD(Ts, ts));
+                           pika::execution::experimental::set_value, std::move(r.receiver)),
+                std::forward<Ts>(ts));
         }
 
         friend constexpr pika::execution::experimental::empty_env tag_invoke(
@@ -178,7 +178,7 @@ namespace pika::unpack_detail {
             pika::execution::experimental::connect_t, unpack_sender_type&& s, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(
-                PIKA_MOVE(s.sender), unpack_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+                std::move(s.sender), unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
@@ -186,7 +186,7 @@ namespace pika::unpack_detail {
             unpack_sender_type const& r, Receiver&& receiver)
         {
             return pika::execution::experimental::connect(
-                r.sender, unpack_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+                r.sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         friend decltype(auto) tag_invoke(
@@ -198,18 +198,28 @@ namespace pika::unpack_detail {
 }    // namespace pika::unpack_detail
 
 namespace pika::execution::experimental {
-    inline constexpr struct unpack_t final : pika::functional::detail::tag_fallback<unpack_t>
+    struct unpack_t final : pika::functional::detail::tag_fallback<unpack_t>
     {
     private:
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(unpack_t, Sender&& sender)
         {
-            return unpack_detail::unpack_sender<Sender>{PIKA_FORWARD(Sender, sender)};
+            return unpack_detail::unpack_sender<Sender>{std::forward<Sender>(sender)};
         }
 
         friend constexpr PIKA_FORCEINLINE auto tag_invoke(unpack_t)
         {
             return detail::partial_algorithm<unpack_t>{};
         }
-    } unpack{};
+    };
+
+    /// \brief Transforms a sender of tuples into a sender of the elements of the tuples.
+    ///
+    /// Sender adaptor that takes a sender of a tuple-like and returns a sender where the tuple-like
+    /// has been unpacked into its elements, similarly to `std::apply`. Each completion signature
+    /// must send exactly one tuple-like, not zero or more than one. The predecessor sender can have
+    /// any number of completion signatures for the value channel, each sending a single tuple-like.
+    /// The adaptor does not unpack tuple-likes recursively. Any type that supports the tuple
+    /// protocol can be used with the adaptor.
+    inline constexpr unpack_t unpack{};
 }    // namespace pika::execution::experimental

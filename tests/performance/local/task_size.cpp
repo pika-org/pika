@@ -190,6 +190,12 @@ double do_work_bulk(
     for (std::uint64_t i = 0; i < tasks_per_thread; ++i)
     {
         sender = std::move(sender) | ex::continues_on(sched) | ex::bulk(num_threads, work);
+        // To avoid stack overflow when connecting, starting, or destroying the operation state,
+        // eagerly start the chain of work periodically using ensure_started. The chosen frequency
+        // is mostly arbitrary. It's done as often as reasonably possible to make the probability of
+        // a stack overflow very low, but not often enough to introduce significant overhead. 100
+        // seems like a good compromise.
+        if (i % 100 == 0) { sender = ex::ensure_started(std::move(sender)); }
     }
 
     double const spawn_time_s = timer.elapsed();

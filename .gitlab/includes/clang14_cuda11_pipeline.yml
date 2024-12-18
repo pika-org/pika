@@ -10,14 +10,14 @@ include:
 
 .variables_clang14_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-haswell
+    SPACK_ARCH: linux-ubuntu24.04-haswell
+    BASE_COMPILER: gcc@11
     COMPILER: clang@14.0.6
     CXXSTD: 17
     GPU_TARGET: '60'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system
       cxxstd=$CXXSTD +valgrind ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0 ^valgrind ~mpi"
-    # PIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE is OFF to test the fallback implementation of PIKA_FORWARD.
-    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=20 -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
+    CMAKE_FLAGS: "-DCMAKE_CXX_CLANG_TIDY=clang-tidy -DPIKA_WITH_CXX_STANDARD=20 -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
                   -DCMAKE_CUDA_ARCHITECTURES=${GPU_TARGET} \
                   -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF \

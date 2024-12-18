@@ -42,7 +42,7 @@ namespace pika::util::detail {
             typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         function(F&& f)
         {
-            assign(PIKA_FORWARD(F, f));
+            assign(std::forward<F>(f));
         }
 
         // the split SFINAE prevents MSVC from eagerly instantiating things
@@ -51,7 +51,7 @@ namespace pika::util::detail {
             typename Enable2 = std::enable_if_t<std::is_invocable_r_v<R, FD&, Ts...>>>
         function& operator=(F&& f)
         {
-            assign(PIKA_FORWARD(F, f));
+            assign(std::forward<F>(f));
             return *this;
         }
 
@@ -83,16 +83,5 @@ namespace pika::detail {
             return f.get_function_annotation();
         }
     };
-
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-    template <typename Sig>
-    struct get_function_annotation_itt<util::detail::function<Sig>>
-    {
-        static util::itt::string_handle call(util::detail::function<Sig> const& f) noexcept
-        {
-            return f.get_function_annotation_itt();
-        }
-    };
-# endif
 }    // namespace pika::detail
 #endif

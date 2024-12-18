@@ -17,7 +17,7 @@ namespace pika::detail {
 
     /// from env var name 's' get value if well-formed, otherwise return default
     template <typename T>
-    T get_env_var_as(const char* s, T def) noexcept
+    T get_env_var_as(char const* s, T def) noexcept
     {
         T val = def;
         char* env = std::getenv(s);

@@ -1,3 +1,4 @@
+//  Copyright (c) 2024 ETH Zurich
 //  Copyright (c) 2013-2015 Thomas Heller
 //
 //  SPDX-License-Identifier: BSL-1.0
@@ -8,86 +9,37 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_MODULE_MPI_BASE)
+#include <pika/modules/runtime_configuration.hpp>
+#include <pika/mpi_base/mpi.hpp>
 
-# include <pika/concurrency/spinlock.hpp>
-# include <pika/modules/runtime_configuration.hpp>
-# include <pika/mpi_base/mpi.hpp>
+#include <cstdlib>
+#include <string>
 
-# include <cstdlib>
-# include <string>
+#include <pika/config/warnings_prefix.hpp>
 
-# include <pika/config/warnings_prefix.hpp>
+namespace pika::mpi::detail {
+    struct PIKA_EXPORT environment
+    {
+        // calls mpi_init_thread with the thread level requested and reports
+        // any problem if the same level is not granted
+        static int init(
+            int* argc, char*** argv, int const required, int const minimal, int& provided);
 
-namespace pika { namespace util {
-        struct PIKA_EXPORT mpi_environment
-        {
-            static bool check_mpi_environment(runtime_configuration const& cfg);
+        // finalize mpi, do not call unless init was previously called
+        static void finalize();
 
-            static int init(
-                int* argc, char*** argv, const int required, const int minimal, int& provided);
-            static void init(int* argc, char*** argv, runtime_configuration& cfg);
-            static void finalize();
+        // returns true if mpi::environment::init has previously been called
+        static bool pika_called_init();
 
-            static bool enabled();
-            static bool multi_threaded();
-            static bool has_called_init();
+        // convenience functions that retrieve mpi settings
+        static bool is_mpi_initialized();
+        static int rank();
+        static int size();
+        static std::string get_processor_name();
 
-            static int rank();
-            static int size();
+    private:
+        static bool mpi_init_pika_;
+    };
+}    // namespace pika::mpi::detail
 
-            static MPI_Comm& communicator();
-
-            static std::string get_processor_name();
-
-            struct PIKA_EXPORT scoped_lock
-            {
-                scoped_lock();
-                scoped_lock(scoped_lock const&) = delete;
-                scoped_lock& operator=(scoped_lock const&) = delete;
-                ~scoped_lock();
-                void unlock();
-            };
-
-            struct PIKA_EXPORT scoped_try_lock
-            {
-                scoped_try_lock();
-                scoped_try_lock(scoped_try_lock const&) = delete;
-                scoped_try_lock& operator=(scoped_try_lock const&) = delete;
-                ~scoped_try_lock();
-                void unlock();
-                bool locked;
-            };
-
-            using mutex_type = pika::concurrency::detail::spinlock;
-
-        private:
-            static mutex_type mtx_;
-
-            static bool enabled_;
-            static bool has_called_init_;
-            static int provided_threading_flag_;
-            static MPI_Comm communicator_;
-
-            static int is_initialized_;
-        };
-}}    // namespace pika::util
-
-# include <pika/config/warnings_suffix.hpp>
-
-#else
-
-# include <pika/modules/runtime_configuration.hpp>
-
-# include <pika/config/warnings_prefix.hpp>
-
-namespace pika { namespace util {
-        struct PIKA_EXPORT mpi_environment
-        {
-            static bool check_mpi_environment(runtime_configuration const& cfg);
-        };
-}}    // namespace pika::util
-
-# include <pika/config/warnings_suffix.hpp>
-
-#endif
+#include <pika/config/warnings_suffix.hpp>

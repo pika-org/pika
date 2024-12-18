@@ -182,7 +182,7 @@ namespace pika::detail {
         }
         catch (...)
         {
-            return PIKA_FORWARD(U, default_value);
+            return std::forward<U>(default_value);
         }
     }
 
@@ -212,7 +212,7 @@ namespace pika::detail {
         }
         catch (...)
         {
-            return PIKA_FORWARD(U, default_value);
+            return std::forward<U>(default_value);
         }
     }
 }    // namespace pika::detail

@@ -18,7 +18,6 @@ function(pika_add_config_test variable)
   set(options FILE EXECUTE GPU NOT_REQUIRED)
   set(one_value_args SOURCE ROOT CMAKECXXFEATURE CHECK_CXXSTD EXTRA_MSG)
   set(multi_value_args
-      CXXFLAGS
       INCLUDE_DIRECTORIES
       LINK_DIRECTORIES
       COMPILE_DEFINITIONS
@@ -117,7 +116,7 @@ function(pika_add_config_test variable)
 
     if(${variable}_EXECUTE)
       if(NOT CMAKE_CROSSCOMPILING)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags}")
         # cmake-format: off
         try_run(
           ${variable}_RUN_RESULT ${variable}_COMPILE_RESULT
@@ -150,9 +149,9 @@ function(pika_add_config_test variable)
       if(PIKA_WITH_HIP)
         set(hip_parameters HIP_STANDARD ${CMAKE_HIP_STANDARD})
       endif()
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
-      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
-      set(CMAKE_HIP_FLAGS "${CMAKE_HIP_FLAGS} ${additional_cmake_flags} ${${variable}_CXXFLAGS}")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${additional_cmake_flags}")
+      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} ${additional_cmake_flags}")
+      set(CMAKE_HIP_FLAGS "${CMAKE_HIP_FLAGS} ${additional_cmake_flags}")
       # cmake-format: off
       try_compile(
         ${variable}_RESULT
@@ -227,15 +226,6 @@ function(pika_check_for_unistd_h)
   pika_add_config_test(
     PIKA_WITH_UNISTD_H
     SOURCE cmake/tests/unistd_h.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##################################################################################################
-function(pika_check_for_libfun_std_experimental_optional)
-  pika_add_config_test(
-    PIKA_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL
-    SOURCE cmake/tests/libfun_std_experimental_optional.cpp
     FILE ${ARGN}
   )
 endfunction()
@@ -433,6 +423,26 @@ function(pika_check_for_cxx20_trivial_virtual_destructor)
 endfunction()
 
 # ##################################################################################################
+function(pika_check_for_cxx20_trivial_virtual_destructor_gpu)
+  if(PIKA_WITH_GPU_SUPPORT)
+    set(trivial_virtual_destructor_test_extension "cpp")
+    if(PIKA_WITH_CUDA AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
+      set(trivial_virtual_destructor_test_extension "cu")
+    elseif(PIKA_WITH_HIP)
+      set(trivial_virtual_destructor_test_extension "hip")
+    endif()
+
+    pika_add_config_test(
+      PIKA_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR_GPU
+      SOURCE
+        cmake/tests/cxx20_trivial_virtual_destructor.${trivial_virtual_destructor_test_extension}
+        GPU
+      FILE ${ARGN}
+    )
+  endif()
+endfunction()
+
+# ##################################################################################################
 function(pika_check_for_cxx23_static_call_operator)
   pika_add_config_test(
     PIKA_WITH_CXX23_STATIC_CALL_OPERATOR
@@ -449,11 +459,6 @@ function(pika_check_for_cxx23_static_call_operator_gpu)
       set(static_call_operator_test_extension "cu")
     elseif(PIKA_WITH_HIP)
       set(static_call_operator_test_extension "hip")
-    endif()
-
-    set(extra_cxxflags)
-    if(PIKA_WITH_CUDA AND CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
-      set(extra_cxxflags "-x cu")
     endif()
 
     pika_add_config_test(
@@ -496,6 +501,15 @@ function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS
     SOURCE cmake/tests/check_openmpi_continuations.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
+function(pika_check_for_pthread_setname_np)
+  pika_add_config_test(
+    PIKA_WITH_PTHREAD_SETNAME_NP
+    SOURCE cmake/tests/pthread_setname_np.cpp
     FILE ${ARGN}
   )
 endfunction()

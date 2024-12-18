@@ -23,6 +23,7 @@
 
 #if defined(PIKA_HAVE_MPI)
 # include <pika/mpi_base/mpi.hpp>
+# include <pika/mpi_base/mpi_environment.hpp>
 #endif
 
 #include <fmt/format.h>
@@ -85,19 +86,10 @@ namespace pika::detail {
                 // FIXME: add indentation to stack frame information
                 strm << "{stack-trace}: " << *back_trace << "\n";
             }
-
 #if defined(PIKA_HAVE_MPI)
-            int mpi_initialized = 0;
-            if (MPI_Initialized(&mpi_initialized) == MPI_SUCCESS && mpi_initialized)
-            {
-                int rank = 0;
-                if (MPI_Comm_rank(MPI_COMM_WORLD, &rank) == MPI_SUCCESS)
-                {
-                    strm << "{mpi-rank}: " << rank << '\n';
-                }
-            }
+            if (mpi::detail::environment::is_mpi_initialized())
+                strm << "MPI rank: " << mpi::detail::environment::rank() << '\n';
 #endif
-
             std::string const* hostname_ = xi.get<pika::detail::throw_hostname>();
             if (hostname_ && !hostname_->empty()) strm << "{hostname}: " << *hostname_ << "\n";
 

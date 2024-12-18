@@ -32,7 +32,6 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/type_support/unused.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have the
 // unistd header...
@@ -82,6 +81,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
         }
 
@@ -92,6 +92,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
         }
 
@@ -198,7 +199,7 @@ namespace pika::threads::coroutines::detail::posix {
 # else    // non-mmap()
 
     //this should be a fine default.
-    static const std::size_t stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
+    static std::size_t const stack_alignment = sizeof(void*) > 16 ? sizeof(void*) : 16;
 
     struct stack_aligner
     {
@@ -232,7 +233,7 @@ namespace pika::threads::coroutines::detail::posix {
 
     /**
      * The splitter is needed for 64 bit systems.
-     * @note The current implementation does NOT use
+     * \note The current implementation does NOT use
      * (for debug reasons).
      * Thus it is not 64 bit clean.
      * Use it for 64 bits systems.

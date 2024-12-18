@@ -84,7 +84,7 @@ if(NOT TARGET pika_dependencies_allocator)
       set(_use_custom_allocator TRUE)
 
       pika_warn(
-        "pika is using mimalloc as the allocator. Typically, exporting the following environment variables will further improve performance: MIMALLOC_EAGER_COMMIT_DELAY=0 and MIMALLOC_LARGE_OS_PAGES=1."
+        "pika is using mimalloc as the allocator. Typically, exporting the following environment variables will further improve performance: MIMALLOC_EAGER_COMMIT_DELAY=0 and MIMALLOC_ALLOW_LARGE_OS_PAGES=1."
       )
     endif()
 
@@ -123,20 +123,6 @@ if(NOT TARGET pika_dependencies_allocator)
   endif()
 
   pika_info("Using ${PIKA_WITH_MALLOC} allocator.")
-
-  # Setup Intel amplifier
-  if((NOT PIKA_WITH_APEX) AND PIKA_WITH_ITTNOTIFY)
-
-    find_package(Amplifier)
-    if(NOT AMPLIFIER_FOUND)
-      pika_error(
-        "Intel Amplifier could not be found and PIKA_WITH_ITTNOTIFY=On, please specify AMPLIFIER_ROOT to point to the root of your Amplifier installation"
-      )
-    endif()
-
-    pika_add_config_define(PIKA_HAVE_ITTNOTIFY 1)
-    pika_add_config_define(PIKA_HAVE_THREAD_DESCRIPTION)
-  endif()
 
   # convey selected allocator type to the build configuration
   if(NOT PIKA_FIND_PACKAGE)

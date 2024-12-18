@@ -15,7 +15,6 @@
 #include <pika/thread_support/unlock_guard.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
 #include <pika/timing/steady_clock.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <exception>
@@ -35,7 +34,7 @@ namespace pika::detail {
 
             pika::no_mutex no_mtx;
             std::unique_lock<pika::no_mutex> lock(no_mtx);
-            abort_all<pika::no_mutex>(PIKA_MOVE(lock));
+            abort_all<pika::no_mutex>(std::move(lock));
         }
     }
 
@@ -117,7 +116,7 @@ namespace pika::detail {
     {
         PIKA_ASSERT(lock.owns_lock());
 
-        abort_all<mutex_type>(PIKA_MOVE(lock));
+        abort_all<mutex_type>(std::move(lock));
     }
 
     pika::threads::detail::thread_restart_state condition_variable::wait(

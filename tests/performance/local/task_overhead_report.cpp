@@ -41,7 +41,7 @@ double null_function() noexcept
 {
     if (num_iterations > 0)
     {
-        const int array_size = 4096;
+        int const array_size = 4096;
         std::array<double, array_size> dummy;
         for (std::uint64_t i = 0; i < num_iterations; ++i)
         {
@@ -53,7 +53,7 @@ double null_function() noexcept
 }
 
 void measure_function_create_thread_hierarchical_placement(
-    std::uint64_t count, const int repetitions)
+    std::uint64_t count, int const repetitions)
 {
     auto sched = pika::threads::detail::get_self_id_data()->get_scheduler_base();
 
@@ -124,7 +124,7 @@ int pika_main(variables_map& vm)
         else
             numa_sensitive = 0;
 
-        const int repetitions = vm["repetitions"].as<int>();
+        int const repetitions = vm["repetitions"].as<int>();
 
         if (vm.count("info")) info_string = vm["info"].as<std::string>();
 
@@ -132,7 +132,7 @@ int pika_main(variables_map& vm)
 
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
-        const std::uint64_t count = vm["tasks"].as<std::uint64_t>();
+        std::uint64_t const count = vm["tasks"].as<std::uint64_t>();
         if (PIKA_UNLIKELY(0 == count))
             throw std::logic_error("error: count of 0 tasks specified\n");
 

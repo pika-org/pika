@@ -83,7 +83,7 @@ PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Dat
             });
         try
         {
-            tt::sync_wait(PIKA_MOVE(s));
+            tt::sync_wait(std::move(s));
         }
         catch (std::runtime_error const& e)
         {
@@ -114,7 +114,7 @@ PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Dat
             std::vector<std::string> err_msgs = {"null datatype", "MPI_DATATYPE_NULL",
                 "Invalid datatype", "MPI_ERR_TYPE", "Invalid root"};
             bool msg_ok = false;
-            for (const auto& msg : err_msgs)
+            for (auto const& msg : err_msgs)
             {
                 msg_ok |= (std::string(e.what()).find(msg) != std::string::npos);
             }
@@ -129,7 +129,7 @@ PIKA_NO_SANITIZE_ADDRESS void test_exception_handler_code(MPI_Comm comm, MPI_Dat
 PIKA_NO_SANITIZE_ADDRESS void test_exception_no_handler(MPI_Comm comm)
 {
     // Use the default error handler MPI_ERRORS_ARE_FATAL
-    mpi::enable_user_polling enable_polling_no_errhandler;
+    mpi::enable_polling enable_polling_no_errhandler;
     {
         // Exception thrown based on the returned error code
         int *data = nullptr, count = 0;
@@ -162,16 +162,15 @@ int pika_main()
 
     {
         {
-            // Use the custom error handler from the async_mpi module which throws
-            // exceptions on error returned
-            mpi::enable_user_polling enable_polling(mpi::get_pool_name(), true);
+            // Use the custom error handler which throws exceptions on mpi errors
+            mpi::enable_polling enable_polling(mpi::exception_mode::install_handler);
             // Success path
             {
                 // MPI function pointer
                 int data = 0, count = 1;
                 if (rank == 0) { data = 42; }
                 auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 
@@ -184,7 +183,7 @@ int pika_main()
                         MPI_Request* request) {
                         return MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 
@@ -197,8 +196,31 @@ int pika_main()
                         MPI_Request* request) {
                         MPI_Ibcast(data, count, datatype, i, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
+            }
+
+            // Values passed to transform_mpi should be kept alive by transform_mpi itself
+            {
+                int count = 1 << 20;
+                auto s = ex::just(std::vector<int>{count, 0}, datatype, 0, comm) |
+                    ex::drop_operation_state() |
+                    mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
+                                           MPI_Request* request) {
+                        MPI_Ibcast(data.data(), data.size(), datatype, i, comm, request);
+                    });
+                tt::sync_wait(std::move(s));
+            }
+
+            {
+                auto s = ex::just(custom_type_non_default_constructible_non_copyable{42}, datatype,
+                             0, comm) |
+                    ex::drop_operation_state() |
+                    mpi::transform_mpi([](auto& data, MPI_Datatype datatype, int i, MPI_Comm comm,
+                                           MPI_Request* request) {
+                        MPI_Ibcast(&data.x, 1, datatype, i, comm, request);
+                    });
+                tt::sync_wait(std::move(s));
             }
 
             // transform_mpi should be able to handle reference types (by copying
@@ -206,11 +228,12 @@ int pika_main()
             {
                 int data = 0, count = 1;
                 if (rank == 0) { data = 42; }
-                auto s = mpi::transform_mpi(
-                    const_reference_sender<int>{count}, [&](int& count, MPI_Request* request) {
-                        MPI_Ibcast(&data, count, datatype, 0, comm, request);
+                auto s = mpi::transform_mpi(const_reference_sender<int>{count},
+                    [&](int& count_transform_mpi, MPI_Request* request) {
+                        PIKA_TEST(&count_transform_mpi != &count);
+                        MPI_Ibcast(&data, count_transform_mpi, datatype, 0, comm, request);
                     });
-                tt::sync_wait(PIKA_MOVE(s));
+                tt::sync_wait(std::move(s));
                 PIKA_TEST_EQ(data, 42);
             }
 
@@ -235,11 +258,16 @@ int pika_main()
                 PIKA_TEST_EQ(data, 42);
             }
 
+            // MPICH does not support throwing exceptions from error handlers (lock issues, see
+            // https://github.com/pmodels/mpich/issues/7187)
+#if !defined(MPICH)
             test_exception_handler_code(comm, datatype);
 
         }    // let the user polling go out of scope
-
         test_exception_no_handler(comm);
+#else
+        }
+#endif
     }
 
     test_adl_isolation(mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request*) {}));
@@ -249,24 +277,15 @@ int pika_main()
 }
 
 //----------------------------------------------------------------------------
-void init_resource_partitioner_handler(
-    pika::resource::partitioner&, pika::program_options::variables_map const& /*vm*/)
-{
-    namespace mpix = pika::mpi::experimental;
-    mpix::create_pool("", mpix::pool_create_mode::pika_decides);
-}
-
-//----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
-
-    // Set runtime initialization callback to init thread_pools
-    pika::init_params init_args;
-    init_args.rp_callback = &init_resource_partitioner_handler;
+    int provided;
+    int preferred = MPI_THREAD_MULTIPLE;
+    MPI_Init_thread(&argc, &argv, preferred, &provided);
+    PIKA_TEST_EQ(provided, preferred);
 
     // Start runtime and collect runtime exit status
-    auto result = pika::init(pika_main, argc, argv, init_args);
+    auto result = pika::init(pika_main, argc, argv);
     PIKA_TEST_EQ(result, 0);
 
     MPI_Finalize();

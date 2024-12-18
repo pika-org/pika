@@ -20,7 +20,7 @@ namespace pika {
         class pika_category : public std::error_category
         {
         public:
-            const char* name() const noexcept { return "pika"; }
+            char const* name() const noexcept { return "pika"; }
 
             std::string message(int value) const
             {
@@ -40,7 +40,7 @@ namespace pika {
         class pika_category_rethrow : public std::error_category
         {
         public:
-            const char* name() const noexcept { return ""; }
+            char const* name() const noexcept { return ""; }
 
             std::string message(int) const noexcept { return ""; }
         };

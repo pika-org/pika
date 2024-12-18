@@ -100,7 +100,7 @@ namespace pika::detail {
         }
         memory_storage(memory_storage&& rhs) noexcept
           : memory_()    // data will be provided by small_vector ctor
-          , resource_(PIKA_MOVE(rhs.resource_))
+          , resource_(std::move(rhs.resource_))
           , pool_(std::data(memory_), std::size(memory_) * sizeof(T), &resource_)
           , allocator_(&pool_)
         {
@@ -136,7 +136,7 @@ namespace pika::detail {
             // be provided by the small_vector::operator= below
 
             // move allocator
-            resource_ = PIKA_MOVE(rhs.resource_);
+            resource_ = std::move(rhs.resource_);
 
             // reconstruct the memory management infrastructure
             new (&pool_) buffer_resource_type(std::data(memory_), preallocated_size, &resource_);
@@ -145,7 +145,7 @@ namespace pika::detail {
             return *this;
         }
 
-        std::aligned_storage_t<sizeof(T), alignof(T)> memory_[Size];
+        alignas(T) memory_[Size * sizeof(T)];
         PIKA_NO_UNIQUE_ADDRESS allocator_memory_resource<T, Allocator> resource_;
         buffer_resource_type pool_;
         allocator_type allocator_;
@@ -226,7 +226,7 @@ namespace pika::detail {
 
         small_vector(small_vector&& rhs) noexcept
           : storage_(rhs.storage_)
-          , data_(PIKA_MOVE(rhs.data_), storage_.allocator_)
+          , data_(std::move(rhs.data_), storage_.allocator_)
         {
         }
 
@@ -255,10 +255,10 @@ namespace pika::detail {
 
                 // reconstruct the memory management infrastructure for
                 // the new instance
-                storage_ = PIKA_MOVE(rhs.storage_);
+                storage_ = std::move(rhs.storage_);
 
                 // fill the new instance with the moved rhs data
-                new (&data_) data_type(PIKA_MOVE(rhs.data_), storage_.allocator_);
+                new (&data_) data_type(std::move(rhs.data_), storage_.allocator_);
             }
             return *this;
         }
@@ -333,7 +333,7 @@ namespace pika::detail {
         }
         iterator insert(const_iterator pos, value_type&& value)
         {
-            return data_.insert(pos, PIKA_MOVE(value));
+            return data_.insert(pos, std::move(value));
         }
         iterator insert(const_iterator pos, size_type count, value_type const& value)
         {
@@ -357,18 +357,18 @@ namespace pika::detail {
         template <typename... Ts>
         iterator emplace(const_iterator pos, Ts&&... ts)
         {
-            return data_.emplace(pos, PIKA_FORWARD(Ts, ts)...);
+            return data_.emplace(pos, std::forward<Ts>(ts)...);
         }
 
         iterator erase(const_iterator pos) { return data_.erase(pos); }
 
         void push_back(value_type const& value) { data_.push_back(value); }
-        void push_back(value_type&& value) { data_.push_back(PIKA_MOVE(value)); }
+        void push_back(value_type&& value) { data_.push_back(std::move(value)); }
 
         template <typename... Ts>
         reference emplace_back(Ts&&... ts)
         {
-            return data_.emplace_back(PIKA_FORWARD(Ts, ts)...);
+            return data_.emplace_back(std::forward<Ts>(ts)...);
         }
 
         void pop_back() { data_.pop_back(); }
@@ -381,9 +381,9 @@ namespace pika::detail {
             // data.swap(other.data_);
             // explicitly move the objects as the MSVC standard library has a
             // bug preventing to swap two std::pmr::vectors
-            small_vector tmp = PIKA_MOVE(*this);
-            *this = PIKA_MOVE(other);
-            other = PIKA_MOVE(tmp);
+            small_vector tmp = std::move(*this);
+            *this = std::move(other);
+            other = std::move(tmp);
         }
 
         friend bool operator==(small_vector const& lhs, small_vector const& rhs)

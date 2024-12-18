@@ -19,7 +19,7 @@
 #   file while saving edits to disk
 # - Please do _not_ reformat a full source file without dire need.
 
-# PLEASE NOTE: This file requires clang-format V16.0
+# PLEASE NOTE: This file requires clang-format V18.0
 
 ---
 AccessModifierOffset: -4
@@ -114,6 +114,7 @@ PenaltyReturnTypeOnItsOwnLine: 20
 PointerAlignment: Left
 PPIndentWidth: 1
 ReflowComments: false
+QualifierAlignment: Right
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SortIncludes:    true

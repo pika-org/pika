@@ -203,6 +203,7 @@ patterns = [
 enable = true
 patterns = [
     { pattern = '\bEXIT_(SUCCESS|FAILURE)\b', include = 'cstdlib' },
+    { pattern = '\bstd::(malloc|aligned_alloc|calloc|realloc|free)\b', include = 'cstdlib' },
     { pattern = '\bstd::make_shared\b', include = 'memory' },
     { pattern = '\bstd::map\b', include = 'map' },
     { pattern = '\bstd::set\b', include = 'set' },
@@ -344,6 +345,7 @@ patterns = [
     { pattern = '\bpika::intrusive_ptr\b', include = 'pika/memory/intrusive_ptr.hpp' },
     { pattern = '\bpika::detail::from_string\b', include = 'pika/string_util/from_string.hpp' },
     { pattern = '\bpika::detail::to_string\b', include = 'pika/string_util/to_string.hpp' },
+    { pattern = '\bPIKA_LOG\b', include = 'pika/logging.hpp' },
     { pattern = '\bPIKA_PP_CAT\b', include = 'pika/preprocessor/cat.hpp' },
     { pattern = '\bPIKA_PP_EXPAND\b', include = 'pika/preprocessor/expand.hpp' },
     { pattern = '\bPIKA_PP_NARGS\b', include = 'pika/preprocessor/nargs.hpp' },

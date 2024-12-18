@@ -22,6 +22,9 @@ namespace ex = pika::execution::experimental;
 
 int pika_main()
 {
+    // split cancellation is currently racy with stdexec:
+    // https://github.com/NVIDIA/stdexec/issues/1426
+#if !defined(PIKA_HAVE_STDEXEC)
     ex::thread_pool_scheduler sched;
 
     for (std::size_t i = 0; i < 100; ++i)
@@ -29,6 +32,7 @@ int pika_main()
         auto s = ex::schedule(sched) | ex::split();
         for (std::size_t j = 0; j < 10; ++j) { ex::start_detached(s); }
     }
+#endif
 
     pika::finalize();
     return EXIT_SUCCESS;

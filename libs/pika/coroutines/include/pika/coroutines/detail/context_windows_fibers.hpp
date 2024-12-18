@@ -37,7 +37,6 @@
 #include <pika/coroutines/config/defines.hpp>
 #include <pika/coroutines/detail/get_stack_pointer.hpp>
 #include <pika/coroutines/detail/swap_context.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_and_reset_value.hpp>
 
 #include <atomic>
@@ -103,7 +102,7 @@ namespace pika::threads::coroutines {
 
         /*
          * Windows implementation for the context_impl_base class.
-         * @note context_impl is not required to be consistent
+         * \note context_impl is not required to be consistent
          * If not initialized it can only be swapped out, not in
          * (at that point it will be initialized).
          */
@@ -126,8 +125,8 @@ namespace pika::threads::coroutines {
             }
 
             /*
-             * Free function. Saves the current context in @p from
-             * and restores the context in @p to. On windows the from
+             * Free function. Saves the current context in \p from
+             * and restores the context in \p to. On windows the from
              * parameter is ignored. The current context is saved on the
              * current fiber.
              * Note that if the current thread is not a fiber, it will be
@@ -139,7 +138,7 @@ namespace pika::threads::coroutines {
              * default.
              */
             friend void swap_context(fibers_context_impl_base& from,
-                const fibers_context_impl_base& to, default_hint) noexcept
+                fibers_context_impl_base const& to, default_hint) noexcept
             {
                 if (!is_fiber())
                 {
@@ -223,7 +222,7 @@ namespace pika::threads::coroutines {
         }
 
         // initial stack size (grows as needed)
-        static const std::size_t stack_size = sizeof(void*) >= 8 ? 2048 : 1024;
+        static std::size_t const stack_size = sizeof(void*) >= 8 ? 2048 : 1024;
 
         template <typename CoroutineImpl>
         class fibers_context_impl : public fibers_context_impl_base

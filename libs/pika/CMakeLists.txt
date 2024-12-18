@@ -33,7 +33,6 @@ set(_pika_modules
     ini
     init_runtime
     iterator_support
-    itt_notify
     lock_registration
     logging
     memory

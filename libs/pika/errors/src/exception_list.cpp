@@ -63,7 +63,7 @@ namespace pika {
 
     exception_list::exception_list(exception_list_type&& l)
       : pika::exception(!l.empty() ? pika::get_error(l.front()) : pika::error::success)
-      , exceptions_(PIKA_MOVE(l))
+      , exceptions_(std::move(l))
       , mtx_()
     {
     }
@@ -76,8 +76,8 @@ namespace pika {
     }
 
     exception_list::exception_list(exception_list&& l)
-      : pika::exception(PIKA_MOVE(static_cast<pika::exception&>(l)))
-      , exceptions_(PIKA_MOVE(l.exceptions_))
+      : pika::exception(std::move(static_cast<pika::exception&>(l)))
+      , exceptions_(std::move(l.exceptions_))
       , mtx_()
     {
     }
@@ -96,8 +96,8 @@ namespace pika {
     {
         if (this != &l)
         {
-            static_cast<pika::exception&>(*this) = PIKA_MOVE(static_cast<pika::exception&>(l));
-            exceptions_ = PIKA_MOVE(l.exceptions_);
+            static_cast<pika::exception&>(*this) = std::move(static_cast<pika::exception&>(l));
+            exceptions_ = std::move(l.exceptions_);
         }
         return *this;
     }

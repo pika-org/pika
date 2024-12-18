@@ -344,13 +344,13 @@ namespace pika::this_thread {
                     get_thread_id_data(id)->get_scheduler_base())
             {
                 auto* scheduler = get_thread_id_data(nextid)->get_scheduler_base();
-                scheduler->schedule_thread(PIKA_MOVE(nextid), execution::thread_schedule_hint());
+                scheduler->schedule_thread(std::move(nextid), execution::thread_schedule_hint());
                 statex = self.yield(
                     threads::detail::thread_result_type(state, threads::detail::invalid_thread_id));
             }
             else
             {
-                statex = self.yield(threads::detail::thread_result_type(state, PIKA_MOVE(nextid)));
+                statex = self.yield(threads::detail::thread_result_type(state, std::move(nextid)));
             }
         }
 
@@ -417,7 +417,7 @@ namespace pika::this_thread {
                     get_thread_id_data(id)->get_scheduler_base())
             {
                 auto* scheduler = get_thread_id_data(nextid)->get_scheduler_base();
-                scheduler->schedule_thread(PIKA_MOVE(nextid), execution::thread_schedule_hint());
+                scheduler->schedule_thread(std::move(nextid), execution::thread_schedule_hint());
                 statex = self.yield(threads::detail::thread_result_type(
                     threads::detail::thread_schedule_state::suspended,
                     threads::detail::invalid_thread_id));
@@ -425,7 +425,7 @@ namespace pika::this_thread {
             else
             {
                 statex = self.yield(threads::detail::thread_result_type(
-                    threads::detail::thread_schedule_state::suspended, PIKA_MOVE(nextid)));
+                    threads::detail::thread_schedule_state::suspended, std::move(nextid)));
             }
 
             if (statex != pika::threads::detail::thread_restart_state::timeout)

@@ -150,7 +150,7 @@ int pika_main()
         bool up = true;
         std::vector<ex::unique_any_sender<>> senders;
         pika::chrono::detail::high_resolution_timer t;
-        const std::size_t num_tasks = 100000;
+        std::size_t const num_tasks = 100000;
         std::size_t num_tasks_spawned = 0;
         while (t.elapsed() < 2)
         {

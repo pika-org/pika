@@ -38,7 +38,7 @@
 {
    ORTE event loop
    Memcheck:Leak
-   fun:malloc
+   fun:*alloc
    ...
    fun:event_base_loop
    ...
@@ -47,9 +47,18 @@
 {
    ORTE event loop
    Memcheck:Leak
-   fun:malloc
+   fun:*alloc
    ...
    fun:pmix_server_init
+   ...
+}
+
+{
+   hwloc
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   fun:hwloc_topology_load
    ...
 }
 

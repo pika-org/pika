@@ -21,7 +21,6 @@ pika_add_module(
     pika_async_base
     pika_config
     pika_execution
-    pika_itt_notify
     pika_properties
     pika_threading
     pika_timing

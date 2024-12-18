@@ -31,7 +31,7 @@ namespace pika::util {
     }    // namespace detail
 
     void perftests_report(
-        std::string const& name, const std::size_t steps, detail::function<void(void)>&& test)
+        std::string const& name, std::size_t const steps, detail::function<void(void)>&& test)
     {
         if (steps == 0) return;
         // First iteration to cache the data
@@ -53,14 +53,14 @@ namespace pika::util {
 
     void perftests_print_times() { std::cout << detail::times(); }
 
-    void print_cdash_timing(const char* name, double time)
+    void print_cdash_timing(char const* name, double time)
     {
         fmt::print(std::cout,
             "<DartMeasurement name=\"{}\" type=\"numeric/double\">{}</DartMeasurement>\n", name,
             time);
     }
 
-    void print_cdash_timing(const char* name, std::uint64_t time)
+    void print_cdash_timing(char const* name, std::uint64_t time)
     {
         print_cdash_timing(name, static_cast<double>(time) / 1e9);
     }

@@ -10,7 +10,7 @@ include:
 
 .variables_gcc11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-zen2
+    SPACK_ARCH: linux-ubuntu24.04-zen2
     COMPILER: gcc@11.4.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD ^boost@1.78.0 \

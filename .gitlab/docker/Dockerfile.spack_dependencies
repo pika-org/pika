@@ -1,11 +1,14 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
+# Provided by the gitlab runner of .container-builder
+ARG NUM_PROCS
+
 ARG SPACK_SPEC
 ENV spack_spec $SPACK_SPEC
 # Install dependencies for this configuration
 RUN echo $spack_spec && \
     spack env create pika_ci && \
     spack -e pika_ci add $spack_spec && \
-    spack -e pika_ci install --fail-fast --only dependencies $spack_spec && \
+    spack -e pika_ci install -j$NUM_PROCS --fail-fast --only dependencies $spack_spec && \
     spack -e pika_ci clean --all

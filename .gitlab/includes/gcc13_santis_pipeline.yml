@@ -10,12 +10,11 @@ include:
 
 .variables_gcc13_santis_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
+    SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
     COMPILER: gcc@13.1.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
-                 ^boost@1.82.0 ^hwloc@2.9.1 \
-                 ^stdexec@git.8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd=main"
+                 ^boost@1.82.0 ^hwloc@2.9.1 ^stdexec@24.09"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_STDEXEC=ON -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON"
 

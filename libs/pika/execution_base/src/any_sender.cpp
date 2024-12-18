@@ -16,18 +16,15 @@
 #include <utility>
 
 namespace pika::execution::experimental::detail {
-    void empty_any_operation_state::start() & noexcept
+    void empty_any_operation_state_holder_state::start() & noexcept
     {
         PIKA_THROW_EXCEPTION(pika::error::bad_function_call, "any_operation_state::start",
             "attempted to call start on empty any_operation_state");
     }
 
-    bool empty_any_operation_state::empty() const noexcept { return true; }
-
-    void tag_invoke(pika::execution::experimental::start_t, any_operation_state& os) noexcept
-    {
-        os.storage.get().start();
-    }
+    bool any_operation_state_holder_base::empty() const noexcept { return false; }
+    bool empty_any_operation_state_holder_state::empty() const noexcept { return true; }
+    void any_operation_state_holder::start() & noexcept { storage.get().start(); }
 
     void throw_bad_any_call(char const* class_name, char const* function_name)
     {

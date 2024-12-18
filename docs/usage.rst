@@ -45,7 +45,7 @@ If you'd like to build pika manually you will need CMake 3.22.0 or greater and a
 supporting C++17:
 
 - `GCC <https://gcc.gnu.org>`__ 9 or greater
-- `clang <https://clang.llvm.org>`__ 11 or greater
+- `clang <https://clang.llvm.org>`__ 13 or greater
 
 Additionally, pika depends on:
 
@@ -67,13 +67,14 @@ pika optionally depends on:
   ``nvc++``.
 * `HIP <https://rocmdocs.amd.com/en/latest/index.html>`__ 5.2.0 or greater. HIP support can be
   enabled with ``PIKA_WITH_HIP=ON``.
+* `whip <https://github.com/eth-cscs/whip>`__  when CUDA or HIP support is enabled.
 * `MPI <https://www.mpi-forum.org/>`__. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
 * `Boost.Context <https://boost.org>`__ on macOS or exotic platforms which are not supported by the
   default user-level thread implementations in pika. This can be enabled with
   ``PIKA_WITH_BOOST_CONTEXT=ON``.
 * `stdexec <https://github.com/NVIDIA/stdexec>`__. stdexec support can be enabled with
-  ``PIKA_WITH_STDEXEC=ON`` (currently tested with commit `8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd
-  <https://github.com/NVIDIA/stdexec/tree/8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd>`__).  The
+  ``PIKA_WITH_STDEXEC=ON`` (currently tested with the tag `nvhpc-24.09
+  <https://github.com/NVIDIA/stdexec/tree/nvhpc-24.09>`__).  The
   integration is experimental. See :ref:`pika_stdexec` for more information about the integration.
 
 If you are using `nix <https://nixos.org>`__ you can also use the ``shell.nix`` file provided at the
@@ -263,6 +264,36 @@ following:
 - ``%q``: The parent task id and description.
 - ``%k``: The current task id and description.
 
+.. _malloc:
+
+Using custom allocators with pika
+=================================
+
+Typical use of pika can often lead to many small allocations from many different threads,
+potentially leading to suboptimal performance with the system allocator. By default, pika uses
+`mimalloc <https://github.com/microsoft/mimalloc>`__ as the memory allocator because it usually
+performs significantly better than the system allocator. In some cases, the system allocator or
+other custom allocators might perform better.
+
+Setting the following environment variables usually further improves performance with mimalloc:
+
+- ``MIMALLOC_EAGER_COMMIT_DELAY=0``
+- ``MIMALLOC_ALLOW_LARGE_OS_PAGES=1``
+
+We have observed mimalloc performing worse than the defaults with the above options on some systems,
+as well as worse than the system allocator. Always benchmark to find the most suitable allocator for
+your workload and system.
+
+To ease testing of different allocators, you may also configure pika with the system allocator and
+instead use ``LD_PRELOAD`` to replace the default allocator at runtime. This allows you to choose
+the allocator without rebuilding pika. To do so, export the ``LD_PRELOAD`` environment variable to
+point to the shared library of the allocator. For example, to use `jemalloc
+<https://jemalloc.net>`__, set ``LD_PRELOAD`` to the full path of ``libjemalloc.so``:
+
+.. code-block:: bash
+
+   export LD_PRELOAD=/path/to/libjemalloc.so
+
 .. _pika_stdexec:
 
 Relation to std::execution and stdexec
@@ -300,13 +331,16 @@ More resources
 .. |cppreference_execution| replace:: documentation about ``std::execution``
 .. _cppreference_execution: https://en.cppreference.com/w/cpp/experimental/execution
 
-The `P2300 proposal <https://wg21.link/p2300>`__ is the source of truth for ``std::execution``
-functionality. The reference implementation of P2300, stdexec, maintains a |stdexec_resources|_.  In
-addition to the above, other implementations of the ``std::execution`` model exist, with useful
-documentation and examples:
+The `C++ standard <https://eel.is/c++draft/exec>`__ is the source of truth for ``std::execution``.
+The `P2300 proposal <https://wg21.link/p2300>`__ also contains both the wording for the majority of
+``std::execution`` functionality as well as the motivation for it. The reference implementation of
+P2300, stdexec, maintains a |stdexec_resources|_.  In addition to the above, other implementations
+of the ``std::execution`` model exist, with useful documentation and examples:
 
 - `HPX <https://hpx-docs.stellar-group.org/latest/html/index.html>`__
 - `libunifex <https://github.com/facebookexperimental/libunifex/blob/main/doc/overview.md>`__
+- `C++ Baremetal Senders & Receivers <https://intel.github.io/cpp-baremetal-senders-and-receivers/>`__
+- `execution26 <https://github.com/beman-project/execution26>`__
 
 Even though the implementations differ, the concepts are transferable between implementations and
 useful for learning. cppreference.com also contains early |cppreference_execution|_.

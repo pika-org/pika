@@ -247,7 +247,7 @@ namespace pika::detail {
             auto* cb = callbacks_;
             callbacks_ = cb->next_;
 
-            const bool more_callbacks = callbacks_ != nullptr;
+            bool const more_callbacks = callbacks_ != nullptr;
             if (more_callbacks) callbacks_->prev_ = &callbacks_;
 
             // Mark this item as removed from the list.

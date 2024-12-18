@@ -8,7 +8,6 @@
 #include <pika/assert.hpp>
 #include <pika/detail/filesystem.hpp>
 #include <pika/errors/exception.hpp>
-#include <pika/modules/itt_notify.hpp>
 #include <pika/preprocessor/expand.hpp>
 #include <pika/preprocessor/stringize.hpp>
 #include <pika/runtime_configuration/init_ini_data.hpp>
@@ -231,9 +230,6 @@ namespace pika::util {
             // NOLINTNEXTLINE(bugprone-suspicious-missing-comma)
             "master_ini_path_suffixes = /share/pika" PIKA_INI_PATH_DELIMITER
                 "/../share/pika",
-#ifdef PIKA_HAVE_ITTNOTIFY
-            "use_itt_notify = ${PIKA_HAVE_ITTNOTIFY:0}",
-#endif
             "shutdown_check_count = ${PIKA_SHUTDOWN_CHECK_COUNT:10}",
 #ifdef PIKA_HAVE_VERIFY_LOCKS
 #if defined(PIKA_DEBUG)
@@ -339,7 +335,8 @@ namespace pika::util {
 
 #if defined(PIKA_HAVE_MPI)
             "[pika.mpi]",
-            "completion_mode = ${PIKA_MPI_COMPLETION_MODE:0}",
+            "enable_pool = ${PIKA_MPI_ENABLE_POOL:0}",
+            "completion_mode = ${PIKA_MPI_COMPLETION_MODE:30}",
 #endif
 
             "[pika.commandline]",
@@ -413,9 +410,6 @@ namespace pika::util {
         pre_initialize_ini();
 
         // set global config options
-#if PIKA_HAVE_ITTNOTIFY != 0
-        use_ittnotify_api = get_itt_notify_mode();
-#endif
         PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
 
         small_stacksize = init_small_stack_size();
@@ -445,26 +439,12 @@ namespace pika::util {
         post_initialize_ini(pika_ini_file, cmdline_ini_defs);
 
         // set global config options
-#if PIKA_HAVE_ITTNOTIFY != 0
-        use_ittnotify_api = get_itt_notify_mode();
-#endif
         PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
 
         small_stacksize = init_small_stack_size();
         medium_stacksize = init_medium_stack_size();
         large_stacksize = init_large_stack_size();
         huge_stacksize = init_huge_stack_size();
-    }
-
-    bool runtime_configuration::get_itt_notify_mode() const
-    {
-#if PIKA_HAVE_ITTNOTIFY != 0
-        if (pika::detail::section const* sec = get_section("pika"); nullptr != sec)
-        {
-            return pika::detail::get_entry_as<int>(*sec, "use_itt_notify", 0) != 0;
-        }
-#endif
-        return false;
     }
 
     // Enable lock detection during suspension

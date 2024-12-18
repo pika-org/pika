@@ -21,13 +21,13 @@ namespace pika::program_options {
 
     template <class Char>
     basic_command_line_parser<Char>::basic_command_line_parser(
-        const std::vector<std::basic_string<Char>>& xargs)
+        std::vector<std::basic_string<Char>> const& xargs)
       : detail::cmdline(to_internal(xargs))
     {
     }
 
     template <class Char>
-    basic_command_line_parser<Char>::basic_command_line_parser(int argc, const Char* const argv[])
+    basic_command_line_parser<Char>::basic_command_line_parser(int argc, Char const* const argv[])
       : detail::cmdline(to_internal(std::vector<std::basic_string<Char>>(argv + 1, argv + argc)))
       , m_desc()
     {
@@ -35,7 +35,7 @@ namespace pika::program_options {
 
     template <class Char>
     basic_command_line_parser<Char>&
-    basic_command_line_parser<Char>::options(const options_description& desc)
+    basic_command_line_parser<Char>::options(options_description const& desc)
     {
         detail::cmdline::set_options_description(desc);
         m_desc = &desc;
@@ -44,7 +44,7 @@ namespace pika::program_options {
 
     template <class Char>
     basic_command_line_parser<Char>&
-    basic_command_line_parser<Char>::positional(const positional_options_description& desc)
+    basic_command_line_parser<Char>::positional(positional_options_description const& desc)
     {
         detail::cmdline::set_positional_options(desc);
         return *this;
@@ -96,8 +96,8 @@ namespace pika::program_options {
 
     template <class Char>
     basic_parsed_options<Char>
-    parse_command_line(int argc, const Char* const argv[], const options_description& desc,
-        int style, std::function<std::pair<std::string, std::string>(const std::string&)> ext)
+    parse_command_line(int argc, Char const* const argv[], options_description const& desc,
+        int style, std::function<std::pair<std::string, std::string>(std::string const&)> ext)
     {
         return basic_command_line_parser<Char>(argc, argv)
             .options(desc)
@@ -108,7 +108,7 @@ namespace pika::program_options {
 
     template <class Char>
     std::vector<std::basic_string<Char>> collect_unrecognized(
-        const std::vector<basic_option<Char>>& options, enum collect_unrecognized_mode mode)
+        std::vector<basic_option<Char>> const& options, enum collect_unrecognized_mode mode)
     {
         std::vector<std::basic_string<Char>> result;
         for (std::size_t i = 0; i < options.size(); ++i)

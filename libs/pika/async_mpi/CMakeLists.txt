@@ -13,19 +13,19 @@ endif()
 
 pika_check_for_mpix_continuations(PIKA_WITH_MPIX_CONTINUATIONS)
 if(PIKA_WITH_MPIX_CONTINUATIONS)
-  set(PIKA_MPI_MODES_LOOP_COUNT 79)
+  set(PIKA_MPI_MODES_LOOP_COUNT 39)
 else()
-  set(PIKA_MPI_MODES_LOOP_COUNT 63)
+  set(PIKA_MPI_MODES_LOOP_COUNT 31)
 endif()
 
 # Default location is $PIKA_ROOT/libs/mpi/include
 set(async_mpi_headers
-    pika/async_mpi/mpi_exception.hpp pika/async_mpi/mpi_helpers.hpp pika/async_mpi/mpi_polling.hpp
-    pika/async_mpi/dispatch_mpi.hpp pika/async_mpi/trigger_mpi.hpp pika/async_mpi/transform_mpi.hpp
+    pika/async_mpi/mpi_helpers.hpp pika/async_mpi/mpi_polling.hpp pika/async_mpi/dispatch_mpi.hpp
+    pika/async_mpi/trigger_mpi.hpp pika/async_mpi/transform_mpi.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/mpi/src
-set(mpi_sources mpi_exception.cpp mpi_polling.cpp)
+set(mpi_sources mpi_polling.cpp)
 
 include(pika_add_module)
 pika_add_module(

@@ -7,7 +7,6 @@
 #include <pika/execution_base/completion_scheduler.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/testing.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <cstddef>
 #include <exception>

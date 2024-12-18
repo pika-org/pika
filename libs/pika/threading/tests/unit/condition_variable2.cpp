@@ -40,7 +40,7 @@ void cv_wait(pika::stop_token stoken, int /* id */, bool& ready, pika::mutex& re
         PIKA_TEST(!stoken.stop_requested());
         PIKA_TEST(notify_called);
     }
-    catch (const char* e)
+    catch (char const* e)
     {
         PIKA_TEST(!notify_called);
     }
@@ -105,7 +105,7 @@ void test_cv_pred(bool call_notify)
                 // should be no std::exception
                 PIKA_TEST(false);
             }
-            catch (const char*)
+            catch (char const*)
             {
                 PIKA_TEST(!call_notify);
             }
@@ -403,7 +403,7 @@ void test_timed_wait(bool call_notify, bool call_interrupt, Dur dur)
                             ++times_done;
                         }
                     }
-                    catch (const char*)
+                    catch (char const*)
                     {
                         t1_feedback.store(state::interrupted, std::memory_order_relaxed);
                         PIKA_TEST(!ready_);
@@ -535,8 +535,8 @@ void test_many_cvs(bool call_notify, bool call_interrupt)
                 vthreads_deferred = std::move(vthreads);
             }
         }    // leave scope of additional threads (already notified/interrupted
-             // or detached)
-    }        // leave scope of t0 without join() or detach() (signals cancellation)
+        // or detached)
+    }    // leave scope of t0 without join() or detach() (signals cancellation)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

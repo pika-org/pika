@@ -44,7 +44,6 @@
 #endif
 
 #include <pika/assert.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_and_reset_value.hpp>
 
 // include unist.d conditionally to check for POSIX version. Not all OSs have
@@ -175,7 +174,7 @@ namespace pika::threads::coroutines {
 
     namespace detail::posix {
         /// Posix implementation for the context_impl_base class.
-        /// @note context_impl is not required to be consistent
+        /// \note context_impl is not required to be consistent
         /// If not initialized it can only be swapped out, not in
         /// (at that point it will be initialized).
         class ucontext_context_impl_base : detail::context_impl_base
@@ -210,10 +209,10 @@ namespace pika::threads::coroutines {
 # endif
 
         private:
-            /// Free function. Saves the current context in @p from
-            /// and restores the context in @p to.
+            /// Free function. Saves the current context in \p from
+            /// and restores the context in \p to.
             friend void swap_context(ucontext_context_impl_base& from,
-                const ucontext_context_impl_base& to, default_hint)
+                ucontext_context_impl_base const& to, default_hint)
             {
                 [[maybe_unused]] int error = PIKA_COROUTINE_SWAP_CONTEXT(&from.m_ctx, &to.m_ctx);
                 PIKA_ASSERT(error == 0);
@@ -265,7 +264,7 @@ namespace pika::threads::coroutines {
 
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 asan_stack_size = m_stack_size;
-                asan_stack_bottom = const_cast<const void*>(m_stack);
+                asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 // concept inspired by the following links:
@@ -379,7 +378,7 @@ namespace pika::threads::coroutines {
 
 # if defined(PIKA_HAVE_ADDRESS_SANITIZER)
                     asan_stack_size = m_stack_size;
-                    asan_stack_bottom = const_cast<const void*>(m_stack);
+                    asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
                 }
             }

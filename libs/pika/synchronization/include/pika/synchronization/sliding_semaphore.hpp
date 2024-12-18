@@ -112,13 +112,13 @@ namespace pika {
         void signal(std::int64_t lower_limit)
         {
             std::unique_lock<mutex_type> l(mtx_);
-            sem_.signal(PIKA_MOVE(l), lower_limit);
+            sem_.signal(std::move(l), lower_limit);
         }
 
         std::int64_t signal_all()
         {
             std::unique_lock<mutex_type> l(mtx_);
-            return sem_.signal_all(PIKA_MOVE(l));
+            return sem_.signal_all(std::move(l));
         }
 
     private:

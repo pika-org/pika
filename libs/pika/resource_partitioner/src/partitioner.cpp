@@ -145,7 +145,7 @@ namespace pika::resource {
         partitioner_.set_default_pool_name(name);
     }
 
-    const std::string& partitioner::get_default_pool_name() const
+    std::string const& partitioner::get_default_pool_name() const
     {
         return partitioner_.get_default_pool_name();
     }

@@ -70,7 +70,7 @@ int pika_main()
 
         while (t.elapsed() < 1)
         {
-            const std::size_t n = worker_pool_threads * num_tasks_per_worker_thread;
+            std::size_t const n = worker_pool_threads * num_tasks_per_worker_thread;
             std::atomic<std::size_t> num_executed{0};
 
             for (std::size_t i = 0; i < n; ++i)
@@ -98,7 +98,7 @@ int pika_main()
                 worker_pool.suspend_processing_unit_direct(thread_num);
             }
 
-            const std::size_t n = worker_pool_threads * num_tasks_per_worker_thread;
+            std::size_t const n = worker_pool_threads * num_tasks_per_worker_thread;
             std::atomic<std::size_t> num_executed{0};
 
             for (std::size_t i = 0; i < n; ++i)

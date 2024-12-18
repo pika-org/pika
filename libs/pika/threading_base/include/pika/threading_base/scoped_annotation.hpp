@@ -12,9 +12,7 @@
 # include <pika/threading_base/thread_description.hpp>
 # include <pika/threading_base/thread_helpers.hpp>
 
-# if PIKA_HAVE_ITTNOTIFY != 0
-#  include <pika/modules/itt_notify.hpp>
-# elif defined(PIKA_HAVE_APEX)
+# if defined(PIKA_HAVE_APEX)
 #  include <pika/threading_base/external_timer.hpp>
 # elif defined(PIKA_HAVE_TRACY)
 #  include <pika/threading_base/detail/tracy.hpp>
@@ -23,6 +21,7 @@
 
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace pika {
     namespace detail {
@@ -46,26 +45,6 @@ namespace pika {
         // add empty (but non-trivial) destructor to silence warnings
         PIKA_HOST_DEVICE ~scoped_annotation() {}
     };
-# elif PIKA_HAVE_ITTNOTIFY != 0
-    struct [[nodiscard]] scoped_annotation
-    {
-        PIKA_NON_COPYABLE(scoped_annotation);
-
-        explicit scoped_annotation(char const* name)
-          : task_(thread_domain_, pika::util::itt::string_handle(name))
-        {
-        }
-        template <typename F>
-        explicit scoped_annotation(F&& f)
-          : task_(
-                thread_domain_, pika::detail::get_function_annotation_itt<std::decay_t<F>>::call(f))
-        {
-        }
-
-    private:
-        pika::util::itt::thread_domain thread_domain_;
-        pika::util::itt::task task_;
-    };
 # elif defined(PIKA_HAVE_TRACY)
     struct [[nodiscard]] scoped_annotation
     {
@@ -77,7 +56,7 @@ namespace pika {
         }
 
         explicit scoped_annotation(std::string annotation)
-          : annotation(detail::store_function_annotation(PIKA_MOVE(annotation)))
+          : annotation(detail::store_function_annotation(std::move(annotation)))
         {
         }
 
@@ -135,7 +114,7 @@ namespace pika {
 #  if defined(PIKA_HAVE_APEX)
                     detail::store_function_annotation(name);
 #  else
-                    detail::store_function_annotation(PIKA_MOVE(name));
+                    detail::store_function_annotation(std::move(name));
 #  endif
                 desc_ = threads::detail::get_thread_id_data(self->get_thread_id())
                             ->set_description(name_c_str);
@@ -144,7 +123,7 @@ namespace pika {
 #  if defined(PIKA_HAVE_APEX)
             /* update the task wrapper in APEX to use the specified name */
             threads::detail::set_self_timer_data(pika::detail::external_timer::update_task(
-                threads::detail::get_self_timer_data(), PIKA_MOVE(name)));
+                threads::detail::get_self_timer_data(), std::move(name)));
 #  endif
         }
 

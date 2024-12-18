@@ -1,25 +1,32 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
+# Provided by the gitlab runner of .container-builder
+ARG NUM_PROCS
+
 ARG SOURCE_DIR
 ARG BUILD_DIR
 
 ARG BUILD_TYPE
 ARG CMAKE_COMMON_FLAGS
 ARG CMAKE_FLAGS
-# Provided by the gitlab runner of .container-builder
-ARG NUM_PROCS
 
 COPY . ${SOURCE_DIR}
 
 # Print spack spec since not printed if the compiler image is found on jfrog
-RUN spack -e pika_ci spec -lI $spack_spec
+RUN spack -e pika_ci spec -lI
 
 # Configure & Build
+# Make sure clang-tidy etc. binaries are in PATH when using clang.
+ARG COMPILER
 RUN spack -e pika_ci config add "config:flags:keep_werror:all" && \
-    spack -e pika_ci build-env $spack_spec -- bash -c "cmake -B${BUILD_DIR} ${SOURCE_DIR} \
-    -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && cmake --build ${BUILD_DIR} \
-    --target all tests examples install"
+    if [[ $COMPILER =~ clang ]]; then \
+        export PATH="$(spack location --install-dir llvm)/bin:$PATH"; \
+    fi && \
+    spack -e pika_ci build-env $spack_spec -- \
+    bash -c " \
+    cmake -B${BUILD_DIR} ${SOURCE_DIR} -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && \
+    cmake --build ${BUILD_DIR} --parallel $NUM_PROCS --target all tests examples install"
 
 # Run compile only tests and tests.unit.build, submit ctest metrics to elastic
 ARG SPACK_ARCH
@@ -32,7 +39,6 @@ ARG CI_COMMIT_SHA
 ARG CI_COMMIT_SHORT_SHA
 ARG CI_COMMIT_TIMESTAMP
 ARG CI_COMMIT_TITLE
-ARG COMPILER
 ARG CSCS_LOGSTASH_URL
 ARG SPACK_COMMIT
 ARG SPACK_SPEC
@@ -41,6 +47,9 @@ RUN CTEST_XML=$PWD/ctest.xml; \
         "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}; \
          ${SOURCE_DIR}/.gitlab/scripts/collect_file_sizes.sh ${BUILD_DIR}" \
         EXIT; \
+    if [[ $COMPILER =~ clang ]]; then \
+        export PATH="$(spack location --install-dir llvm)/bin:$PATH"; \
+    fi && \
     spack -e pika_ci build-env $spack_spec -- \
         bash -c "ctest \
             --output-junit ${CTEST_XML} \

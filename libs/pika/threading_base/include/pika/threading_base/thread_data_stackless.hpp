@@ -86,7 +86,7 @@ namespace pika::threads::detail {
         {
             this->thread_data::rebind_base(init_data);
 
-            coroutine_.rebind(PIKA_MOVE(init_data.func), thread_id_type(this));
+            coroutine_.rebind(std::move(init_data.func), thread_id_type(this));
 
             PIKA_ASSERT(coroutine_.is_ready());
         }
@@ -94,7 +94,7 @@ namespace pika::threads::detail {
         thread_data_stackless(thread_init_data& init_data, void* queue, std::ptrdiff_t stacksize,
             thread_id_addref addref)
           : thread_data(init_data, queue, stacksize, true, addref)
-          , coroutine_(PIKA_MOVE(init_data.func), thread_id_type(this_()))
+          , coroutine_(std::move(init_data.func), thread_id_type(this_()))
         {
             PIKA_ASSERT(coroutine_.is_ready());
         }

@@ -22,25 +22,27 @@ struct test_input
 
 void test_valid()
 {
-    const std::vector<test_input> tests
-    {
-        {"0x0", 4, {}}, {"0x1", 4, {0}}, {"0x2", 4, {1}}, {"0xb", 4, {0, 1, 3}},
-            {"0xf", 4, {0, 1, 2, 3}},
-            {"0xff", static_cast<std::size_t>(2 * 4), {0, 1, 2, 3, 4, 5, 6, 7}},
-            {"0x808080", static_cast<std::size_t>(6 * 4), {7, 15, 23}},
-            {"0x0f0f0f0f0f0f0f0f", static_cast<std::size_t>(16 * 4),
-                {0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27, 32, 33, 34, 35, 40, 41,
-                    42, 43, 48, 49, 50, 51, 56, 57, 58, 59}},
-            {"0x0f0e0d0c04030201", static_cast<std::size_t>(16 * 4),
-                {0, 9, 16, 17, 26, 34, 35, 40, 42, 43, 49, 50, 51, 56, 57, 58, 59}},
-            {"       0x808080     \t  ", static_cast<std::size_t>(6 * 4), {7, 15, 23}},
+    std::vector<test_input> const tests{
+        {"0x0", 4, {}},
+        {"0x1", 4, {0}},
+        {"0x2", 4, {1}},
+        {"0xb", 4, {0, 1, 3}},
+        {"0xf", 4, {0, 1, 2, 3}},
+        {"0xff", static_cast<std::size_t>(2 * 4), {0, 1, 2, 3, 4, 5, 6, 7}},
+        {"0x808080", static_cast<std::size_t>(6 * 4), {7, 15, 23}},
+        {"0x0f0f0f0f0f0f0f0f", static_cast<std::size_t>(16 * 4),
+            {0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27, 32, 33, 34, 35, 40, 41, 42,
+                43, 48, 49, 50, 51, 56, 57, 58, 59}},
+        {"0x0f0e0d0c04030201", static_cast<std::size_t>(16 * 4),
+            {0, 9, 16, 17, 26, 34, 35, 40, 42, 43, 49, 50, 51, 56, 57, 58, 59}},
+        {"       0x808080     \t  ", static_cast<std::size_t>(6 * 4), {7, 15, 23}},
 #if !defined(PIKA_HAVE_MAX_CPU_COUNT)
-            {"0xff00000000000000000000", static_cast<std::size_t>(22 * 4),
-                {80, 81, 82, 83, 84, 85, 86, 87}},
+        {"0xff00000000000000000000", static_cast<std::size_t>(22 * 4),
+            {80, 81, 82, 83, 84, 85, 86, 87}},
 #endif
     };
 
-    for (const auto& t : tests)
+    for (auto const& t : tests)
     {
         auto mask = pika::detail::from_string<pika::threads::detail::mask_type>(t.str);
 #if defined(PIKA_HAVE_MAX_CPU_COUNT)
@@ -65,10 +67,10 @@ void test_valid()
 
 void test_invalid()
 {
-    const std::vector<std::string> tests{
+    std::vector<std::string> const tests{
         "", "0", "0x", "Ob", "foobar", "x0xff", "0xffg", " 0xabcdefgh\t"};
 
-    for (const auto& t : tests)
+    for (auto const& t : tests)
     {
         try
         {

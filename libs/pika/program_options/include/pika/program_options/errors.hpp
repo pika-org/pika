@@ -18,7 +18,7 @@
 
 namespace pika::program_options {
 
-    inline std::string strip_prefixes(const std::string& text)
+    inline std::string strip_prefixes(std::string const& text)
     {
         // "--foo-bar" -> "foo-bar"
         std::string::size_type i = text.find_first_not_of("-/");
@@ -30,7 +30,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT error : public std::logic_error
     {
     public:
-        error(const std::string& xwhat)
+        error(std::string const& xwhat)
           : std::logic_error(xwhat)
         {
         }
@@ -52,7 +52,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT invalid_command_line_style : public error
     {
     public:
-        invalid_command_line_style(const std::string& msg)
+        invalid_command_line_style(std::string const& msg)
           : error(msg)
         {
         }
@@ -62,7 +62,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT reading_file : public error
     {
     public:
-        reading_file(const char* filename)
+        reading_file(char const* filename)
           : error(std::string("can not read options configuration file '")
                       .append(filename)
                       .append("'"))
@@ -114,8 +114,8 @@ namespace pika::program_options {
         /** template with placeholders */
         std::string m_error_template;
 
-        error_with_option_name(const std::string& template_, const std::string& option_name = "",
-            const std::string& original_token = "", int option_style = 0);
+        error_with_option_name(std::string const& template_, std::string const& option_name = "",
+            std::string const& original_token = "", int option_style = 0);
 
         /** gcc says that throw specification on dtor is loosened
          *  without this line
@@ -125,7 +125,7 @@ namespace pika::program_options {
         /** Substitute
          *      parameter_name->value to create the error message from
          *      the error template */
-        void set_substitute(const std::string& parameter_name, const std::string& value)
+        void set_substitute(std::string const& parameter_name, std::string const& value)
         {
             m_substitutions[parameter_name] = value;
         }
@@ -133,7 +133,7 @@ namespace pika::program_options {
         /** If the parameter is missing, then make the
          *      from->to substitution instead */
         void set_substitute_default(
-            const std::string& parameter_name, const std::string& from, const std::string& to)
+            std::string const& parameter_name, std::string const& from, std::string const& to)
         {
             m_substitution_defaults[parameter_name] = std::make_pair(from, to);
         }
@@ -141,7 +141,7 @@ namespace pika::program_options {
         /** Add context to an exception */
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         void add_context(
-            const std::string& option_name, const std::string& original_token, int option_style)
+            std::string const& option_name, std::string const& original_token, int option_style)
         // NOLINTEND(bugprone-easily-swappable-parameters)
         {
             set_option_name(option_name);
@@ -152,31 +152,31 @@ namespace pika::program_options {
         void set_prefix(int option_style) { m_option_style = option_style; }
 
         /** Overridden in error_with_no_option_name */
-        virtual void set_option_name(const std::string& option_name)
+        virtual void set_option_name(std::string const& option_name)
         {
             set_substitute("option", option_name);
         }
 
         std::string get_option_name() const { return get_canonical_option_name(); }
 
-        void set_original_token(const std::string& original_token)
+        void set_original_token(std::string const& original_token)
         {
             set_substitute("original_token", original_token);
         }
 
         /** Creates the error_message on the fly
          *      Currently a thin wrapper for substitute_placeholders() */
-        const char* what() const noexcept override;
+        char const* what() const noexcept override;
 
     protected:
         /** Used to hold the error text returned by what() */
         mutable std::string m_message;    // For on-demand formatting in 'what'
 
         /** Makes all substitutions using the template */
-        virtual void substitute_placeholders(const std::string& error_template) const;
+        virtual void substitute_placeholders(std::string const& error_template) const;
 
         // helper function for substitute_placeholders
-        void replace_token(const std::string& from, const std::string& to) const;
+        void replace_token(std::string const& from, std::string const& to) const;
 
         /** Construct option name in accordance with the appropriate
          *  prefix style: i.e. long dash or short slash etc */
@@ -216,7 +216,7 @@ namespace pika::program_options {
     {
     public:
         // option name is constructed by the option_descriptor and never on the fly
-        required_option(const std::string& option_name)
+        required_option(std::string const& option_name)
           : error_with_option_name(
                 "the option '%canonical_option%' is required but missing", "", option_name)
         {
@@ -241,13 +241,13 @@ namespace pika::program_options {
     {
     public:
         error_with_no_option_name(
-            const std::string& template_, const std::string& original_token = "")
+            std::string const& template_, std::string const& original_token = "")
           : error_with_option_name(template_, "", original_token)
         {
         }
 
         /** Does NOT set option name, because no option name makes sense */
-        void set_option_name(const std::string&) override {}
+        void set_option_name(std::string const&) override {}
 
         ~error_with_no_option_name() noexcept {}
     };
@@ -256,7 +256,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT unknown_option : public error_with_no_option_name
     {
     public:
-        unknown_option(const std::string& original_token = "")
+        unknown_option(std::string const& original_token = "")
           : error_with_no_option_name("unrecognised option '%canonical_option%'", original_token)
         {
         }
@@ -268,7 +268,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT ambiguous_option : public error_with_no_option_name
     {
     public:
-        ambiguous_option(const std::vector<std::string>& xalternatives)
+        ambiguous_option(std::vector<std::string> const& xalternatives)
           : error_with_no_option_name("option '%canonical_option%' is ambiguous")
           , m_alternatives(xalternatives)
         {
@@ -276,11 +276,11 @@ namespace pika::program_options {
 
         ~ambiguous_option() noexcept {}
 
-        const std::vector<std::string>& alternatives() const noexcept { return m_alternatives; }
+        std::vector<std::string> const& alternatives() const noexcept { return m_alternatives; }
 
     protected:
         /** Makes all substitutions using the template */
-        void substitute_placeholders(const std::string& error_template) const override;
+        void substitute_placeholders(std::string const& error_template) const override;
 
     private:
         // TODO: copy ctor might throw
@@ -304,8 +304,8 @@ namespace pika::program_options {
             unrecognized_line
         };
 
-        invalid_syntax(kind_t kind, const std::string& option_name = "",
-            const std::string& original_token = "", int option_style = 0)
+        invalid_syntax(kind_t kind, std::string const& option_name = "",
+            std::string const& original_token = "", int option_style = 0)
           : error_with_option_name(get_template(kind), option_name, original_token, option_style)
           , m_kind(kind)
         {
@@ -327,7 +327,7 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT invalid_config_file_syntax : public invalid_syntax
     {
     public:
-        invalid_config_file_syntax(const std::string& invalid_line, kind_t kind)
+        invalid_config_file_syntax(std::string const& invalid_line, kind_t kind)
           : invalid_syntax(kind)
         {
             m_substitutions["invalid_line"] = invalid_line;
@@ -348,8 +348,8 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT invalid_command_line_syntax : public invalid_syntax
     {
     public:
-        invalid_command_line_syntax(kind_t kind, const std::string& option_name = "",
-            const std::string& original_token = "", int option_style = 0)
+        invalid_command_line_syntax(kind_t kind, std::string const& option_name = "",
+            std::string const& original_token = "", int option_style = 0)
           : invalid_syntax(kind, option_name, original_token, option_style)
         {
         }
@@ -370,8 +370,8 @@ namespace pika::program_options {
         };
 
     public:
-        validation_error(kind_t kind, const std::string& option_name = "",
-            const std::string& original_token = "", int option_style = 0)
+        validation_error(kind_t kind, std::string const& option_name = "",
+            std::string const& original_token = "", int option_style = 0)
           : error_with_option_name(get_template(kind), option_name, original_token, option_style)
           , m_kind(kind)
         {
@@ -391,15 +391,15 @@ namespace pika::program_options {
     class PIKA_ALWAYS_EXPORT invalid_option_value : public validation_error
     {
     public:
-        invalid_option_value(const std::string& value);
-        invalid_option_value(const std::wstring& value);
+        invalid_option_value(std::string const& value);
+        invalid_option_value(std::wstring const& value);
     };
 
     /** Class thrown if there is an invalid bool value given */
     class PIKA_ALWAYS_EXPORT invalid_bool_value : public validation_error
     {
     public:
-        invalid_bool_value(const std::string& value);
+        invalid_bool_value(std::string const& value);
     };
 
 }    // namespace pika::program_options

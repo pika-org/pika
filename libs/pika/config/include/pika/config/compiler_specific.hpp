@@ -162,23 +162,32 @@
 #endif
 
 // clang-format on
+# if !defined(__has_feature)
+#  define PIKA_HAS_FEATURE(x) 0
+# else
+#  define PIKA_HAS_FEATURE(x) __has_feature(x)
+# endif
+
 # if defined(PIKA_HAVE_SANITIZERS)
-#  if defined(__has_feature)
-#   if __has_feature(address_sanitizer)
-#    define PIKA_HAVE_ADDRESS_SANITIZER
-#    if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION)
-#     define PIKA_NO_SANITIZE_ADDRESS __attribute__((no_sanitize("address")))
-#    endif
-#   endif
-#   if __has_feature(thread_sanitizer)
-#    define PIKA_HAVE_THREAD_SANITIZER
-#   endif
-#  elif defined(__SANITIZE_ADDRESS__)    // MSVC defines this
+#  if defined(__SANITIZE_ADDRESS__) || PIKA_HAS_FEATURE(address_sanitizer)
 #   define PIKA_HAVE_ADDRESS_SANITIZER
+#   if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION)
+#    define PIKA_NO_SANITIZE_ADDRESS __attribute__((no_sanitize("address")))
+#   endif
+#  endif
+#  if defined(__SANITIZE_THREAD__) || PIKA_HAS_FEATURE(thread_sanitizer)
+#   define PIKA_HAVE_THREAD_SANITIZER
+#   if defined(PIKA_GCC_VERSION) || defined(PIKA_CLANG_VERSION)
+#    define PIKA_NO_SANITIZE_THREAD __attribute__((no_sanitize("thread")))
+#   endif
 #  endif
 # endif
-#endif
 
-#if !defined(PIKA_NO_SANITIZE_ADDRESS)
-# define PIKA_NO_SANITIZE_ADDRESS
-#endif
+# if !defined(PIKA_NO_SANITIZE_ADDRESS)
+#  define PIKA_NO_SANITIZE_ADDRESS
+# endif
+# if !defined(PIKA_NO_SANITIZE_THREAD)
+#  define PIKA_NO_SANITIZE_THREAD
+# endif
+
+#endif    // doxygen

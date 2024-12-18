@@ -18,9 +18,7 @@ set(config_headers
     pika/config/emulate_deleted.hpp
     pika/config/export_definitions.hpp
     pika/config/forceinline.hpp
-    pika/config/forward.hpp
     pika/config/manual_profiling.hpp
-    pika/config/move.hpp
     pika/config/static_call_operator.hpp
     pika/config/threads_stack.hpp
     pika/config/warnings_prefix.hpp

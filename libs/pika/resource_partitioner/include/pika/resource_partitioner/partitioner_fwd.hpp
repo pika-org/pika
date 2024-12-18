@@ -37,8 +37,7 @@ namespace pika::resource {
     /// Returns false otherwise.
     PIKA_EXPORT bool is_partitioner_valid();
 
-    /// This enumeration describes the modes available when creating a
-    /// resource partitioner.
+    /// This enumeration describes the modes available when creating a resource partitioner.
     enum partitioner_mode
     {
         /// Default mode.

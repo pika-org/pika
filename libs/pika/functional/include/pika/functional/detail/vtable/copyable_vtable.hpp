@@ -23,6 +23,7 @@ namespace pika::util::detail {
             if (destroy) vtable::get<T>(storage).~T();
 
             void* buffer = vtable::allocate<T>(storage, storage_size);
+            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
             return ::new (buffer) T(vtable::get<T>(src));
         }
         void* (*copy)(void*, std::size_t, void const*, bool);

@@ -43,8 +43,8 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_value_t>(
                 pika::execution::experimental::get_env(sender));
             return pika::functional::detail::tag_invoke(continues_on_t{},
-                PIKA_MOVE(completion_scheduler), PIKA_FORWARD(Sender, sender),
-                PIKA_FORWARD(Scheduler, scheduler));
+                std::move(completion_scheduler), std::forward<Sender>(sender),
+                std::forward<Scheduler>(scheduler));
         }
 
         // clang-format off
@@ -58,7 +58,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(continues_on_t, Sender&& predecessor_sender, Scheduler&& scheduler)
         {
             return schedule_from(
-                PIKA_FORWARD(Scheduler, scheduler), PIKA_FORWARD(Sender, predecessor_sender));
+                std::forward<Scheduler>(scheduler), std::forward<Sender>(predecessor_sender));
         }
 
         template <typename Scheduler>
@@ -66,7 +66,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(continues_on_t, Scheduler&& scheduler)
         {
             return detail::partial_algorithm<continues_on_t, Scheduler>{
-                PIKA_FORWARD(Scheduler, scheduler)};
+                std::forward<Scheduler>(scheduler)};
         }
     } continues_on{};
 

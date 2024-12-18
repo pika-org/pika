@@ -32,7 +32,7 @@ namespace pika::program_options {
     namespace {
 
         template <class Char>
-        std::basic_string<Char> tolower_(const std::basic_string<Char>& str)
+        std::basic_string<Char> tolower_(std::basic_string<Char> const& str)
         {
             std::basic_string<Char> result;
             for (typename std::basic_string<Char>::size_type i = 0; i < str.size(); ++i)
@@ -46,14 +46,14 @@ namespace pika::program_options {
 
     option_description::option_description() {}
 
-    option_description::option_description(const char* names, const value_semantic* s)
+    option_description::option_description(char const* names, value_semantic const* s)
       : m_value_semantic(s)
     {
         this->set_names(names);
     }
 
     option_description::option_description(
-        const char* names, const value_semantic* s, const char* description)
+        char const* names, value_semantic const* s, char const* description)
       : m_description(description)
       , m_value_semantic(s)
     {
@@ -63,12 +63,12 @@ namespace pika::program_options {
     option_description::~option_description() {}
 
     option_description::match_result option_description::match(
-        const std::string& option, bool approx, bool long_ignore_case, bool short_ignore_case) const
+        std::string const& option, bool approx, bool long_ignore_case, bool short_ignore_case) const
     {
         match_result result = no_match;
         std::string local_option = (long_ignore_case ? tolower_(option) : option);
 
-        for (const auto& long_name : m_long_names)
+        for (auto const& long_name : m_long_names)
         {
             std::string local_long_name((long_ignore_case ? tolower_(long_name) : long_name));
 
@@ -105,13 +105,13 @@ namespace pika::program_options {
         return result;
     }
 
-    const std::string& option_description::key(const std::string& option) const
+    std::string const& option_description::key(std::string const& option) const
     {
         // We make the arbitrary choice of using the first long
         // name as the key, regardless of anything else
         if (!m_long_names.empty())
         {
-            const std::string& first_long_name = *m_long_names.begin();
+            std::string const& first_long_name = *m_long_names.begin();
             if (first_long_name.find('*') != string::npos)
                 // The '*' character means we're long_name
                 // matches only part of the input. So, returning
@@ -149,7 +149,7 @@ namespace pika::program_options {
             return m_short_name;
     }
 
-    const std::string& option_description::long_name() const
+    std::string const& option_description::long_name() const
     {
         // NOTE: Upstream this is empty_string(""). However, nvc++ 22.11 fails
         // with:
@@ -163,15 +163,15 @@ namespace pika::program_options {
         return m_long_names.empty() ? empty_string : *m_long_names.begin();
     }
 
-    const std::pair<const std::string*, std::size_t> option_description::long_names() const
+    std::pair<std::string const*, std::size_t> const option_description::long_names() const
     {
         // reinterpret_cast is to please msvc 10.
         return (m_long_names.empty()) ?
-            std::pair<const std::string*, size_t>(reinterpret_cast<const std::string*>(0), 0) :
-            std::pair<const std::string*, size_t>(&(*m_long_names.begin()), m_long_names.size());
+            std::pair<std::string const*, size_t>(reinterpret_cast<std::string const*>(0), 0) :
+            std::pair<std::string const*, size_t>(&(*m_long_names.begin()), m_long_names.size());
     }
 
-    option_description& option_description::set_names(const char* _names)
+    option_description& option_description::set_names(char const* _names)
     {
         m_long_names.clear();
         std::istringstream iss(_names);
@@ -183,7 +183,7 @@ namespace pika::program_options {
         bool try_interpreting_last_name_as_a_switch = m_long_names.size() > 1;
         if (try_interpreting_last_name_as_a_switch)
         {
-            const std::string& last_name = *m_long_names.rbegin();
+            std::string const& last_name = *m_long_names.rbegin();
             if (last_name.length() == 1)
             {
                 m_short_name = '-' + last_name;
@@ -202,9 +202,9 @@ namespace pika::program_options {
         return *this;
     }
 
-    const std::string& option_description::description() const { return m_description; }
+    std::string const& option_description::description() const { return m_description; }
 
-    std::shared_ptr<const value_semantic> option_description::semantic() const
+    std::shared_ptr<value_semantic const> option_description::semantic() const
     {
         return m_value_semantic;
     }
@@ -234,7 +234,7 @@ namespace pika::program_options {
     }
 
     options_description_easy_init& options_description_easy_init::operator()(
-        const char* name, const char* description)
+        char const* name, char const* description)
     {
         // Create untyped semantic which accepts zero tokens: i.e.
         // no value can be specified on command line.
@@ -247,7 +247,7 @@ namespace pika::program_options {
     }
 
     options_description_easy_init& options_description_easy_init::operator()(
-        const char* name, const value_semantic* s)
+        char const* name, value_semantic const* s)
     {
         std::shared_ptr<option_description> d(new option_description(name, s));
         owner->add(d);
@@ -255,7 +255,7 @@ namespace pika::program_options {
     }
 
     options_description_easy_init& options_description_easy_init::operator()(
-        const char* name, const value_semantic* s, const char* description)
+        char const* name, value_semantic const* s, char const* description)
     {
         std::shared_ptr<option_description> d(new option_description(name, s, description));
 
@@ -263,7 +263,7 @@ namespace pika::program_options {
         return *this;
     }
 
-    const unsigned options_description::m_default_line_length = 80;
+    unsigned const options_description::m_default_line_length = 80;
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     options_description::options_description(unsigned line_length, unsigned min_description_length)
@@ -277,7 +277,7 @@ namespace pika::program_options {
 
     // NOLINTBEGIN(bugprone-easily-swappable-parameters)
     options_description::options_description(
-        const std::string& caption, unsigned line_length, unsigned min_description_length)
+        std::string const& caption, unsigned line_length, unsigned min_description_length)
       // NOLINTEND(bugprone-easily-swappable-parameters)
       : m_caption(caption)
       , m_line_length(line_length)
@@ -293,12 +293,12 @@ namespace pika::program_options {
         belong_to_group.push_back(false);
     }
 
-    options_description& options_description::add(const options_description& desc)
+    options_description& options_description::add(options_description const& desc)
     {
         std::shared_ptr<options_description> d(new options_description(desc));
         groups.push_back(d);
 
-        for (const auto& option : desc.m_options)
+        for (auto const& option : desc.m_options)
         {
             add(option);
             belong_to_group.back() = true;
@@ -312,22 +312,22 @@ namespace pika::program_options {
         return options_description_easy_init(this);
     }
 
-    const option_description& options_description::find(
-        const std::string& name, bool approx, bool long_ignore_case, bool short_ignore_case) const
+    option_description const& options_description::find(
+        std::string const& name, bool approx, bool long_ignore_case, bool short_ignore_case) const
     {
-        const option_description* d =
+        option_description const* d =
             find_nothrow(name, approx, long_ignore_case, short_ignore_case);
         if (!d) throw unknown_option();
         return *d;
     }
 
-    const std::vector<std::shared_ptr<option_description>>& options_description::options() const
+    std::vector<std::shared_ptr<option_description>> const& options_description::options() const
     {
         return m_options;
     }
 
-    const option_description* options_description::find_nothrow(
-        const std::string& name, bool approx, bool long_ignore_case, bool short_ignore_case) const
+    option_description const* options_description::find_nothrow(
+        std::string const& name, bool approx, bool long_ignore_case, bool short_ignore_case) const
     {
         std::shared_ptr<option_description> found;
         bool had_full_match = false;
@@ -337,7 +337,7 @@ namespace pika::program_options {
         // We use linear search because matching specified option
         // name with the declared option name need to take care about
         // case sensitivity and trailing '*' and so we can't use simple map.
-        for (const auto& option : m_options)
+        for (auto const& option : m_options)
         {
             option_description::match_result r =
                 option->match(name, approx, long_ignore_case, short_ignore_case);
@@ -372,7 +372,7 @@ namespace pika::program_options {
     }
 
     PIKA_EXPORT
-    std::ostream& operator<<(std::ostream& os, const options_description& desc)
+    std::ostream& operator<<(std::ostream& os, options_description const& desc)
     {
         desc.print(os);
         return os;
@@ -428,7 +428,7 @@ namespace pika::program_options {
             else
             {
                 string::const_iterator line_begin = par.begin();
-                const string::const_iterator par_end = par.end();
+                string::const_iterator const par_end = par.end();
 
                 bool first_line = true;    // of current paragraph!
 
@@ -502,7 +502,7 @@ namespace pika::program_options {
             }
         }
 
-        void format_description(std::ostream& os, const std::string& desc,
+        void format_description(std::ostream& os, std::string const& desc,
             std::size_t first_column_width, std::size_t line_length)
         {
             // we need to use one char less per line to work correctly if actual
@@ -523,7 +523,7 @@ namespace pika::program_options {
             tok paragraphs(desc, boost::char_separator<char>("\n", "", boost::keep_empty_tokens));
 
             tok::const_iterator par_iter = paragraphs.begin();
-            const tok::const_iterator par_end = paragraphs.end();
+            tok::const_iterator const par_end = paragraphs.end();
 
             while (par_iter != par_end)    // paragraphs
             {
@@ -541,7 +541,7 @@ namespace pika::program_options {
             }    // paragraphs
         }
 
-        void format_one(std::ostream& os, const option_description& opt,
+        void format_one(std::ostream& os, option_description const& opt,
             std::size_t first_column_width, std::size_t line_length)
         {
             stringstream ss;
@@ -578,14 +578,14 @@ namespace pika::program_options {
         std::size_t i;    // vc6 has broken for loop scoping
         for (i = 0; i < m_options.size(); ++i)
         {
-            const option_description& opt = *m_options[i];
+            option_description const& opt = *m_options[i];
             stringstream ss;
             ss << "  " << opt.format_name() << ' ' << opt.format_parameter();
             width = (std::max)(width, ss.str().size());
         }
 
         /* Get width of groups as well*/
-        for (const auto& group : groups)
+        for (auto const& group : groups)
             width = (std::max)(width, group->get_option_column_width());
 
         /* this is the column were description should start, if first
@@ -610,14 +610,14 @@ namespace pika::program_options {
         {
             if (belong_to_group[i]) continue;
 
-            const option_description& opt = *m_options[i];
+            option_description const& opt = *m_options[i];
 
             format_one(os, opt, width, m_line_length);
 
             os << "\n";
         }
 
-        for (const auto& group : groups)
+        for (auto const& group : groups)
         {
             os << "\n";
             group->print(os, width);

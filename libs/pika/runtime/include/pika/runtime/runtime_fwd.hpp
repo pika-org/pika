@@ -15,7 +15,6 @@
 #include <pika/modules/runtime_configuration.hpp>
 #include <pika/runtime/config_entry.hpp>
 #include <pika/runtime/get_os_thread_count.hpp>
-#include <pika/runtime/get_thread_name.hpp>
 #include <pika/runtime/get_worker_thread_num.hpp>
 #include <pika/runtime/report_error.hpp>
 #include <pika/runtime/shutdown_function.hpp>
@@ -52,8 +51,6 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////////
     PIKA_EXPORT pika::util::runtime_configuration const& get_config();
-
-    /// \endcond
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief Test whether the runtime system is currently being started.

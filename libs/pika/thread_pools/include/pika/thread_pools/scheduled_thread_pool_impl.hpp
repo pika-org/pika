@@ -13,6 +13,7 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/deferred_call.hpp>
 #include <pika/functional/detail/invoke.hpp>
+#include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/schedulers.hpp>
 #include <pika/thread_pools/scheduled_thread_pool.hpp>
@@ -95,7 +96,7 @@ namespace pika::threads::detail {
     scheduled_thread_pool<Scheduler>::scheduled_thread_pool(
         std::unique_ptr<Scheduler> sched, thread_pool_init_parameters const& init)
       : thread_pool_base(init)
-      , sched_(PIKA_MOVE(sched))
+      , sched_(std::move(sched))
       , thread_count_(0)
       , max_idle_loop_count_(init.max_idle_loop_count_)
       , max_busy_loop_count_(init.max_busy_loop_count_)
@@ -202,7 +203,7 @@ namespace pika::threads::detail {
     template <typename Lock>
     void scheduled_thread_pool<Scheduler>::stop_locked(Lock& l, bool blocking)
     {
-        PIKA_LOG(info, "stop: {} blocking({})", id_.name(), blocking);
+        PIKA_LOG(info, "pool \"{}\" blocking({})", id_.name(), blocking);
 
         if (!threads_.empty())
         {
@@ -227,11 +228,11 @@ namespace pika::threads::detail {
                     if (!threads_[i].joinable()) continue;
 
                     // make sure no OS thread is waiting
-                    PIKA_LOG(info, "stop: {} notify_all", id_.name());
+                    PIKA_LOG(info, "pool \"{}\" notify_all", id_.name());
 
                     sched_->Scheduler::do_some_work(std::size_t(-1));
 
-                    PIKA_LOG(info, "stop: {} join:{}", id_.name(), i);
+                    PIKA_LOG(info, "pool \"{}\" join:{}", id_.name(), i);
 
                     {
                         // unlock the lock while joining
@@ -257,9 +258,9 @@ namespace pika::threads::detail {
     {
         PIKA_ASSERT(l.owns_lock());
 
-        PIKA_LOG(info, "run: {} number of processing units available: {}", id_.name(),
+        PIKA_LOG(info, "pool \"{}\" number of processing units available: {}", id_.name(),
             threads::detail::hardware_concurrency());
-        PIKA_LOG(info, "run: {} creating {} OS thread(s)", id_.name(), pool_threads);
+        PIKA_LOG(info, "pool \"{}\" creating {} OS thread(s)", id_.name(), pool_threads);
 
         if (0 == pool_threads)
         {
@@ -274,7 +275,7 @@ namespace pika::threads::detail {
         init_perf_counter_data(pool_threads);
         this->init_pool_time_scale();
 
-        PIKA_LOG(info, "run: {} timestamp_scale: {}", id_.name(), timestamp_scale_);
+        PIKA_LOG(info, "pool \"{}\" timestamp_scale: {}", id_.name(), timestamp_scale_);
 
         // run threads and wait for initialization to complete
         std::size_t thread_num = 0;
@@ -297,7 +298,7 @@ namespace pika::threads::detail {
                 // in affinity_data::affinity_masks_
                 // which is in order of occupied PU
                 PIKA_LOG(info,
-                    "run: {} create OS thread {}: will run on processing units "
+                    "pool \"{}\" create OS thread {}: will run on processing units "
                     "within this mask: {}",
                     id_.name(), global_thread_num, pika::threads::detail::to_string(mask));
 
@@ -312,7 +313,7 @@ namespace pika::threads::detail {
         }
         catch (std::exception const& e)
         {
-            PIKA_LOG(critical, "run: {} failed with: {}", id_.name(), e.what());
+            PIKA_LOG(critical, "pool \"{}\" failed with: {}", id_.name(), e.what());
 
             // trigger the barrier
             pool_threads -= (thread_num + 1);
@@ -324,7 +325,7 @@ namespace pika::threads::detail {
             return false;
         }
 
-        PIKA_LOG(info, "run: {} running", id_.name());
+        PIKA_LOG(info, "pool \"{}\" running", id_.name());
         return true;
     }
 
@@ -407,8 +408,7 @@ namespace pika::threads::detail {
         topo.set_thread_affinity_mask(mask, ec);
         if (ec)
         {
-            PIKA_LOG(warn,
-                "thread_func: {} setting thread affinity on OS thread {} failed with: {}",
+            PIKA_LOG(warn, "pool \"{}\" setting thread affinity on OS thread {} failed with: {}",
                 id_.name(), global_thread_num, ec.get_message());
         }
 
@@ -422,7 +422,7 @@ namespace pika::threads::detail {
             if (ec)
             {
                 PIKA_LOG(warn,
-                    "thread_func: {} reducing thread priority on OS thread {} failed with: {}",
+                    "pool \"{}\" reducing thread priority on OS thread {} failed with: {}",
                     id_.name(), global_thread_num, ec.get_message());
             }
         }
@@ -440,7 +440,7 @@ namespace pika::threads::detail {
         // wait for all threads to start up before before starting pika work
         startup->wait();
 
-        PIKA_LOG(info, "thread_func: {} starting OS thread: {}", id_.name(), thread_num);
+        PIKA_LOG(info, "pool \"{}\" starting OS thread: {}", id_.name(), thread_num);
 
         try
         {
@@ -476,7 +476,7 @@ namespace pika::threads::detail {
             catch (pika::exception const& e)
             {
                 PIKA_LOG(critical,
-                    "thread_func: {} thread_num:{} : caught pika::exception: {}, "
+                    "pool \"{}\" thread_num:{} : caught pika::exception: {}, "
                     "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
@@ -486,7 +486,7 @@ namespace pika::threads::detail {
             catch (std::system_error const& e)
             {
                 PIKA_LOG(critical,
-                    "thread_func: {} thread_num:{} : caught std::system_error: {}, "
+                    "pool \"{}\" thread_num:{} : caught std::system_error: {}, "
                     "aborted thread execution",
                     id_.name(), global_thread_num, e.what());
 
@@ -502,7 +502,7 @@ namespace pika::threads::detail {
         catch (...)
         {
             PIKA_LOG(critical,
-                "thread_func: {} thread_num:{} : caught unexpected exception, aborted "
+                "pool \"{}\" thread_num:{} : caught unexpected exception, aborted "
                 "thread execution",
                 id_.name(), global_thread_num);
 
@@ -510,7 +510,7 @@ namespace pika::threads::detail {
             return;
         }
 
-        PIKA_LOG(info, "thread_func: {} thread_num: {}, ending OS thread, executed {} pika threads",
+        PIKA_LOG(info, "pool \"{}\" thread_num: {}, ending OS thread, executed {} pika threads",
             id_.name(), global_thread_num,
             counter_data_[global_thread_num].data_.executed_threads_);
     }
@@ -578,7 +578,7 @@ namespace pika::threads::detail {
     template <typename InIter, typename T, typename Proj>
     T accumulate_projected(InIter first, InIter last, T init, Proj&& proj)
     {
-        while (first != last) { init = PIKA_MOVE(init) + PIKA_INVOKE(proj, (first++)->data_); }
+        while (first != last) { init = std::move(init) + PIKA_INVOKE(proj, (first++)->data_); }
         return init;
     }
 
@@ -1312,7 +1312,7 @@ namespace pika::threads::detail {
         PIKA_ASSERT(oldstate == runtime_state::stopped || oldstate == runtime_state::initialized);
 
         threads_[virt_core] = std::thread(
-            &scheduled_thread_pool::thread_func, this, virt_core, thread_num, PIKA_MOVE(startup));
+            &scheduled_thread_pool::thread_func, this, virt_core, thread_num, std::move(startup));
 
         if (&ec != &throws) ec = make_success_code();
     }

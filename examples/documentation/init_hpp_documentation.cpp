@@ -9,15 +9,20 @@
 
 #include <fmt/printf.h>
 
+#include <utility>
+
 int main(int argc, char* argv[])
 {
+    namespace ex = pika::execution::experimental;
+    namespace tt = pika::this_thread::experimental;
+
     pika::start(argc, argv);
 
-    // The pika runtime is now active and we can schedule work on the default thread pool
-    pika::this_thread::experimental::sync_wait(
-        pika::execution::experimental::schedule(
-            pika::execution::experimental::thread_pool_scheduler{}) |
-        pika::execution::experimental::then([]() { fmt::print("Hello from the pika runtime\n"); }));
+    // The pika runtime is now active and we can schedule work on the default
+    // thread pool
+    auto s = ex::schedule(ex::thread_pool_scheduler{}) |
+        ex::then([]() { fmt::print("Hello from the pika runtime\n"); });
+    tt::sync_wait(std::move(s));
 
     pika::finalize();
     pika::stop();

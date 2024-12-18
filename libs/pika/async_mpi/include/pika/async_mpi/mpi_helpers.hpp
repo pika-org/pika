@@ -25,6 +25,7 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
+#include <pika/mpi_base/mpi_exception.hpp>
 #include <pika/runtime/runtime.hpp>
 
 #include <exception>
@@ -67,7 +68,7 @@ namespace pika::mpi::experimental::detail {
     // return a scheduler on the mpi pool
     inline auto mpi_pool_scheduler(execution::thread_priority p)
     {
-        if (!pool_exists()) return default_pool_scheduler(p);
+        if (!get_pool_enabled()) return default_pool_scheduler(p);
         return ex::with_priority(
             ex::thread_pool_scheduler{&resource::get_thread_pool(get_pool_name())}, p);
     }
@@ -80,12 +81,12 @@ namespace pika::mpi::experimental::detail {
         static_assert(sizeof...(Ts) <= 1, "Expecting at most one value");
         if (mpi_status == MPI_SUCCESS)
         {
-            ex::set_value(PIKA_FORWARD(Receiver, receiver), PIKA_FORWARD(Ts, ts)...);
+            ex::set_value(std::forward<Receiver>(receiver), std::forward<Ts>(ts)...);
         }
         else
         {
-            ex::set_error(PIKA_FORWARD(Receiver, receiver),
-                std::make_exception_ptr(mpi_exception(mpi_status)));
+            ex::set_error(std::forward<Receiver>(receiver),
+                std::make_exception_ptr(mpi::exception(mpi_status, "set_error handler")));
         }
     }
 
@@ -124,8 +125,9 @@ namespace pika::mpi::experimental::detail {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
                 if (status != MPI_SUCCESS)
                 {
-                    ex::set_error(PIKA_MOVE(op_state.receiver),
-                        std::make_exception_ptr(mpi_exception(status)));
+                    ex::set_error(std::move(op_state.receiver),
+                        std::make_exception_ptr(
+                            mpi::exception(status, "new_task_request_callback")));
                 }
                 else
                 {
@@ -136,9 +138,9 @@ namespace pika::mpi::experimental::detail {
                     auto snd0 =
                         ex::schedule(default_pool_scheduler(p)) | ex::then([&op_state]() mutable {
                             PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("set_value")));
-                            ex::set_value(PIKA_MOVE(op_state.receiver));
+                            ex::set_value(std::move(op_state.receiver));
                         });
-                    ex::start_detached(PIKA_MOVE(snd0));
+                    ex::start_detached(std::move(snd0));
                 }
             },
             op_state.request);
@@ -154,7 +156,7 @@ namespace pika::mpi::experimental::detail {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_void")));
-                set_value_error_helper(status, PIKA_MOVE(op_state.receiver));
+                set_value_error_helper(status, std::move(op_state.receiver));
             },
             op_state.request);
     }
@@ -186,7 +188,7 @@ namespace pika::mpi::experimental::detail {
     {
         PIKA_DETAIL_DP(mpi_tran<1>, debug(str<>("MPIX"), "callback triggered"));
         auto& op_state = *static_cast<OperationState*>(cb_data);
-        set_value_error_helper(op_state.status, PIKA_MOVE(op_state.receiver));
+        set_value_error_helper(op_state.status, std::move(op_state.receiver));
         // tell mpix that we handled it ok, error is passed into set_error in mpi_trigger
         return MPI_SUCCESS;
     }

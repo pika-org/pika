@@ -15,19 +15,26 @@
 #include <string>
 
 namespace pika::cuda::experimental {
-    /// RAII wrapper for a CUDA stream.
+    /// \brief RAII wrapper for a CUDA stream.
     ///
-    /// An RAII wrapper for a CUDA stream which creates a stream on construction
-    /// and destroys it on destruction. Is movable and copiable. A moved-from
-    /// stream holds the default stream. A copied stream uses the properties
-    /// from the given stream and creates a new stream.
+    /// An RAII wrapper for a CUDA stream which creates a stream on construction and destroys it on
+    /// destruction. It is movable and copyable. A moved-from stream holds the default stream. A
+    /// copied stream uses the properties from the given stream and creates a new stream.
+    ///
+    /// Equality comparable and formattable.
+    ///
+    /// When accessing the underlying stream, [whip](https://github.com/eth-cscs/whip) is used for
+    /// compatibility with CUDA and HIP.
+    ///
+    /// \note The recommended way to access a stream is through sender adaptors using \ref
+    /// cuda_scheduler.
     class cuda_stream
     {
     private:
         int device;
         pika::execution::thread_priority priority;
         unsigned int flags;
-        whip::stream_t stream = 0;
+        whip::stream_t stream{};
 
         struct priorities
         {
@@ -40,6 +47,13 @@ namespace pika::cuda::experimental {
             int device, pika::execution::thread_priority priority, unsigned int flags);
 
     public:
+        /// \brief Construct a new stream with the given device and priority.
+        ///
+        /// \param device The device to create the stream on.
+        /// \param priority The priority of the stream. The mapping from \ref thread_priority to
+        /// CUDA stream priorities is undefined, except that the order is preserved, allowing for
+        /// different \ref thread_priority to map to the same CUDA priority.
+        /// \param flags Flags to pass to the CUDA stream creation.
         PIKA_EXPORT explicit cuda_stream(int device = 0,
             pika::execution::thread_priority priority = pika::execution::thread_priority::default_,
             unsigned int flags = 0);
@@ -49,9 +63,18 @@ namespace pika::cuda::experimental {
         PIKA_EXPORT cuda_stream(cuda_stream const&);
         PIKA_EXPORT cuda_stream& operator=(cuda_stream const&);
 
+        /// \brief Get the underlying stream.
+        ///
+        /// The stream is still owned by the \ref cuda_stream and must not be manually released.
         PIKA_EXPORT whip::stream_t get() const noexcept;
+
+        /// \brief Get the device of the stream.
         PIKA_EXPORT int get_device() const noexcept;
+
+        /// \brief Get the priority of the stream.
         PIKA_EXPORT pika::execution::thread_priority get_priority() const noexcept;
+
+        /// brief Get the flags of the stream.
         PIKA_EXPORT unsigned int get_flags() const noexcept;
 
         /// \cond NOINTERNAL

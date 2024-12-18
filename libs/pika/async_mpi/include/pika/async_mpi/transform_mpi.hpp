@@ -20,6 +20,7 @@
 #include <pika/execution/algorithms/detail/partial_algorithm.hpp>
 #include <pika/execution/algorithms/just.hpp>
 #include <pika/execution/algorithms/let_value.hpp>
+#include <pika/execution/algorithms/unpack.hpp>
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -51,55 +52,51 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
-            using pika::execution::experimental::unique_any_sender;
+            using pika::execution::experimental::unpack;
 
             // get mpi completion mode settings
             auto mode = get_completion_mode();
             bool completions_inline = use_inline_completion(mode);
             bool requests_inline = use_inline_request(mode);
 
-#ifdef PIKA_DEBUG
-            // ----------------------------------------------------------
-            // the pool should exist if the completion mode needs it
-            int cwsize = detail::comm_world_size();
-            bool need_pool = (cwsize > 1 && use_pool(mode));
-            if (pool_exists() != need_pool)
-            {
-                PIKA_DETAIL_DP(mpi_tran<0>,
-                    error(str<>("transform_mpi"), "mode", mode, "pool_exists()", pool_exists(),
-                        "need_pool", need_pool));
-            }
-            PIKA_ASSERT(pool_exists() == need_pool);
-#endif
-
             execution::thread_priority p = use_priority_boost(mode) ?
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
-                if (!completions_inline)    // not inline : a transfer is required
-                {
-                    if (request == MPI_REQUEST_NULL)
-                    {
-                        return ex::schedule(default_pool_scheduler(p));
-                    }
-                    return just(request) | trigger_mpi(mode) |
-                        ex::continues_on(default_pool_scheduler(p));
-                }
-                if (request == MPI_REQUEST_NULL) { return just(); }
-                return just(request) | trigger_mpi(mode);
-            };
-
-            if (requests_inline)
+            if (completions_inline)
             {
-                return dispatch_mpi_sender<Sender, F>{PIKA_MOVE(sender), PIKA_FORWARD(F, f)} |
-                    let_value(completion_snd);
+                auto f_completion = [mode, f = std::forward<F>(f)](auto&... args) mutable {
+                    return just(std::forward_as_tuple(args...)) | unpack() |
+                        dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                };
+
+                if (requests_inline)
+                {
+                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
+                }
+                else
+                {
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value(std::move(f_completion));
+                }
             }
             else
             {
-                auto snd0 = PIKA_FORWARD(Sender, sender) | continues_on(mpi_pool_scheduler(p));
-                return dispatch_mpi_sender<decltype(snd0), F>{PIKA_MOVE(snd0), PIKA_FORWARD(F, f)} |
-                    let_value(completion_snd);
+                auto f_completion = [mode, p, f = std::forward<F>(f)](auto&... args) mutable {
+                    return just(std::forward_as_tuple(args...)) | unpack() |
+                        dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
+                        continues_on(default_pool_scheduler(p));
+                };
+
+                if (requests_inline)
+                {
+                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
+                }
+                else
+                {
+                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                        let_value(std::move(f_completion));
+                }
             }
         }
 
@@ -110,7 +107,7 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F>{
-                PIKA_FORWARD(F, f)};
+                std::forward<F>(f)};
         }
 
     } transform_mpi{};

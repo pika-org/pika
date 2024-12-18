@@ -157,7 +157,7 @@ namespace pika {
         // Effects:        Sets both the initial expected count for each
         //                 barrier phase and the current expected count for the
         //                 first phase to expected. Initializes completion with
-        //                 PIKA_MOVE(f). Starts the first phase. [Note: If
+        //                 std::move(f). Starts the first phase. [Note: If
         //                 expected is 0 this object can only be destroyed.-
         //                 end note]
         // Throws:         Any exception thrown by CompletionFunction's move
@@ -216,7 +216,7 @@ namespace pika {
         //                 point for the current phase or the immediately
         //                 preceding phase of the same barrier object.
         // Effects:        Blocks at the synchronization point associated with
-        //                 PIKA_MOVE(arrival) until the phase completion step
+        //                 std::move(arrival) until the phase completion step
         //                 of the synchronization point's phase is run. [ Note:
         //                 If arrival is associated with the synchronization
         //                 point for a previous phase, the call returns

@@ -97,12 +97,12 @@ namespace pika::detail {
 
         bool notify_one(std::unique_lock<mutex_type> lock, error_code& ec = throws)
         {
-            return notify_one(PIKA_MOVE(lock), execution::thread_priority::default_, ec);
+            return notify_one(std::move(lock), execution::thread_priority::default_, ec);
         }
 
         void notify_all(std::unique_lock<mutex_type> lock, error_code& ec = throws)
         {
-            return notify_all(PIKA_MOVE(lock), execution::thread_priority::default_, ec);
+            return notify_all(std::move(lock), execution::thread_priority::default_, ec);
         }
 
         PIKA_EXPORT void abort_all(std::unique_lock<mutex_type> lock);

@@ -57,5 +57,5 @@ set_tests_properties(
   tests.unit.modules.execution.algorithm_require_started_terminate
   PROPERTIES
     PASS_REGULAR_EXPRESSION
-    ".*~require_started_sender: A require_started sender was never started\nstd::terminate called*"
+    ".*~require_started_sender: A require_started sender was never started\n.*std::terminate called.*"
 )

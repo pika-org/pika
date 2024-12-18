@@ -50,7 +50,6 @@ pika_add_module(
     pika_datastructures
     pika_debugging
     pika_errors
-    pika_itt_notify
     pika_tag_invoke
     pika_type_support
   CMAKE_SUBDIRS examples tests

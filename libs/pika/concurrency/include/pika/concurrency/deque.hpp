@@ -77,7 +77,7 @@ namespace pika::concurrency::detail {
         deque_node(deque_node* lptr, deque_node* rptr, T&& v, tag_t ltag = 0, tag_t rtag = 0)
           : left(pointer(lptr, ltag))
           , right(pointer(rptr, rtag))
-          , data(PIKA_MOVE(v))
+          , data(std::move(v))
         {
         }
     };
@@ -122,47 +122,6 @@ namespace pika::concurrency::detail {
         }
 
         pair lrs(std::memory_order mo = std::memory_order_acquire) const { return pair_.load(mo); }
-
-        node* left(std::memory_order mo = std::memory_order_acquire) const
-        {
-            return pair_.load(mo).get_left_ptr();
-        }
-
-        node* right(std::memory_order mo = std::memory_order_acquire) const
-        {
-            return pair_.load(mo).get_right_ptr();
-        }
-
-        tag_t status(std::memory_order mo = std::memory_order_acquire) const
-        {
-            return pair_.load(mo).get_left_tag();
-        }
-
-        tag_t tag(std::memory_order mo = std::memory_order_acquire) const
-        {
-            return pair_.load(mo).get_right_tag();
-        }
-
-        bool cas(deque_anchor& expected, deque_anchor const& desired,
-            std::memory_order mo = std::memory_order_acq_rel)
-        {
-            return pair_.compare_exchange_strong(expected.load(std::memory_order_acquire),
-                desired.load(std::memory_order_acquire), mo);
-        }
-
-        bool cas(pair& expected, deque_anchor const& desired,
-            std::memory_order mo = std::memory_order_acq_rel)
-        {
-            return pair_.compare_exchange_strong(
-                expected, desired.load(std::memory_order_acquire), mo);
-        }
-
-        bool cas(deque_anchor& expected, pair const& desired,
-            std::memory_order mo = std::memory_order_acq_rel)
-        {
-            return pair_.compare_exchange_strong(
-                expected.load(std::memory_order_acquire), desired, mo);
-        }
 
         bool cas(
             pair& expected, pair const& desired, std::memory_order mo = std::memory_order_acq_rel)
@@ -234,7 +193,7 @@ namespace pika::concurrency::detail {
         {
             node* chunk = pool_.allocate();
             if (chunk == nullptr) { throw std::bad_alloc(); }
-            new (chunk) node(lptr, rptr, PIKA_MOVE(v), ltag, rtag);
+            new (chunk) node(lptr, rptr, std::move(v), ltag, rtag);
             return chunk;
         }
 
@@ -354,7 +313,7 @@ namespace pika::concurrency::detail {
         bool push_left(T data)
         {
             // Allocate the new node which we will be inserting.
-            node* n = alloc_node(nullptr, nullptr, PIKA_MOVE(data));
+            node* n = alloc_node(nullptr, nullptr, std::move(data));
 
             if (n == nullptr) return false;
 
@@ -409,7 +368,7 @@ namespace pika::concurrency::detail {
         bool push_right(T data)
         {
             // Allocate the new node which we will be inserting.
-            node* n = alloc_node(nullptr, nullptr, PIKA_MOVE(data));
+            node* n = alloc_node(nullptr, nullptr, std::move(data));
 
             if (n == nullptr) return false;
 
@@ -480,7 +439,7 @@ namespace pika::concurrency::detail {
                                 nullptr, nullptr, lrs.get_left_tag(), lrs.get_right_tag() + 1)))
                     {
                         // Set the result, deallocate the popped node, and return.
-                        r = PIKA_MOVE(lrs.get_left_ptr()->data);
+                        r = std::move(lrs.get_left_ptr()->data);
                         dealloc_node(lrs.get_left_ptr());
                         return true;
                     }
@@ -502,7 +461,7 @@ namespace pika::concurrency::detail {
                                 lrs.get_right_tag() + 1)))
                     {
                         // Set the result, deallocate the popped node, and return.
-                        r = PIKA_MOVE(lrs.get_left_ptr()->data);
+                        r = std::move(lrs.get_left_ptr()->data);
                         dealloc_node(lrs.get_left_ptr());
                         return true;
                     }
@@ -540,7 +499,7 @@ namespace pika::concurrency::detail {
                                 nullptr, nullptr, lrs.get_left_tag(), lrs.get_right_tag() + 1)))
                     {
                         // Set the result, deallocate the popped node, and return.
-                        r = PIKA_MOVE(lrs.get_right_ptr()->data);
+                        r = std::move(lrs.get_right_ptr()->data);
                         dealloc_node(lrs.get_right_ptr());
                         return true;
                     }
@@ -562,7 +521,7 @@ namespace pika::concurrency::detail {
                                 lrs.get_right_tag() + 1)))
                     {
                         // Set the result, deallocate the popped node, and return.
-                        r = PIKA_MOVE(lrs.get_right_ptr()->data);
+                        r = std::move(lrs.get_right_ptr()->data);
                         dealloc_node(lrs.get_right_ptr());
                         return true;
                     }

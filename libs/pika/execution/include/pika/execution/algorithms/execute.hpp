@@ -27,7 +27,7 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(execute_t, Scheduler&& scheduler, F&& f)
         {
             return start_detached(
-                then(schedule(PIKA_FORWARD(Scheduler, scheduler)), PIKA_FORWARD(F, f)));
+                then(schedule(std::forward<Scheduler>(scheduler)), std::forward<F>(f)));
         }
     } execute{};
 }    // namespace pika::execution::experimental

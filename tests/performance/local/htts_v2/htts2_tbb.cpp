@@ -48,7 +48,7 @@ private:
         stage_tasks_functor& outer;
 
     public:
-        void operator()(const tbb::blocked_range<std::uint64_t>& r) const
+        void operator()(tbb::blocked_range<std::uint64_t> const& r) const
         {
             for (std::uint64_t i = r.begin(); i != r.end(); ++i)
             {
@@ -151,8 +151,7 @@ private:
             std::cout << "OS-threads (Independent Variable),"
                       << "Tasks per OS-thread (Control Variable) [tasks/OS-threads],"
                       << "Payload Duration (Control Variable) [nanoseconds],"
-                      << "Total Walltime [nanoseconds]"
-                      << "\n";
+                      << "Total Walltime [nanoseconds]" << "\n";
 
         fmt::print(std::cout, "{},{},{},{:.14g}\n", this->osthreads_, this->tasks_,
             this->payload_duration_, results);

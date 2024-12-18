@@ -59,8 +59,8 @@ namespace pika::debug::detail {
     constexpr int debug_level = 0;
 
     template <int Level>
-    static print_threshold<Level, debug_level> spq_deb("SPQUEUE");
-    static print_threshold<1, debug_level> spq_arr("SPQUEUE");
+    inline constexpr print_threshold<Level, debug_level> spq_deb("SPQUEUE");
+    inline constexpr print_threshold<1, debug_level> spq_arr("SPQUEUE");
 }    // namespace pika::debug::detail
 
 // ------------------------------------------------------------
@@ -105,9 +105,9 @@ namespace pika::threads::detail {
 
         struct init_parameter
         {
-            init_parameter(std::size_t num_worker_threads, const core_ratios& cores_per_queue,
+            init_parameter(std::size_t num_worker_threads, core_ratios const& cores_per_queue,
                 pika::detail::affinity_data const& affinity_data,
-                const thread_queue_init_parameters& thread_queue_init,
+                thread_queue_init_parameters const& thread_queue_init,
                 char const* description = "shared_priority_queue_scheduler")
               : num_worker_threads_(num_worker_threads)
               , cores_per_queue_(cores_per_queue)
@@ -117,7 +117,7 @@ namespace pika::threads::detail {
             {
             }
 
-            init_parameter(std::size_t num_worker_threads, const core_ratios& cores_per_queue,
+            init_parameter(std::size_t num_worker_threads, core_ratios const& cores_per_queue,
                 pika::detail::affinity_data const& affinity_data, char const* description)
               : num_worker_threads_(num_worker_threads)
               , cores_per_queue_(cores_per_queue)
@@ -204,7 +204,7 @@ namespace pika::threads::detail {
         inline std::size_t local_thread_number() const
         {
             using namespace pika::threads::detail;
-            const std::size_t thread_pool_num = get_thread_pool_num_tss();
+            std::size_t const thread_pool_num = get_thread_pool_num_tss();
             // if the thread belongs to this pool return local Id
             if (pool_index_ == thread_pool_num) return get_local_thread_num_tss();
             return std::size_t(-1);
@@ -287,7 +287,7 @@ namespace pika::threads::detail {
             std::size_t domain_num;
             std::size_t q_index;
 
-            [[maybe_unused]] const char* msg = nullptr;
+            [[maybe_unused]] char const* msg = nullptr;
 
             std::unique_lock<pu_mutex_type> l;
 
@@ -424,7 +424,7 @@ namespace pika::threads::detail {
         template <typename T>
         // NOLINTBEGIN(bugprone-easily-swappable-parameters)
         bool steal_by_function(std::size_t domain, std::size_t q_index, bool steal_numa,
-            bool steal_core, thread_holder_type* origin, T& var, const char* prefix,
+            bool steal_core, thread_holder_type* origin, T& var, char const* prefix,
             util::detail::function<bool(
                 std::size_t, std::size_t, thread_holder_type*, T&, bool, bool)>
                 operation_HP,
@@ -677,7 +677,7 @@ namespace pika::threads::detail {
             std::size_t q_index = std::size_t(-1);
 
             std::unique_lock<pu_mutex_type> l;
-            [[maybe_unused]] const char* msg;
+            [[maybe_unused]] char const* msg;
 
             using execution::thread_schedule_hint_mode;
 
@@ -996,7 +996,7 @@ namespace pika::threads::detail {
             // worker threads and assign them into groups based on locality
             // even if the thread numbering is arbitrary
             std::sort(locations.begin(), locations.end(),
-                [](const dcp_tuple& a, const dcp_tuple& b) -> bool {
+                [](dcp_tuple const& a, dcp_tuple const& b) -> bool {
                     return (std::get<0>(a) == std::get<0>(b)) ?
                         ((std::get<1>(a) == std::get<1>(b)) ? (std::get<2>(a) < std::get<2>(b)) :
                                                               (std::get<1>(a) < std::get<1>(b))) :
@@ -1322,7 +1322,7 @@ namespace pika::threads::detail {
 
         pika::detail::affinity_data const& affinity_data_;
 
-        const thread_queue_init_parameters queue_parameters_;
+        thread_queue_init_parameters const queue_parameters_;
 
         // used to make sure the scheduler is only initialized once on a thread
         std::mutex init_mutex;

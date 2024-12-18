@@ -8,6 +8,8 @@
 #pragma once
 
 #include <pika/config.hpp>
+
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -67,7 +69,7 @@ namespace pika::debug::detail {
 // --------------------------------------------------------------------
 namespace pika::debug {
     template <typename T = void>    // print a single type
-    inline std::string print_type(const char* = "")
+    inline std::string print_type(char const* = "")
     {
         return std::string(detail::cxx_type_id<T>().type_id());
     }
@@ -79,7 +81,7 @@ namespace pika::debug {
     }
 
     template <typename T, typename... Args>    // print a list of types
-    inline std::enable_if_t<sizeof...(Args) != 0, std::string> print_type(const char* delim = "")
+    inline std::enable_if_t<sizeof...(Args) != 0, std::string> print_type(char const* delim = "")
     {
         std::string temp(print_type<T>());
         return temp + delim + print_type<Args...>(delim);

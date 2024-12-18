@@ -37,7 +37,6 @@
 #include <pika/threading/thread.hpp>
 #include <pika/threading_base/detail/get_default_pool.hpp>
 #include <pika/type_support/pack.hpp>
-#include <pika/type_support/unused.hpp>
 #include <pika/util/get_entry_as.hpp>
 #include <pika/version.hpp>
 
@@ -139,9 +138,12 @@ namespace pika {
             pika::util::detail::set_spinlock_deadlock_warning_limit(
                 cmdline.rtcfg_.get_spinlock_deadlock_warning_limit());
 #endif
-#ifdef PIKA_HAVE_MPI
-            pika::mpi::experimental::set_completion_mode(pika::detail::get_entry_as<std::size_t>(
-                cmdline.rtcfg_, "pika.mpi.completion_mode", 0));
+#if defined(PIKA_HAVE_MPI)
+            pika::mpi::experimental::detail::set_pool_enabled(
+                pika::detail::get_entry_as<bool>(cmdline.rtcfg_, "pika.mpi.enable_pool", false));
+            pika::mpi::experimental::detail::set_completion_mode(
+                pika::detail::get_entry_as<std::size_t>(
+                    cmdline.rtcfg_, "pika.mpi.completion_mode", 0));
 #endif
             init_logging(cmdline.rtcfg_);
         }
@@ -175,9 +177,9 @@ namespace pika {
                 rt.get_config().load_application_configuration(config.c_str());
             }
 
-            if (!!startup) rt.add_startup_function(PIKA_MOVE(startup));
+            if (!!startup) rt.add_startup_function(std::move(startup));
 
-            if (!!shutdown) rt.add_shutdown_function(PIKA_MOVE(shutdown));
+            if (!!shutdown) rt.add_shutdown_function(std::move(shutdown));
 
             if (vm.count("pika:dump-config-initial"))
             {
@@ -196,7 +198,7 @@ namespace pika {
             pika::program_options::variables_map& vm, startup_function_type startup,
             shutdown_function_type shutdown)
         {
-            add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            add_startup_functions(rt, vm, std::move(startup), std::move(shutdown));
 
             // Run this runtime instance using the given function f.
             if (!f.empty()) return rt.run(pika::util::detail::bind_front(f, vm));
@@ -210,7 +212,7 @@ namespace pika {
             pika::program_options::variables_map& vm, startup_function_type startup,
             shutdown_function_type shutdown)
         {
-            add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            add_startup_functions(rt, vm, std::move(startup), std::move(shutdown));
 
             if (!f.empty())
             {
@@ -228,11 +230,11 @@ namespace pika {
         {
             if (blocking)
             {
-                return run(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+                return run(*rt, cfg.pika_main_f_, cfg.vm_, std::move(startup), std::move(shutdown));
             }
 
             // non-blocking version
-            start(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            start(*rt, cfg.pika_main_f_, cfg.vm_, std::move(startup), std::move(shutdown));
 
             // pointer to runtime is stored in TLS
             [[maybe_unused]] pika::detail::runtime* p = rt.release();
@@ -243,7 +245,7 @@ namespace pika {
         ////////////////////////////////////////////////////////////////////////
         void init_environment(detail::command_line_handling& cmdline)
         {
-            PIKA_UNUSED(pika::detail::filesystem::initial_path());
+            pika::detail::filesystem::initial_path();
 
             pika::detail::set_assertion_handler(&pika::detail::assertion_handler);
             pika::detail::set_custom_exception_info_handler(&pika::detail::custom_exception_info);
@@ -285,7 +287,7 @@ namespace pika {
         ///////////////////////////////////////////////////////////////////////
         int run_or_start(
             pika::util::detail::function<int(pika::program_options::variables_map& vm)> const& f,
-            int argc, const char* const* argv, init_params const& params, bool blocking)
+            int argc, char const* const* argv, init_params const& params, bool blocking)
         {
             if (pika::detail::get_runtime_ptr() != nullptr)
             {
@@ -322,6 +324,12 @@ namespace pika {
             case command_line_handling_result::exit: return 0;
             }
 
+#if defined(PIKA_HAVE_MPI)
+            if (mpi::experimental::detail::get_pool_enabled())
+                mpi::experimental::detail::init_resource_partitioner_handler(rp, cmdline.vm_,
+                    mpi::experimental::polling_pool_creation_mode::mode_pika_decides);
+#endif
+
             // If thread_pools initialization in user main
             if (params.rp_callback) { params.rp_callback(rp, cmdline.vm_); }
 
@@ -343,13 +351,13 @@ namespace pika {
             PIKA_LOG(info, "creating local runtime");
             rt.reset(new pika::detail::runtime(cmdline.rtcfg_, true));
 
-            return run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),
-                PIKA_MOVE(params.shutdown));
+            return run_or_start(blocking, std::move(rt), cmdline, std::move(params.startup),
+                std::move(params.shutdown));
         }
 
         int init_start_impl(
             pika::util::detail::function<int(pika::program_options::variables_map&)> f, int argc,
-            const char* const* argv, init_params const& params, bool blocking)
+            char const* const* argv, init_params const& params, bool blocking)
         {
             if (argc == 0 || argv == nullptr)
             {
@@ -371,75 +379,75 @@ namespace pika {
     }    // namespace detail
 
     int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params)
+        char const* const* argv, init_params const& params)
     {
-        return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(f), argc, argv, params, true);
     }
 
-    int init(std::function<int(int, char**)> f, int argc, const char* const* argv,
+    int init(std::function<int(int, char**)> f, int argc, char const* const* argv,
         init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(main_f), argc, argv, params, true);
     }
 
-    int init(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
+    int init(std::function<int()> f, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind(f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(main_f), argc, argv, params, true);
     }
 
-    int init(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
+    int init(std::nullptr_t, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(main_f), argc, argv, params, true);
     }
 
     void start(std::function<int(pika::program_options::variables_map&)> f, int argc,
-        const char* const* argv, init_params const& params)
+        char const* const* argv, init_params const& params)
     {
-        if (detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
     }
 
-    void start(std::function<int(int, char**)> f, int argc, const char* const* argv,
+    void start(std::function<int(int, char**)> f, int argc, char const* const* argv,
         init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind_back(pika::detail::init_helper, f);
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
     }
 
-    void start(std::function<int()> f, int argc, const char* const* argv, init_params const& params)
+    void start(std::function<int()> f, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind(f);
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
     }
 
-    void start(std::nullptr_t, int argc, const char* const* argv, init_params const& params)
+    void start(std::nullptr_t, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
     }
 
-    void start(int argc, const char* const* argv, init_params const& params)
+    void start(int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }

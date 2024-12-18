@@ -105,7 +105,7 @@ struct f_struct_1
 
 struct f_struct_2
 {
-    void operator()(int = 42){};
+    void operator()(int = 42) {};
 };
 
 void f_fun_1() {}

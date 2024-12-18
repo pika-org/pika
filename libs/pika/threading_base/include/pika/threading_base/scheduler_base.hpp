@@ -154,12 +154,12 @@ namespace pika::threads::detail {
         std::size_t domain_from_local_thread_index(std::size_t n);
 
         // assumes queues use index 0..N-1 and correspond to the pool cores
-        std::size_t num_domains(const std::size_t workers);
+        std::size_t num_domains(std::size_t const workers);
 
         // either threads in same domain, or not in same domain
         // depending on the predicate
         std::vector<std::size_t> domain_threads(std::size_t local_id,
-            const std::vector<std::size_t>& ts,
+            std::vector<std::size_t> const& ts,
             util::detail::function<bool(std::size_t, std::size_t)> pred);
 
 #ifdef PIKA_HAVE_THREAD_CREATION_AND_CLEANUP_RATES
@@ -385,7 +385,7 @@ struct fmt::formatter<pika::threads::detail::scheduler_base> : fmt::formatter<st
     {
         return fmt::formatter<std::string>::format(
             fmt::format(
-                "{}({})", scheduler.get_description(), static_cast<const void*>(&scheduler)),
+                "{}({})", scheduler.get_description(), static_cast<void const*>(&scheduler)),
             ctx);
     }
 };

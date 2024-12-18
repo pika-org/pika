@@ -73,7 +73,7 @@ namespace pika::debug::detail {
                     pika::threads::detail::get_self_id_data();
                 os << hex<12, std::uintptr_t>(reinterpret_cast<std::uintptr_t>(dummy)) << " ";
             }
-            const char* pool = "--------";
+            char const* pool = "--------";
             auto tid = pika::threads::detail::get_self_id();
             if (tid != threads::detail::invalid_thread_id)
             {
@@ -86,8 +86,7 @@ namespace pika::debug::detail {
 #ifdef PIKA_DEBUGGING_PRINT_LINUX
                << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
 #else
-               << " cpu "
-               << "--- ";
+               << " cpu " << "--- ";
 #endif
         }
 

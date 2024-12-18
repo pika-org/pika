@@ -66,7 +66,7 @@ namespace pika::resource::detail {
       , scheduling_policy_(user_defined)
       , num_threads_(0)
       , mode_(mode)
-      , create_function_(PIKA_MOVE(create_func))
+      , create_function_(std::move(create_func))
     {
         if (name.empty())
         {
@@ -491,8 +491,8 @@ namespace pika::resource::detail {
         }
 
         affinity_data_.set_num_threads(new_pu_nums.size());
-        affinity_data_.set_pu_nums(PIKA_MOVE(new_pu_nums));
-        affinity_data_.set_affinity_masks(PIKA_MOVE(new_affinity_masks));
+        affinity_data_.set_pu_nums(std::move(new_pu_nums));
+        affinity_data_.set_affinity_masks(std::move(new_affinity_masks));
     }
 
     // Returns true if any of the pools defined by the user is empty of resources
@@ -562,7 +562,7 @@ namespace pika::resource::detail {
         if (pool_name == get_default_pool_name())
         {
             initial_thread_pools_[0] = detail::init_pool_data(
-                get_default_pool_name(), PIKA_MOVE(scheduler_creation), default_scheduler_mode_);
+                get_default_pool_name(), std::move(scheduler_creation), default_scheduler_mode_);
             return;
         }
 
@@ -580,7 +580,7 @@ namespace pika::resource::detail {
         }
 
         initial_thread_pools_.push_back(detail::init_pool_data(
-            pool_name, PIKA_MOVE(scheduler_creation), default_scheduler_mode_));
+            pool_name, std::move(scheduler_creation), default_scheduler_mode_));
     }
 
     // ----------------------------------------------------------------------
@@ -650,7 +650,7 @@ namespace pika::resource::detail {
     void partitioner::add_resource(
         std::vector<core> const& cv, std::string const& pool_name, bool exclusive)
     {
-        for (const core& c : cv) { add_resource(c.pus_, pool_name, exclusive); }
+        for (core const& c : cv) { add_resource(c.pus_, pool_name, exclusive); }
     }
 
     void partitioner::add_resource(socket const& nd, std::string const& pool_name, bool exclusive)
@@ -661,7 +661,7 @@ namespace pika::resource::detail {
     void partitioner::add_resource(
         std::vector<socket> const& ndv, std::string const& pool_name, bool exclusive)
     {
-        for (const socket& d : ndv) { add_resource(d, pool_name, exclusive); }
+        for (socket const& d : ndv) { add_resource(d, pool_name, exclusive); }
     }
 
     void partitioner::set_scheduler(scheduling_policy sched, std::string const& pool_name)
@@ -732,7 +732,7 @@ namespace pika::resource::detail {
         return get_pool_data(l, pool_index).num_threads_;
     }
 
-    std::size_t partitioner::get_num_threads(const std::string& pool_name) const
+    std::size_t partitioner::get_num_threads(std::string const& pool_name) const
     {
         std::unique_lock<mutex_type> l(mtx_);
         return get_pool_data(l, pool_name).num_threads_;

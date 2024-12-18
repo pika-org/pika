@@ -22,7 +22,6 @@
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/synchronization/counting_semaphore.hpp>
 #include <pika/type_support/pack.hpp>
-#include <pika/type_support/unused.hpp>
 
 #include <atomic>
 #include <exception>
@@ -143,7 +142,7 @@ namespace pika::sync_wait_detail {
                 if (pika::detail::holds_alternative<value_type>(value))
                 {
                     if constexpr (is_void_result) { return; }
-                    else { return PIKA_MOVE(pika::detail::get<value_type>(value)); }
+                    else { return std::move(pika::detail::get<value_type>(value)); }
                 }
                 else if (pika::detail::holds_alternative<error_type>(value))
                 {
@@ -165,7 +164,7 @@ namespace pika::sync_wait_detail {
         friend void tag_invoke(pika::execution::experimental::set_error_t,
             sync_wait_receiver_type&& r, Error&& error) noexcept
         {
-            r.state.value.template emplace<error_type>(PIKA_FORWARD(Error, error));
+            r.state.value.template emplace<error_type>(std::forward<Error>(error));
             r.signal_set_called();
         }
 
@@ -178,10 +177,10 @@ namespace pika::sync_wait_detail {
         template <typename... Us,
             typename = std::enable_if_t<(is_void_result && sizeof...(Us) == 0) ||
                 (!is_void_result && sizeof...(Us) == 1)>>
-        friend void tag_invoke(pika::execution::experimental::set_value_t,
-            sync_wait_receiver_type&& r, Us&&... us) noexcept
+        void set_value(Us&&... us) && noexcept
         {
-            r.state.value.template emplace<value_type>(PIKA_FORWARD(Us, us)...);
+            auto r = std::move(*this);
+            r.state.value.template emplace<value_type>(std::forward<Us>(us)...);
             r.signal_set_called();
         }
 
@@ -210,7 +209,7 @@ namespace pika::this_thread::experimental {
 
             state_type state{};
             auto op_state = pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender, sender), receiver_type{state});
+                std::forward<Sender>(sender), receiver_type{state});
             pika::execution::experimental::start(op_state);
 
             state.wait();
