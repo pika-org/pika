@@ -189,6 +189,24 @@ Since version ``0.20.0``, the ``pika-bind`` helper script is bundled with pika. 
 and then runs the given command. ``pika-bind`` is a more convenient alternative to manually setting ``PIKA_PROCESS_MASK``
 when pika is used together with a runtime that may reset the process mask of the main thread, like OpenMP.
 
+.. _cli_options:
+
+Command line options
+====================
+
+pika's behaviour can be controlled with command line options, or environment variables. Not all
+command line options are exposed as environment variables. When both are present, command line
+options take precedence over environment variables.
+
+If a command line option is not exposed as an environment variable, but it is necessary to set it,
+it is possible to use the ``PIKA_COMMANDLINE_OPTIONS`` environment variable.
+
+For example, the following disable thread binding and explicitly sets the number of threads:
+
+.. code-block:: bash
+
+   export PIKA_COMMANDLINE_OPTIONS="--pika:bind=none --pika:threads=4"
+
 .. _logging:
 
 Logging
