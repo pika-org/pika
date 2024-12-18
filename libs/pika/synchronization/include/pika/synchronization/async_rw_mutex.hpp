@@ -41,8 +41,8 @@ namespace pika::execution::experimental {
         {
             using mutex_type = pika::concurrency::detail::spinlock;
             using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
-            std::atomic<bool> value_set{false};
-            std::optional<T> value{std::nullopt};
+            using value_ptr_type = std::shared_ptr<T>;
+            value_ptr_type value{nullptr};
             shared_state_ptr_type next_state{nullptr};
             mutex_type mtx{};
             pika::detail::small_vector<
@@ -67,37 +67,19 @@ namespace pika::execution::experimental {
 
                 if (PIKA_LIKELY(next_state))
                 {
-                    // The current state has now finished all accesses to the
-                    // wrapped value, so we move the value to the next state.
-                    PIKA_ASSERT(value.has_value());
-                    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                    next_state->set_value(std::move(*value));
-
-                    if (!continuations.empty())
-                    {
-                        auto const size = continuations.size();
-                        for (std::size_t i = 0; i < size - 1; ++i) { continuations[i](next_state); }
-
-                        // Move shared state into the last continuation to ensure that the
-                        // continuations release the last reference and not this destructor.
-                        continuations[size - 1](std::move(next_state));
-                    }
+                    for (auto& continuation : continuations) { continuation(next_state); }
                 }
             }
 
-            template <typename U>
-            void set_value(U&& u)
+            void set_value(value_ptr_type v)
             {
+                PIKA_ASSERT(v);
                 PIKA_ASSERT(!value);
-                value.emplace(std::forward<U>(u));
-                value_set.store(true, std::memory_order_release);
+                value = std::move(v);
             }
 
             T& get_value()
             {
-                pika::util::yield_while(
-                    [this]() { return !value_set.load(std::memory_order_acquire); },
-                    "async_rw_mutex_shared_state::get_value");
                 PIKA_ASSERT(value);
                 // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                 return *value;
@@ -565,7 +547,7 @@ namespace pika::execution::experimental {
         template <typename U,
             typename = std::enable_if_t<!std::is_same<std::decay_t<U>, async_rw_mutex>::value>>
         explicit async_rw_mutex(U&& u, allocator_type const& alloc = {})
-          : value(std::forward<U>(u))
+          : value(std::allocate_shared<readwrite_type, allocator_type>(alloc, std::forward<U>(u)))
           , alloc(alloc)
         {
         }
@@ -588,19 +570,15 @@ namespace pika::execution::experimental {
             {
                 auto shared_prev_state = std::move(state);
                 state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+                state->set_value(value);
                 prev_access = async_rw_mutex_access_type::read;
 
-                // Only the first access has no previous shared state. When
-                // there is a previous state we set the next state so that the
-                // value can be passed from the previous state to the next
-                // state. When there is no previous state we need to move the
-                // value to the first state.
+                // Only the first access has no previous shared state.
                 if (PIKA_LIKELY(shared_prev_state))
                 {
                     shared_prev_state->set_next_state(state);
                     prev_state = shared_prev_state;
                 }
-                else { state->set_value(std::move(value)); }
             }
 
             return {prev_state, state};
@@ -611,18 +589,15 @@ namespace pika::execution::experimental {
         {
             auto shared_prev_state = std::move(state);
             state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+            state->set_value(value);
             prev_access = async_rw_mutex_access_type::readwrite;
 
-            // Only the first access has no previous shared state. When there is
-            // a previous state we set the next state so that the value can be
-            // passed from the previous state to the next state. When there is
-            // no previous state we need to move the value to the first state.
+            // Only the first access has no previous shared state.
             if (PIKA_LIKELY(shared_prev_state))
             {
                 shared_prev_state->set_next_state(state);
                 prev_state = shared_prev_state;
             }
-            else { state->set_value(std::move(value)); }
 
             return {prev_state, state};
         }
@@ -630,6 +605,7 @@ namespace pika::execution::experimental {
     private:
         using shared_state_type = detail::async_rw_mutex_shared_state<readwrite_type>;
         using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
+        using value_ptr_type = std::shared_ptr<readwrite_type>;
 
         // nvc++ is not able to see this typedef unless it's public
 #if defined(PIKA_NVHPC_VERSION)
@@ -740,7 +716,7 @@ namespace pika::execution::experimental {
             }
         };
 
-        PIKA_NO_UNIQUE_ADDRESS readwrite_type value;
+        value_ptr_type value;
         PIKA_NO_UNIQUE_ADDRESS allocator_type alloc;
 
         async_rw_mutex_access_type prev_access = async_rw_mutex_access_type::readwrite;
