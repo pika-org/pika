@@ -23,20 +23,20 @@ include:
 gcc12_hip6_spack_compiler_image:
   extends:
     - .variables_gcc12_hip6_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 gcc12_hip6_spack_image:
   timeout: 4 hours
   needs: [gcc12_hip6_spack_compiler_image]
   extends:
     - .variables_gcc12_hip6_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 gcc12_hip6_build:
   needs: [gcc12_hip6_spack_image]
   extends:
     - .variables_gcc12_hip6_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 # Disabled until AMD GPU runners come back online
 # .gcc12_hip6_test_common:
