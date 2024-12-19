@@ -94,8 +94,7 @@ namespace pika::execution::experimental {
                         // We have now successfully acquired the head of the queue, and signaled to
                         // other threads that they can't add any more items to the queue. We can now
                         // process the queue without further synchronization.
-                        async_rw_mutex_operation_state_base* current =
-                            static_cast<async_rw_mutex_operation_state_base*>(expected);
+                        auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
 
                         // We are also not accessing this shared state directly anymore, so we can
                         // reset p early.
@@ -103,7 +102,7 @@ namespace pika::execution::experimental {
 
                         while (current != nullptr)
                         {
-                            async_rw_mutex_operation_state_base* next = current->next;
+                            auto* next = current->next;
                             current->continuation();
                             current = next;
                         }
@@ -218,8 +217,7 @@ namespace pika::execution::experimental {
                         // We have now successfully acquired the head of the queue, and signaled to
                         // other threads that they can't add any more items to the queue. We can now
                         // process the queue without further synchronization.
-                        async_rw_mutex_operation_state_base* current =
-                            static_cast<async_rw_mutex_operation_state_base*>(expected);
+                        auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
 
                         // We are also not accessing this shared state directly anymore, so we can
                         // reset p early.
@@ -227,7 +225,7 @@ namespace pika::execution::experimental {
 
                         while (current != nullptr)
                         {
-                            async_rw_mutex_operation_state_base* next = current->next;
+                            auto* next = current->next;
                             current->continuation();
                             current = next;
                         }
