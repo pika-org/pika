@@ -310,8 +310,9 @@ namespace pika::execution::experimental {
           : state(std::move(state))
         {
         }
-        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
-        async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) noexcept = default;
+        async_rw_mutex_access_wrapper& operator=(
+            async_rw_mutex_access_wrapper&&) noexcept = default;
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = default;
         async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = default;
 
@@ -348,8 +349,9 @@ namespace pika::execution::experimental {
           : state(std::move(state))
         {
         }
-        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
-        async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) noexcept = default;
+        async_rw_mutex_access_wrapper& operator=(
+            async_rw_mutex_access_wrapper&&) noexcept = default;
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = delete;
         async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = delete;
 
@@ -382,8 +384,9 @@ namespace pika::execution::experimental {
           : state(std::move(state))
         {
         }
-        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
-        async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) noexcept = default;
+        async_rw_mutex_access_wrapper& operator=(
+            async_rw_mutex_access_wrapper&&) noexcept = default;
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = default;
         async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = default;
     };
@@ -406,8 +409,9 @@ namespace pika::execution::experimental {
           : state(std::move(state))
         {
         }
-        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) = default;
-        async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper&&) = default;
+        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) noexcept = default;
+        async_rw_mutex_access_wrapper& operator=(
+            async_rw_mutex_access_wrapper&&) noexcept = default;
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = delete;
         async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = delete;
     };
@@ -493,8 +497,8 @@ namespace pika::execution::experimental {
           : alloc(alloc)
         {
         }
-        async_rw_mutex(async_rw_mutex&&) = default;
-        async_rw_mutex& operator=(async_rw_mutex&&) = default;
+        async_rw_mutex(async_rw_mutex&&) noexcept = default;
+        async_rw_mutex& operator=(async_rw_mutex&&) noexcept = default;
         async_rw_mutex(async_rw_mutex const&) = delete;
         async_rw_mutex& operator=(async_rw_mutex const&) = delete;
 
@@ -684,8 +688,8 @@ namespace pika::execution::experimental {
           , alloc(alloc)
         {
         }
-        async_rw_mutex(async_rw_mutex&&) = default;
-        async_rw_mutex& operator=(async_rw_mutex&&) = default;
+        async_rw_mutex(async_rw_mutex&&) noexcept = default;
+        async_rw_mutex& operator=(async_rw_mutex&&) noexcept = default;
         async_rw_mutex(async_rw_mutex const&) = delete;
         async_rw_mutex& operator=(async_rw_mutex const&) = delete;
         /// \brief Destroy the mutex.
