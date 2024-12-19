@@ -58,9 +58,8 @@ namespace pika::execution::experimental {
             std::atomic<void*> op_state_head{nullptr};
 
             async_rw_mutex_shared_state() = default;
-            template <typename Allocator_>
-            async_rw_mutex_shared_state(Allocator_&& alloc, value_ptr_type v)
-              : alloc(std::forward<Allocator_>(alloc))
+            async_rw_mutex_shared_state(allocator_type&& alloc, value_ptr_type v)
+              : alloc(std::move(alloc))
               , value(std::move(v))
             {
             }
@@ -184,9 +183,8 @@ namespace pika::execution::experimental {
             std::atomic<void*> op_state_head{nullptr};
 
             async_rw_mutex_shared_state() = default;
-            template <typename Allocator_>
-            explicit async_rw_mutex_shared_state(Allocator_&& alloc)
-              : alloc(std::forward<Allocator_>(alloc))
+            explicit async_rw_mutex_shared_state(allocator_type&& alloc)
+              : alloc(std::move(alloc))
             {
             }
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
