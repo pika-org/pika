@@ -520,9 +520,9 @@ namespace pika::execution::experimental {
             using unique_ptr = std::unique_ptr<shared_state_type,
                 pika::detail::allocator_deleter<other_allocator>>;
 
-            other_allocator alloc(this->alloc);
-            unique_ptr p(allocator_traits::allocate(alloc, 1),
-                pika::detail::allocator_deleter<other_allocator>{alloc});
+            other_allocator allocator(this->alloc);
+            unique_ptr p(allocator_traits::allocate(allocator, 1),
+                pika::detail::allocator_deleter<other_allocator>{allocator});
             new (p.get()) shared_state_type{this->alloc};
             return p.release();
         }
@@ -720,9 +720,9 @@ namespace pika::execution::experimental {
             using unique_ptr = std::unique_ptr<shared_state_type,
                 pika::detail::allocator_deleter<other_allocator>>;
 
-            other_allocator alloc(this->alloc);
-            unique_ptr p(allocator_traits::allocate(alloc, 1),
-                pika::detail::allocator_deleter<other_allocator>{alloc});
+            other_allocator allocator(this->alloc);
+            unique_ptr p(allocator_traits::allocate(allocator, 1),
+                pika::detail::allocator_deleter<other_allocator>{allocator});
             new (p.get()) shared_state_type{this->alloc, value};
             return p.release();
         }
