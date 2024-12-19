@@ -202,7 +202,7 @@ options take precedence over environment variables.
 If a command line option is not exposed as an environment variable, but it is necessary to set it,
 it is possible to use the ``PIKA_COMMANDLINE_OPTIONS`` environment variable.
 
-For example, the following disable thread binding and explicitly sets the number of threads:
+For example, the following disables thread binding and explicitly sets the number of threads:
 
 .. code-block:: bash
 
