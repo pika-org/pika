@@ -46,7 +46,8 @@ namespace pika::execution::experimental {
         template <typename T, typename Allocator>
         struct async_rw_mutex_shared_state
         {
-            using allocator_type = Allocator;
+            using allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<
+                async_rw_mutex_shared_state>;
             using shared_state_ptr_type = pika::intrusive_ptr<async_rw_mutex_shared_state>;
             using value_ptr_type = std::shared_ptr<T>;
 
@@ -163,8 +164,6 @@ namespace pika::execution::experimental {
             {
                 if (--p->reference_count == 0)
                 {
-                    using allocator_type = typename std::allocator_traits<
-                        allocator_type>::template rebind_alloc<async_rw_mutex_shared_state>;
                     allocator_type other_alloc(p->alloc);
                     std::allocator_traits<allocator_type>::destroy(other_alloc, p);
                     std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
@@ -175,7 +174,8 @@ namespace pika::execution::experimental {
         template <typename Allocator>
         struct async_rw_mutex_shared_state<void, Allocator>
         {
-            using allocator_type = Allocator;
+            using allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<
+                async_rw_mutex_shared_state>;
             using shared_state_ptr_type = pika::intrusive_ptr<async_rw_mutex_shared_state>;
 
             PIKA_NO_UNIQUE_ADDRESS Allocator alloc;
@@ -275,8 +275,6 @@ namespace pika::execution::experimental {
             {
                 if (--p->reference_count == 0)
                 {
-                    using allocator_type = typename std::allocator_traits<
-                        allocator_type>::template rebind_alloc<async_rw_mutex_shared_state>;
                     allocator_type other_alloc(p->alloc);
                     std::allocator_traits<allocator_type>::destroy(other_alloc, p);
                     std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
