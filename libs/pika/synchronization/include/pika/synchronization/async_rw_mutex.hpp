@@ -310,7 +310,7 @@ namespace pika::execution::experimental {
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        async_rw_mutex_access_wrapper(shared_state_ptr_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_ptr_type state)
           : state(std::move(state))
         {
         }
@@ -348,7 +348,7 @@ namespace pika::execution::experimental {
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        async_rw_mutex_access_wrapper(shared_state_ptr_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_ptr_type state)
           : state(std::move(state))
         {
         }
