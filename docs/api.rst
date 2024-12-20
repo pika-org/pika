@@ -200,6 +200,12 @@ blocks of distributed matrices.
 
 ----
 
+.. literalinclude:: ../examples/documentation/async_rw_mutex_documentation.cpp
+   :language: c++
+   :start-at: #include
+
+----
+
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex
 
 ----
@@ -213,10 +219,6 @@ blocks of distributed matrices.
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::read >
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::read >
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::readwrite >
-
-.. literalinclude:: ../examples/documentation/async_rw_mutex_documentation.cpp
-   :language: c++
-   :start-at: #include
 
 .. _header_pika_cuda:
 
