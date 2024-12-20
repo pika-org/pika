@@ -6,16 +6,14 @@
 
 #pragma once
 
-#include <pika/allocator_support/allocator_deleter.hpp>
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
+#include <pika/concurrency/spinlock.hpp>
 #include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
 #include <pika/execution_base/this_thread.hpp>
-#include <pika/memory/intrusive_ptr.hpp>
-#include <pika/thread_support/atomic_count.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -43,26 +41,17 @@ namespace pika::execution::experimental {
             virtual void continuation() = 0;
         };
 
-        template <typename T, typename Allocator>
+        template <typename T>
         struct async_rw_mutex_shared_state
         {
-            using allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<
-                async_rw_mutex_shared_state>;
-            using shared_state_ptr_type = pika::intrusive_ptr<async_rw_mutex_shared_state>;
+            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
             using value_ptr_type = std::shared_ptr<T>;
 
-            PIKA_NO_UNIQUE_ADDRESS Allocator alloc;
             value_ptr_type value{nullptr};
-            pika::detail::atomic_count reference_count{0};
             shared_state_ptr_type next_state{nullptr};
             std::atomic<void*> op_state_head{nullptr};
 
             async_rw_mutex_shared_state() = default;
-            async_rw_mutex_shared_state(allocator_type&& alloc, value_ptr_type v)
-              : alloc(std::move(alloc))
-              , value(std::move(v))
-            {
-            }
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
             async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state&&) = delete;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state const&) = delete;
@@ -70,18 +59,10 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
-                if (next_state)
-                {
-                    // We pass the ownership of the intrusive_ptr of the next state to the next
-                    // state itself, so that it can choose when to release it. If we can avoid it,
-                    // we don't want this shared state to to hold on to the reference longer than
-                    // necessary.
-                    async_rw_mutex_shared_state* p = next_state.get();
-                    p->done(std::move(next_state));
-                }
+                if (next_state) { next_state->done(); }
             }
 
-            void done(shared_state_ptr_type p) noexcept
+            void done() noexcept
             {
                 while (true)
                 {
@@ -95,10 +76,6 @@ namespace pika::execution::experimental {
                         // other threads that they can't add any more items to the queue. We can now
                         // process the queue without further synchronization.
                         auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
-
-                        // We are also not accessing this shared state directly anymore, so we can
-                        // reset p early.
-                        p.reset();
 
                         while (current != nullptr)
                         {
@@ -119,7 +96,7 @@ namespace pika::execution::experimental {
                 return *value;
             }
 
-            void set_next_state(shared_state_ptr_type state)
+            void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
             {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
@@ -145,40 +122,17 @@ namespace pika::execution::experimental {
 
                 return true;
             }
-
-            friend void intrusive_ptr_add_ref(async_rw_mutex_shared_state* p)
-            {
-                ++p->reference_count;
-            }
-
-            friend void intrusive_ptr_release(async_rw_mutex_shared_state* p)
-            {
-                if (--p->reference_count == 0)
-                {
-                    allocator_type other_alloc(p->alloc);
-                    std::allocator_traits<allocator_type>::destroy(other_alloc, p);
-                    std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
-                }
-            }
         };
 
-        template <typename Allocator>
-        struct async_rw_mutex_shared_state<void, Allocator>
+        template <>
+        struct async_rw_mutex_shared_state<void>
         {
-            using allocator_type = typename std::allocator_traits<Allocator>::template rebind_alloc<
-                async_rw_mutex_shared_state>;
-            using shared_state_ptr_type = pika::intrusive_ptr<async_rw_mutex_shared_state>;
+            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
 
-            PIKA_NO_UNIQUE_ADDRESS Allocator alloc;
             shared_state_ptr_type next_state{nullptr};
-            pika::detail::atomic_count reference_count{0};
             std::atomic<void*> op_state_head{nullptr};
 
             async_rw_mutex_shared_state() = default;
-            explicit async_rw_mutex_shared_state(allocator_type&& alloc)
-              : alloc(std::move(alloc))
-            {
-            }
             async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
             async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state&&) = delete;
             async_rw_mutex_shared_state(async_rw_mutex_shared_state const&) = delete;
@@ -186,18 +140,10 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
-                if (next_state)
-                {
-                    // We pass the ownership of the intrusive_ptr of the next state to the next
-                    // state itself, so that it can choose when to release it. If we can avoid it,
-                    // we don't want this shared state to to hold on to the reference longer than
-                    // necessary.
-                    async_rw_mutex_shared_state* p = next_state.get();
-                    p->done(std::move(next_state));
-                }
+                if (next_state) { next_state->done(); }
             }
 
-            void done(shared_state_ptr_type p) noexcept
+            void done() noexcept
             {
                 while (true)
                 {
@@ -212,10 +158,6 @@ namespace pika::execution::experimental {
                         // process the queue without further synchronization.
                         auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
 
-                        // We are also not accessing this shared state directly anymore, so we can
-                        // reset p early.
-                        p.reset();
-
                         while (current != nullptr)
                         {
                             auto* next = current->next;
@@ -228,7 +170,7 @@ namespace pika::execution::experimental {
                 }
             }
 
-            void set_next_state(shared_state_ptr_type state)
+            void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
             {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
@@ -254,21 +196,6 @@ namespace pika::execution::experimental {
 
                 return true;
             }
-
-            friend void intrusive_ptr_add_ref(async_rw_mutex_shared_state* p)
-            {
-                ++p->reference_count;
-            }
-
-            friend void intrusive_ptr_release(async_rw_mutex_shared_state* p)
-            {
-                if (--p->reference_count == 0)
-                {
-                    allocator_type other_alloc(p->alloc);
-                    std::allocator_traits<allocator_type>::destroy(other_alloc, p);
-                    std::allocator_traits<allocator_type>::deallocate(other_alloc, p, 1);
-                }
-            }
         };
     }    // namespace detail
 
@@ -281,25 +208,22 @@ namespace pika::execution::experimental {
     ///
     /// When the access type is \ref async_rw_mutex_access_type::readwrite the wrapper is move-only.
     /// When the access type is \ref async_rw_mutex_access_type::read the wrapper is copyable.
-    template <typename ReadWriteT, typename ReadT, async_rw_mutex_access_type AccessType,
-        typename Allocator>
+    template <typename ReadWriteT, typename ReadT, async_rw_mutex_access_type AccessType>
     class async_rw_mutex_access_wrapper;
 
     /// \brief A wrapper for values sent by senders from \ref async_rw_mutex with read-only access.
     ///
     /// The wrapper is copyable.
-    template <typename ReadWriteT, typename ReadT, typename Allocator>
-    class async_rw_mutex_access_wrapper<ReadWriteT, ReadT, async_rw_mutex_access_type::read,
-        Allocator>
+    template <typename ReadWriteT, typename ReadT>
+    class async_rw_mutex_access_wrapper<ReadWriteT, ReadT, async_rw_mutex_access_type::read>
     {
     private:
-        using shared_state_ptr_type =
-            pika::intrusive_ptr<detail::async_rw_mutex_shared_state<ReadWriteT, Allocator>>;
-        shared_state_ptr_type state;
+        using shared_state_type = std::shared_ptr<detail::async_rw_mutex_shared_state<ReadWriteT>>;
+        shared_state_type state;
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_ptr_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state)
           : state(std::move(state))
         {
         }
@@ -320,9 +244,8 @@ namespace pika::execution::experimental {
     /// \brief A wrapper for values sent by senders from \ref async_rw_mutex with read-write access.
     ///
     /// The wrapper is move-only.
-    template <typename ReadWriteT, typename ReadT, typename Allocator>
-    class async_rw_mutex_access_wrapper<ReadWriteT, ReadT, async_rw_mutex_access_type::readwrite,
-        Allocator>
+    template <typename ReadWriteT, typename ReadT>
+    class async_rw_mutex_access_wrapper<ReadWriteT, ReadT, async_rw_mutex_access_type::readwrite>
     {
     private:
         static_assert(!std::is_void<ReadWriteT>::value,
@@ -332,13 +255,12 @@ namespace pika::execution::experimental {
             "Cannot mix void and non-void type in async_rw_mutex_access_wrapper wrapper (ReadT "
             "is void, ReadWriteT is non-void)");
 
-        using shared_state_ptr_type =
-            pika::intrusive_ptr<detail::async_rw_mutex_shared_state<ReadWriteT, Allocator>>;
-        shared_state_ptr_type state;
+        using shared_state_type = std::shared_ptr<detail::async_rw_mutex_shared_state<ReadWriteT>>;
+        shared_state_type state;
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_ptr_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state)
           : state(std::move(state))
         {
         }
@@ -363,17 +285,16 @@ namespace pika::execution::experimental {
     /// \brief A wrapper for read-only access granted by a \p void \ref async_rw_mutex.
     ///
     /// The wrapper is copyable.
-    template <typename Allocator>
-    class async_rw_mutex_access_wrapper<void, void, async_rw_mutex_access_type::read, Allocator>
+    template <>
+    class async_rw_mutex_access_wrapper<void, void, async_rw_mutex_access_type::read>
     {
     private:
-        using shared_state_ptr_type =
-            pika::intrusive_ptr<detail::async_rw_mutex_shared_state<void, Allocator>>;
-        shared_state_ptr_type state;
+        using shared_state_type = std::shared_ptr<detail::async_rw_mutex_shared_state<void>>;
+        shared_state_type state;
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_ptr_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state)
           : state(std::move(state))
         {
         }
@@ -387,18 +308,16 @@ namespace pika::execution::experimental {
     /// \brief A wrapper for read-write access granted by a \p void \ref async_rw_mutex.
     ///
     /// The wrapper is move-only.
-    template <typename Allocator>
-    class async_rw_mutex_access_wrapper<void, void, async_rw_mutex_access_type::readwrite,
-        Allocator>
+    template <>
+    class async_rw_mutex_access_wrapper<void, void, async_rw_mutex_access_type::readwrite>
     {
     private:
-        using shared_state_ptr_type =
-            pika::intrusive_ptr<detail::async_rw_mutex_shared_state<void, Allocator>>;
-        shared_state_ptr_type state;
+        using shared_state_type = std::shared_ptr<detail::async_rw_mutex_shared_state<void>>;
+        shared_state_type state;
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_ptr_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state)
           : state(std::move(state))
         {
         }
@@ -472,17 +391,27 @@ namespace pika::execution::experimental {
     template <typename Allocator>
     class async_rw_mutex<void, void, Allocator>
     {
+    private:
         template <async_rw_mutex_access_type AccessType>
         struct sender;
+
+        using shared_state_type = detail::async_rw_mutex_shared_state<void>;
+        using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
+
+        // nvc++ is not able to see this typedef unless it's public
+#if defined(PIKA_NVHPC_VERSION)
+    public:
+#endif
+        using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
 
     public:
         using read_type = void;
         using readwrite_type = void;
 
         using read_access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type,
-            async_rw_mutex_access_type::read, Allocator>;
+            async_rw_mutex_access_type::read>;
         using readwrite_access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type,
-            async_rw_mutex_access_type::readwrite, Allocator>;
+            async_rw_mutex_access_type::readwrite>;
 
         using allocator_type = Allocator;
 
@@ -495,38 +424,12 @@ namespace pika::execution::experimental {
         async_rw_mutex(async_rw_mutex const&) = delete;
         async_rw_mutex& operator=(async_rw_mutex const&) = delete;
 
-    private:
-        using shared_state_type = detail::async_rw_mutex_shared_state<void, allocator_type>;
-
-        // nvc++ is not able to see this typedef unless it's public
-#if defined(PIKA_NVHPC_VERSION)
-    public:
-#endif
-        using shared_state_ptr_type = pika::intrusive_ptr<shared_state_type>;
-
-    private:
-        shared_state_ptr_type allocate_shared()
-        {
-            using other_allocator = typename std::allocator_traits<
-                allocator_type>::template rebind_alloc<shared_state_type>;
-            using allocator_traits = std::allocator_traits<other_allocator>;
-            using unique_ptr = std::unique_ptr<shared_state_type,
-                pika::detail::allocator_deleter<other_allocator>>;
-
-            other_allocator allocator(this->alloc);
-            unique_ptr p(allocator_traits::allocate(allocator, 1),
-                pika::detail::allocator_deleter<other_allocator>{allocator});
-            new (p.get()) shared_state_type{this->alloc};
-            return p.release();
-        }
-
-    public:
         sender<async_rw_mutex_access_type::read> read()
         {
             if (prev_access == async_rw_mutex_access_type::readwrite)
             {
                 auto prev_state = std::move(state);
-                state = allocate_shared();
+                state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
                 prev_access = async_rw_mutex_access_type::read;
 
                 // Only the first access has no previous shared state. When
@@ -534,7 +437,7 @@ namespace pika::execution::experimental {
                 // value can be passed from the previous state to the next
                 // state.
                 if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-                else { state->done(nullptr); }
+                else { state->done(); }
             }
 
             return {state};
@@ -543,14 +446,14 @@ namespace pika::execution::experimental {
         sender<async_rw_mutex_access_type::readwrite> readwrite()
         {
             auto prev_state = std::move(state);
-            state = allocate_shared();
+            state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
             prev_access = async_rw_mutex_access_type::readwrite;
 
             // Only the first access has no previous shared state. When there is
             // a previous state we set the next state so that the value can be
             // passed from the previous state to the next state.
             if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-            else { state->done(nullptr); }
+            else { state->done(); }
 
             return {state};
         }
@@ -563,8 +466,8 @@ namespace pika::execution::experimental {
 
             shared_state_ptr_type state;
 
-            using access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type, AccessType,
-                allocator_type>;
+            using access_type =
+                async_rw_mutex_access_wrapper<readwrite_type, read_type, AccessType>;
             template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<access_type>>;
 
@@ -663,11 +566,11 @@ namespace pika::execution::experimental {
 
         /// \brief The wrapper type sent by read-only-access senders.
         using read_access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type,
-            async_rw_mutex_access_type::read, Allocator>;
+            async_rw_mutex_access_type::read>;
 
         /// \brief The wrapper type sent by read-write-access senders.
         using readwrite_access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type,
-            async_rw_mutex_access_type::readwrite, Allocator>;
+            async_rw_mutex_access_type::readwrite>;
 
         using allocator_type = Allocator;
 
@@ -693,46 +596,19 @@ namespace pika::execution::experimental {
         /// whichever happens later.
         ~async_rw_mutex() = default;
 
-    private:
-        using shared_state_type =
-            detail::async_rw_mutex_shared_state<readwrite_type, allocator_type>;
-        using value_ptr_type = std::shared_ptr<readwrite_type>;
-
-        // nvc++ is not able to see this typedef unless it's public
-#if defined(PIKA_NVHPC_VERSION)
-    public:
-#endif
-        using shared_state_ptr_type = pika::intrusive_ptr<shared_state_type>;
-
-    private:
-        shared_state_ptr_type allocate_shared()
-        {
-            using other_allocator = typename std::allocator_traits<
-                allocator_type>::template rebind_alloc<shared_state_type>;
-            using allocator_traits = std::allocator_traits<other_allocator>;
-            using unique_ptr = std::unique_ptr<shared_state_type,
-                pika::detail::allocator_deleter<other_allocator>>;
-
-            other_allocator allocator(this->alloc);
-            unique_ptr p(allocator_traits::allocate(allocator, 1),
-                pika::detail::allocator_deleter<other_allocator>{allocator});
-            new (p.get()) shared_state_type{this->alloc, value};
-            return p.release();
-        }
-
-    public:
         /// \brief Access the wrapped value in read-only mode through a sender.
         sender<async_rw_mutex_access_type::read> read()
         {
             if (prev_access == async_rw_mutex_access_type::readwrite)
             {
                 auto prev_state = std::move(state);
-                state = allocate_shared();
+                state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+                state->set_value(value);
                 prev_access = async_rw_mutex_access_type::read;
 
                 // Only the first access has no previous shared state.
                 if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-                else { state->done(nullptr); }
+                else { state->done(); }
             }
 
             return {state};
@@ -742,15 +618,27 @@ namespace pika::execution::experimental {
         sender<async_rw_mutex_access_type::readwrite> readwrite()
         {
             auto prev_state = std::move(state);
-            state = allocate_shared();
+            state = std::allocate_shared<shared_state_type, allocator_type>(alloc);
+            state->set_value(value);
             prev_access = async_rw_mutex_access_type::readwrite;
 
             // Only the first access has no previous shared state.
             if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-            else { state->done(nullptr); }
+            else { state->done(); }
 
             return {state};
         }
+
+    private:
+        using shared_state_type = detail::async_rw_mutex_shared_state<readwrite_type>;
+        using shared_state_weak_ptr_type = std::weak_ptr<shared_state_type>;
+        using value_ptr_type = std::shared_ptr<readwrite_type>;
+
+        // nvc++ is not able to see this typedef unless it's public
+#if defined(PIKA_NVHPC_VERSION)
+    public:
+#endif
+        using shared_state_ptr_type = std::shared_ptr<shared_state_type>;
 
     private:
         template <async_rw_mutex_access_type AccessType>
@@ -760,8 +648,8 @@ namespace pika::execution::experimental {
 
             shared_state_ptr_type state;
 
-            using access_type = async_rw_mutex_access_wrapper<readwrite_type, read_type, AccessType,
-                allocator_type>;
+            using access_type =
+                async_rw_mutex_access_wrapper<readwrite_type, read_type, AccessType>;
             template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<access_type>>;
 
