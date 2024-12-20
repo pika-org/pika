@@ -59,10 +59,18 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
-                if (next_state) { next_state->done(); }
+                if (next_state)
+                {
+                    // We pass the ownership of the intrusive_ptr of the next state to the next
+                    // state itself, so that it can choose when to release it. If we can avoid it,
+                    // we don't want this shared state to to hold on to the reference longer than
+                    // necessary.
+                    async_rw_mutex_shared_state* p = next_state.get();
+                    p->done(std::move(next_state));
+                }
             }
 
-            void done() noexcept
+            void done(shared_state_ptr_type p) noexcept
             {
                 while (true)
                 {
@@ -76,6 +84,10 @@ namespace pika::execution::experimental {
                         // other threads that they can't add any more items to the queue. We can now
                         // process the queue without further synchronization.
                         auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
+
+                        // We are also not accessing this shared state directly anymore, so we can
+                        // reset p early.
+                        p.reset();
 
                         while (current != nullptr)
                         {
@@ -147,10 +159,18 @@ namespace pika::execution::experimental {
 
             ~async_rw_mutex_shared_state()
             {
-                if (next_state) { next_state->done(); }
+                if (next_state)
+                {
+                    // We pass the ownership of the intrusive_ptr of the next state to the next
+                    // state itself, so that it can choose when to release it. If we can avoid it,
+                    // we don't want this shared state to to hold on to the reference longer than
+                    // necessary.
+                    async_rw_mutex_shared_state* p = next_state.get();
+                    p->done(std::move(next_state));
+                }
             }
 
-            void done() noexcept
+            void done(shared_state_ptr_type p) noexcept
             {
                 while (true)
                 {
@@ -164,6 +184,10 @@ namespace pika::execution::experimental {
                         // other threads that they can't add any more items to the queue. We can now
                         // process the queue without further synchronization.
                         auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
+
+                        // We are also not accessing this shared state directly anymore, so we can
+                        // reset p early.
+                        p.reset();
 
                         while (current != nullptr)
                         {
@@ -444,7 +468,7 @@ namespace pika::execution::experimental {
                 // value can be passed from the previous state to the next
                 // state.
                 if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-                else { state->done(); }
+                else { state->done(nullptr); }
             }
 
             return {state};
@@ -460,7 +484,7 @@ namespace pika::execution::experimental {
             // a previous state we set the next state so that the value can be
             // passed from the previous state to the next state.
             if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-            else { state->done(); }
+            else { state->done(nullptr); }
 
             return {state};
         }
@@ -615,7 +639,7 @@ namespace pika::execution::experimental {
 
                 // Only the first access has no previous shared state.
                 if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-                else { state->done(); }
+                else { state->done(nullptr); }
             }
 
             return {state};
@@ -631,7 +655,7 @@ namespace pika::execution::experimental {
 
             // Only the first access has no previous shared state.
             if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
-            else { state->done(); }
+            else { state->done(nullptr); }
 
             return {state};
         }
