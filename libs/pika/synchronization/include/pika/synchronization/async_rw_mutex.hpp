@@ -89,6 +89,13 @@ namespace pika::execution::experimental {
                 }
             }
 
+            void set_value(value_ptr_type v)
+            {
+                PIKA_ASSERT(v);
+                PIKA_ASSERT(!value);
+                value = std::move(v);
+            }
+
             T& get_value()
             {
                 PIKA_ASSERT(value);
