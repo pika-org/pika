@@ -27,6 +27,7 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     m4 \
     moreutils \
     openssl \
+    patch \
     pipx \
     pkgconf \
     tar \
