@@ -263,16 +263,20 @@ namespace pika::util {
 #endif
 
             // add placeholders for keys to be added by command line handling
-            "ignore_process_mask = 0",
+            "ignore_process_mask = ${PIKA_IGNORE_PROCESS_MASK:0}",
             "process_mask = ${PIKA_PROCESS_MASK:}",
-            "os_threads = cores",
-            "cores = all",
-            "first_pu = 0",
-            "scheduler = local-priority-fifo",
-            "affinity = core",
-            "pu_step = 1",
-            "pu_offset = 0",
-            "numa_sensitive = 0",
+            "os_threads = ${PIKA_THREADS:cores}",
+            "cores = ${PIKA_CORES:all}",
+            "scheduler = ${PIKA_SCHEDULER:local-priority-fifo}",
+#if defined(__APPLE__)
+            "bind = ${PIKA_BIND:none}",
+#else
+            "bind = ${PIKA_BIND:balanced}",
+#endif
+            "affinity = ${PIKA_AFFINITY:pu}",
+            "pu_step = ${PIKA_PU_STEP:1}",
+            "pu_offset = ${PIKA_PU_OFFSET:0}",
+            "numa_sensitive = ${PIKA_NUMA_SENSITIVE:0}",
             "max_idle_loop_count = ${PIKA_MAX_IDLE_LOOP_COUNT:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_IDLE_LOOP_COUNT_MAX)) "}",
             "max_busy_loop_count = ${PIKA_MAX_BUSY_LOOP_COUNT:" PIKA_PP_STRINGIZE(
