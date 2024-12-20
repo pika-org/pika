@@ -52,19 +52,43 @@ Runtime management (``pika/init.hpp``)
 
 The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
 
+----
+
 .. literalinclude:: ../examples/documentation/init_hpp_documentation.cpp
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenfunction:: pika::start(int argc, char const* const* argv, init_params const &params)
+
+----
+
 .. doxygenfunction:: pika::stop()
+
+----
+
 .. doxygenfunction:: pika::finalize()
+
+----
+
 .. doxygenfunction:: pika::wait()
+
+----
+
 .. doxygenfunction:: pika::resume()
+
+----
+
 .. doxygenfunction:: pika::suspend()
+
+----
+
 .. doxygenfunction:: pika::is_runtime_initialized()
 
 .. versionadded:: 0.22.0
+
+----
 
 .. doxygenstruct:: pika::init_params
    :members:
@@ -89,6 +113,8 @@ Documented below are sender adaptors not available in stdexec or not proposed fo
 All sender adaptors are `customization point objects (CPOs)
 <https://eel.is/c++draft/customization.point.object>`__.
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::drop_value
 
 .. versionadded:: 0.6.0
@@ -96,6 +122,8 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/drop_value_documentation.cpp
    :language: c++
    :start-at: #include
+
+----
 
 .. doxygenvariable:: pika::execution::experimental::drop_operation_state
 
@@ -105,6 +133,8 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::require_started
 
 .. versionadded:: 0.21.0
@@ -112,6 +142,8 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/require_started_documentation.cpp
    :language: c++
    :start-at: #include
+
+----
 
 .. doxygenvariable:: pika::execution::experimental::split_tuple
 
@@ -121,6 +153,8 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::unpack
 
 .. versionadded:: 0.17.0
@@ -129,6 +163,8 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::when_all_vector
 
 .. versionadded:: 0.2.0
@@ -136,6 +172,8 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/when_all_vector_documentation.cpp
    :language: c++
    :start-at: #include
+
+----
 
 .. doxygenclass:: pika::execution::experimental::unique_any_sender
 .. doxygenclass:: pika::execution::experimental::any_sender
@@ -160,17 +198,27 @@ asynchronously. This mutex is used extensively in `DLA-Future
 <https://github.com/eth-cscs/DLA-Future>`__, where it forms the basis for asynchronous access to
 blocks of distributed matrices.
 
+----
+
+.. literalinclude:: ../examples/documentation/async_rw_mutex_documentation.cpp
+   :language: c++
+   :start-at: #include
+
+----
+
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex
+
+----
+
 .. doxygenenum:: pika::execution::experimental::async_rw_mutex_access_type
+
+----
+
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::readwrite >
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::read >
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::read >
 .. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::readwrite >
-
-.. literalinclude:: ../examples/documentation/async_rw_mutex_documentation.cpp
-   :language: c++
-   :start-at: #include
 
 .. _header_pika_cuda:
 
@@ -230,13 +278,20 @@ While :cpp:class:`pika::cuda::experimental::cuda_pool` gives direct access to st
 the recommended way to access them is through the
 :cpp:class:`pika::cuda::experimental::cuda_scheduler` and the sender adaptors available below.
 
+----
+
 .. doxygenclass:: pika::cuda::experimental::cuda_scheduler
+
+----
+
 .. doxygenstruct:: pika::cuda::experimental::then_with_stream_t
 .. doxygenvariable:: pika::cuda::experimental::then_with_stream
 
 .. literalinclude:: ../examples/documentation/then_with_stream_documentation.cu
     :language: c++
     :start-at: #include
+
+----
 
 .. doxygenstruct:: pika::cuda::experimental::then_with_cublas_t
 .. doxygenvariable:: pika::cuda::experimental::then_with_cublas
@@ -245,6 +300,8 @@ the recommended way to access them is through the
     :language: c++
     :start-at: #include
 
+----
+
 .. doxygenstruct:: pika::cuda::experimental::then_with_cusolver_t
 .. doxygenvariable:: pika::cuda::experimental::then_with_cusolver
 
@@ -252,10 +309,30 @@ See :cpp:var:`pika::cuda::experimental::then_with_cublas` for an example of what
 :cpp:var:`pika::cuda::experimental::then_with_cusolver`. The interfaces are identical except for the
 type of handle passed to the callable.
 
+----
+
 .. doxygenclass:: pika::cuda::experimental::enable_user_polling
+
+----
+
 .. doxygenclass:: pika::cuda::experimental::cuda_pool
+
+----
+
 .. doxygenclass:: pika::cuda::experimental::cuda_stream
+
+----
+
 .. doxygenclass:: pika::cuda::experimental::cublas_handle
+
+----
+
 .. doxygenclass:: pika::cuda::experimental::locked_cublas_handle
+
+----
+
 .. doxygenclass:: pika::cuda::experimental::cusolver_handle
+
+----
+
 .. doxygenclass:: pika::cuda::experimental::locked_cusolver_handle
