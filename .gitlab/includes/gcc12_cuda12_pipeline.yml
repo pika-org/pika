@@ -10,7 +10,7 @@ include:
 
 .variables_gcc12_cuda12_config:
   variables:
-    SPACK_ARCH: linux-ubuntu24.04-haswell
+    SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
     COMPILER: gcc@12.1.0
     CXXSTD: 20
     GPU_TARGET: "60"
@@ -22,33 +22,31 @@ include:
 gcc12_cuda12_spack_compiler_image:
   extends:
     - .variables_gcc12_cuda12_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_gh200
 
 gcc12_cuda12_spack_image:
   needs: [gcc12_cuda12_spack_compiler_image]
   extends:
     - .variables_gcc12_cuda12_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_gh200
 
 gcc12_cuda12_build:
   needs: [gcc12_cuda12_spack_image]
   extends:
     - .variables_gcc12_cuda12_config
-    - .build_template_rosa
+    - .build_template_gh200
 
-## Test step currently commented as the cuda driver is too old on clariden:
-## https://github.com/pika-org/pika/issues/884
-#.gcc12_cuda12_test_common:
-#  needs: [gcc12_cuda12_build]
-#  extends:
-#    - .variables_gcc12_cuda12_config
-#    - .test_common_gpu_daint_cuda
-#    - .test_template
-#
-#gcc12_cuda12_test_release:
-#  extends: [.gcc12_cuda12_test_common]
-#  image: $PERSIST_IMAGE_NAME_RELEASE
-#
-#gcc12_cuda12_test_debug:
-#  extends: [.gcc12_cuda12_test_common]
-#  image: $PERSIST_IMAGE_NAME_DEBUG
+.gcc12_cuda12_test_common:
+  needs: [gcc12_cuda12_build]
+  extends:
+    - .variables_gcc12_cuda12_config
+    - .test_common_daint_gh200
+    - .test_template
+
+gcc12_cuda12_test_release:
+  extends: [.gcc12_cuda12_test_common]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc12_cuda12_test_debug:
+  extends: [.gcc12_cuda12_test_common]
+  image: $PERSIST_IMAGE_NAME_DEBUG
