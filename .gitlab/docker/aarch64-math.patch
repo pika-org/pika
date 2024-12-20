@@ -1,0 +1,13 @@
+diff --git math/math.h math/math.h
+index a1631a8c24..150eb9ea75 100644
+--- math/math.h
++++ math/math.h
+@@ -1412,7 +1412,7 @@ template<> struct __iseqsig_type<_Float64>
+ };
+ #  endif
+
+-#  if __HAVE_FLOAT128_UNLIKE_LDBL || (__HAVE_FLOAT128 && __GNUC_PREREQ (13, 0))
++#  if (__HAVE_FLOAT128_UNLIKE_LDBL || (__HAVE_FLOAT128 && __GNUC_PREREQ (13, 0))) && !defined(__NVCOMPILER)
+   /* When using an IEEE 128-bit long double, _Float128 is defined as long double
+      in C++.  */
+ template<> struct __iseqsig_type<_Float128>
