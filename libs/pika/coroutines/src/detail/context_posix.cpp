@@ -25,10 +25,9 @@
 
 # include <cstddef>
 
-namespace pika { namespace threads { namespace coroutines { namespace detail { namespace posix {
-
+namespace pika::threads::coroutines::detail::posix {
     std::ptrdiff_t ucontext_context_impl_base::default_stack_size = SIGSTKSZ;
-}}}}}    // namespace pika::threads::coroutines::detail::posix
+}    // namespace pika::threads::coroutines::detail::posix
 
 #elif defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 
