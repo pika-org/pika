@@ -24,6 +24,93 @@
 #include <type_traits>
 #include <utility>
 
+// See the doxygen documentation details below for usage information. Implementation details are
+// provided here.
+//
+// At a high level, the async_rw_mutex protects access to a given resource using a reference-counted
+// shared state per access (consecutive read-only accesses share the shared state to allow
+// concurrent access).
+//
+// Because the order of completion of senders depends on the order in which the senders are
+// accessed, shared states must be allocated eagerly on creation of a sender, instead of e.g.
+// relying on the operation state for storage. Until a the senders are connected and started to
+// create the operation state we don't yet have a stable storage to use for linking together the
+// different accesses in the correct order, so we allocate the shared state eagerly to keep track of
+// the order of accesses.
+//
+// The flow from accessing a sender to releasing the next access is as follows:
+// - A sender is created along with a new shared state which keeps track of the next access.
+//   - If a consecutive read-only access is done, the shared state is simply reused from the
+//     previous access.
+// - If there was a previous access (this happens every time except for on the first access), we set
+//   the newly allocated shared state as the next state on the previous shared state (using
+//   set_next_state).
+// - If the wrapped type is not void, we also tell the newly allocated shared state where to find
+//   the value. The value is stored in a separate shared_ptr, and is reference counted by all the
+//   shared states. When the last shared state is released, the value is also released.
+// - When the sender is connected to a receiver and the operation state started, the shared state
+//   must now keep track of whether we can give access to the wrapped value (i.e. signal set_value).
+//   - If the previous access is done, it will have been signaled by the previous shared state by
+//     calling the done method from the previous shared state on the next shared state. This is
+//     called in the destructor of the previous shared state.
+//   - If the previous access is done, we can call set_value immediately, passing on a reference of
+//     the shared state inside a wrapper type, so that the receiver can decide when the current
+//     access is done.
+//   - If the previous access isn't done, we add the operation state to an intrusive queue. The head
+//     of the queue is stored in the shared state. The head of the queue is initially nullptr. When
+//     the queue has been processed (i.e. done has been called), the queue head points to the shared
+//     state itself. Otherwise the queue points to a valid operation state.
+//   - If the queue is not empty when done is called, done will traverse the queue, calling the
+//     continuation method on the operation state. The continuation method will signal the receiver
+//     associated with the operation state.
+// - When all receivers are done accessing the shared state, and the reference count goes to the
+//   zero, the shared state is destroyed. The destructor calls done on the next shared state, if one
+//   has been set, and the chain of accesses continues the same way.
+//
+// Additional design notes:
+// - If non-void, the value is stored in a separate shared state, rather than in each shared state
+//   individually. This requires one extra allocation, but avoids having to move the value between
+//   shared states.
+// - The intrusive queue of operation states is LIFO, since we only keep track of the head of the
+//   queue and push operation states to the front. When processing the queue we have to start from
+//   the latest operation state. Continuations will be triggered in reverse order from how they were
+//   started (not the order the senders were created).
+// - The intrusive queue uses void* because there is a special value to mark that the queue has been
+//   processed: the `this` pointer. This is not a pointer to an operation state, and should never be
+//   dereferenced. All other non-nullptr values in the queue must be operation states and can be
+//   cast to the correct type.
+//
+// After one read-write access, three read-only accesses, and one more read-write accesses, the
+// senders (s_i_j, with i the index of the shared state and j the index of the access within that
+// shared state) would point to shared states (sh_st_i) as follows:
+//
+// ┌───────┐    ┌───────┐    ┌───────┐
+// │sh_st_1├───►│sh_st_2├───►│sh_st_3│
+// └───▲───┘    └───▲▲▲─┘    └───▲───┘
+//     │            │││          │
+//  ┌──┴──┐      ┌──┴┴┴┐      ┌──┴──┐
+//  │s_1_1│      │s_2_1├┐     │s_3_1│
+//  └─────┘      └┬────┘├┐    └─────┘
+//                └┬────┘│
+//                 └─────┘
+//
+// Once all senders have been connected and the associated operation states started, the shared
+// states and operation states (op_i_j corresponds to s_i_j) may relate as follows:
+//
+//               ┌──────┐
+//               │op_2_1│
+//               └──▲───┘
+//               ┌──┴───┐
+//               │op_2_2│
+//               └──▲───┘
+//  ┌──────┐     ┌──┴───┐     ┌──────┐
+//  │op_1_1│     │op_2_3│     │op_3_1│
+//  └──▲───┘     └──▲───┘     └──▲───┘
+//     │            │            │
+// ┌───┴───┐    ┌───┴───┐    ┌───┴───┐
+// │sh_st_1│───►│sh_st_2│───►│sh_st_3│
+// └───────┘    └───────┘    └───────┘
+
 namespace pika::execution::experimental {
     /// \brief The type of access provided by async_rw_mutex.
     enum class async_rw_mutex_access_type
@@ -309,32 +396,6 @@ namespace pika::execution::experimental {
     template <typename ReadWriteT = void, typename ReadT = ReadWriteT,
         typename Allocator = pika::detail::internal_allocator<>>
     class async_rw_mutex;
-
-    // Implementation details:
-    //
-    // The async_rw_mutex protects access to a given resource using two
-    // reference counted shared states, the current and the previous state. Each
-    // shared state guards access to the next stage; when the shared state goes
-    // out of scope it triggers continuations for the next stage.
-    //
-    // When read-write access is required a sender is created which holds on to
-    // the newly created shared state for the read-write access and the previous
-    // state. When the sender is connected to a receiver, a callback is added to
-    // the previous shared state's destructor. The callback holds the new state,
-    // and passes a wrapper holding the shared state to set_value. Once the
-    // receiver which receives the wrapper has let the wrapper go out of scope
-    // (and all other references to the shared state are out of scope), the new
-    // shared state will again trigger its continuations.
-    //
-    // When read-only access is required and the previous access was read-only
-    // the procedure is the same as for read-write access. When read-only access
-    // follows a previous read-only access the shared state is reused between
-    // all consecutive read-only accesses, such that multiple read-only accesses
-    // can run concurrently, and the next access (which must be read-write) is
-    // triggered once all instances of that shared state have gone out of scope.
-    //
-    // The protected value is moved from state to state and is released when the
-    // last shared state is destroyed.
 
     template <typename Allocator>
     class async_rw_mutex<void, void, Allocator>
