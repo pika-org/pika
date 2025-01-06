@@ -25,6 +25,7 @@ RUN spack -e pika_ci config add "config:flags:keep_werror:all" && \
     fi && \
     spack -e pika_ci build-env $spack_spec -- \
     bash -c " \
+    set -x; \
     cmake -B${BUILD_DIR} ${SOURCE_DIR} -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CMAKE_COMMON_FLAGS $CMAKE_FLAGS && \
     cmake --build ${BUILD_DIR} --parallel $NUM_PROCS --target all tests examples install"
 
