@@ -37,7 +37,7 @@ namespace pika::execution::experimental {
     namespace detail {
         struct async_rw_mutex_operation_state_base
         {
-            async_rw_mutex_operation_state_base* next{nullptr};
+            void* next{nullptr};
             virtual void continuation() = 0;
         };
 
@@ -72,32 +72,31 @@ namespace pika::execution::experimental {
 
             void done(shared_state_ptr_type p) noexcept
             {
-                while (true)
+                void* expected = op_state_head.load(std::memory_order_relaxed);
+
+                // `this` is not an async_rw_mutex_operation_state_base*, but is a known value to
+                // signal that the queue has been processed
+                while (!op_state_head.compare_exchange_weak(expected, static_cast<void*>(this),
+                    std::memory_order_acquire, std::memory_order_relaxed))
                 {
-                    void* expected = op_state_head.load(std::memory_order_relaxed);
-                    // TODO: memory order
-                    // this is not an async_rw_mutex_operation_state_base*, but is a known value to
-                    // signal that the queue has been processed
-                    if (op_state_head.compare_exchange_strong(expected, static_cast<void*>(this)))
-                    {
-                        // We have now successfully acquired the head of the queue, and signaled to
-                        // other threads that they can't add any more items to the queue. We can now
-                        // process the queue without further synchronization.
-                        auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
+                }
 
-                        // We are also not accessing this shared state directly anymore, so we can
-                        // reset p early.
-                        p.reset();
+                // We have now successfully acquired the head of the queue, and signaled to other
+                // threads that they can't add any more items to the queue. We can now process the
+                // queue without further synchronization.
+                void* current = expected;
 
-                        while (current != nullptr)
-                        {
-                            auto* next = current->next;
-                            current->continuation();
-                            current = next;
-                        }
+                // We are also not accessing this shared state directly anymore, so we can
+                // reset p early.
+                p.reset();
 
-                        break;
-                    }
+                while (current != nullptr)
+                {
+                    auto* current_op_state =
+                        static_cast<async_rw_mutex_operation_state_base*>(current);
+                    void* next = current_op_state->next;
+                    current_op_state->continuation();
+                    current = next;
                 }
             }
 
@@ -125,19 +124,13 @@ namespace pika::execution::experimental {
 
             bool add_op_state(async_rw_mutex_operation_state_base* op_state)
             {
-                while (true)
-                {
-                    void* expected = op_state_head.load(std::memory_order_relaxed);
-                    if (expected == static_cast<void*>(this)) { return false; }
-
-                    op_state->next = static_cast<async_rw_mutex_operation_state_base*>(expected);
-                    // TODO: memory order
-                    if (op_state_head.compare_exchange_strong(
-                            expected, static_cast<void*>(op_state)))
-                    {
-                        break;
-                    }
-                }
+                op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
+                    op_state_head.load(std::memory_order_relaxed));
+                do {
+                    if (op_state->next == static_cast<void*>(this)) { return false; }
+                } while (!op_state_head.compare_exchange_weak(op_state->next,
+                    static_cast<void*>(op_state), std::memory_order_release,
+                    std::memory_order_relaxed));
 
                 return true;
             }
@@ -172,32 +165,31 @@ namespace pika::execution::experimental {
 
             void done(shared_state_ptr_type p) noexcept
             {
-                while (true)
+                void* expected = op_state_head.load(std::memory_order_relaxed);
+
+                // `this` is not an async_rw_mutex_operation_state_base*, but is a known value to
+                // signal that the queue has been processed
+                while (!op_state_head.compare_exchange_weak(expected, static_cast<void*>(this),
+                    std::memory_order_acquire, std::memory_order_relaxed))
                 {
-                    void* expected = op_state_head.load(std::memory_order_relaxed);
-                    // TODO: memory order
-                    // this is not an async_rw_mutex_operation_state_base*, but is a known value to
-                    // signal that the queue has been processed
-                    if (op_state_head.compare_exchange_strong(expected, static_cast<void*>(this)))
-                    {
-                        // We have now successfully acquired the head of the queue, and signaled to
-                        // other threads that they can't add any more items to the queue. We can now
-                        // process the queue without further synchronization.
-                        auto* current = static_cast<async_rw_mutex_operation_state_base*>(expected);
+                }
 
-                        // We are also not accessing this shared state directly anymore, so we can
-                        // reset p early.
-                        p.reset();
+                // We have now successfully acquired the head of the queue, and signaled to other
+                // threads that they can't add any more items to the queue. We can now process the
+                // queue without further synchronization.
+                void* current = expected;
 
-                        while (current != nullptr)
-                        {
-                            auto* next = current->next;
-                            current->continuation();
-                            current = next;
-                        }
+                // We are also not accessing this shared state directly anymore, so we can
+                // reset p early.
+                p.reset();
 
-                        break;
-                    }
+                while (current != nullptr)
+                {
+                    auto* current_op_state =
+                        static_cast<async_rw_mutex_operation_state_base*>(current);
+                    void* next = current_op_state->next;
+                    current_op_state->continuation();
+                    current = next;
                 }
             }
 
@@ -211,19 +203,13 @@ namespace pika::execution::experimental {
 
             bool add_op_state(async_rw_mutex_operation_state_base* op_state)
             {
-                while (true)
-                {
-                    void* expected = op_state_head.load(std::memory_order_relaxed);
-                    if (expected == static_cast<void*>(this)) { return false; }
-
-                    op_state->next = static_cast<async_rw_mutex_operation_state_base*>(expected);
-                    // TODO: memory order
-                    if (op_state_head.compare_exchange_strong(
-                            expected, static_cast<void*>(op_state)))
-                    {
-                        break;
-                    }
-                }
+                op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
+                    op_state_head.load(std::memory_order_relaxed));
+                do {
+                    if (op_state->next == static_cast<void*>(this)) { return false; }
+                } while (!op_state_head.compare_exchange_weak(op_state->next,
+                    static_cast<void*>(op_state), std::memory_order_release,
+                    std::memory_order_relaxed));
 
                 return true;
             }
