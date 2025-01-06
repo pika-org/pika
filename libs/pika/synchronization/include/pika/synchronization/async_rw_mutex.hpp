@@ -41,23 +41,21 @@ namespace pika::execution::experimental {
             virtual void continuation() = 0;
         };
 
-        template <typename T>
-        struct async_rw_mutex_shared_state
+        struct async_rw_mutex_shared_state_base
         {
-            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
-            using value_ptr_type = std::shared_ptr<T>;
-
-            value_ptr_type value{nullptr};
+            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state_base>;
             shared_state_ptr_type next_state{nullptr};
             std::atomic<void*> op_state_head{nullptr};
 
-            async_rw_mutex_shared_state() = default;
-            async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state(async_rw_mutex_shared_state const&) = delete;
-            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state const&) = delete;
+            async_rw_mutex_shared_state_base() = default;
+            async_rw_mutex_shared_state_base(async_rw_mutex_shared_state_base&&) = delete;
+            async_rw_mutex_shared_state_base& operator=(
+                async_rw_mutex_shared_state_base&&) = delete;
+            async_rw_mutex_shared_state_base(async_rw_mutex_shared_state_base const&) = delete;
+            async_rw_mutex_shared_state_base& operator=(
+                async_rw_mutex_shared_state_base const&) = delete;
 
-            ~async_rw_mutex_shared_state()
+            virtual ~async_rw_mutex_shared_state_base()
             {
                 if (next_state)
                 {
@@ -65,9 +63,30 @@ namespace pika::execution::experimental {
                     // state itself, so that it can choose when to release it. If we can avoid it,
                     // we don't want this shared state to to hold on to the reference longer than
                     // necessary.
-                    async_rw_mutex_shared_state* p = next_state.get();
+                    async_rw_mutex_shared_state_base* p = next_state.get();
                     p->done(std::move(next_state));
                 }
+            }
+
+            void set_next_state(shared_state_ptr_type state)
+            {
+                // The next state should only be set once
+                PIKA_ASSERT(!next_state);
+                PIKA_ASSERT(state);
+                next_state = std::move(state);
+            }
+
+            bool add_op_state(async_rw_mutex_operation_state_base* op_state)
+            {
+                op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
+                    op_state_head.load(std::memory_order_relaxed));
+                do {
+                    if (op_state->next == static_cast<void*>(this)) { return false; }
+                } while (!op_state_head.compare_exchange_weak(op_state->next,
+                    static_cast<void*>(op_state), std::memory_order_release,
+                    std::memory_order_relaxed));
+
+                return true;
             }
 
             void done(shared_state_ptr_type p) noexcept
@@ -99,6 +118,13 @@ namespace pika::execution::experimental {
                     current = next;
                 }
             }
+        };
+
+        template <typename T>
+        struct async_rw_mutex_shared_state : async_rw_mutex_shared_state_base
+        {
+            using value_ptr_type = std::shared_ptr<T>;
+            value_ptr_type value{nullptr};
 
             void set_value(value_ptr_type v)
             {
@@ -113,106 +139,11 @@ namespace pika::execution::experimental {
                 // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                 return *value;
             }
-
-            void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
-            {
-                // The next state should only be set once
-                PIKA_ASSERT(!next_state);
-                PIKA_ASSERT(state);
-                next_state = std::move(state);
-            }
-
-            bool add_op_state(async_rw_mutex_operation_state_base* op_state)
-            {
-                op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
-                    op_state_head.load(std::memory_order_relaxed));
-                do {
-                    if (op_state->next == static_cast<void*>(this)) { return false; }
-                } while (!op_state_head.compare_exchange_weak(op_state->next,
-                    static_cast<void*>(op_state), std::memory_order_release,
-                    std::memory_order_relaxed));
-
-                return true;
-            }
         };
 
         template <>
-        struct async_rw_mutex_shared_state<void>
+        struct async_rw_mutex_shared_state<void> : async_rw_mutex_shared_state_base
         {
-            using shared_state_ptr_type = std::shared_ptr<async_rw_mutex_shared_state>;
-
-            shared_state_ptr_type next_state{nullptr};
-            std::atomic<void*> op_state_head{nullptr};
-
-            async_rw_mutex_shared_state() = default;
-            async_rw_mutex_shared_state(async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state&&) = delete;
-            async_rw_mutex_shared_state(async_rw_mutex_shared_state const&) = delete;
-            async_rw_mutex_shared_state& operator=(async_rw_mutex_shared_state const&) = delete;
-
-            ~async_rw_mutex_shared_state()
-            {
-                if (next_state)
-                {
-                    // We pass the ownership of the intrusive_ptr of the next state to the next
-                    // state itself, so that it can choose when to release it. If we can avoid it,
-                    // we don't want this shared state to to hold on to the reference longer than
-                    // necessary.
-                    async_rw_mutex_shared_state* p = next_state.get();
-                    p->done(std::move(next_state));
-                }
-            }
-
-            void done(shared_state_ptr_type p) noexcept
-            {
-                void* expected = op_state_head.load(std::memory_order_relaxed);
-
-                // `this` is not an async_rw_mutex_operation_state_base*, but is a known value to
-                // signal that the queue has been processed
-                while (!op_state_head.compare_exchange_weak(expected, static_cast<void*>(this),
-                    std::memory_order_acquire, std::memory_order_relaxed))
-                {
-                }
-
-                // We have now successfully acquired the head of the queue, and signaled to other
-                // threads that they can't add any more items to the queue. We can now process the
-                // queue without further synchronization.
-                void* current = expected;
-
-                // We are also not accessing this shared state directly anymore, so we can
-                // reset p early.
-                p.reset();
-
-                while (current != nullptr)
-                {
-                    auto* current_op_state =
-                        static_cast<async_rw_mutex_operation_state_base*>(current);
-                    void* next = current_op_state->next;
-                    current_op_state->continuation();
-                    current = next;
-                }
-            }
-
-            void set_next_state(std::shared_ptr<async_rw_mutex_shared_state> state)
-            {
-                // The next state should only be set once
-                PIKA_ASSERT(!next_state);
-                PIKA_ASSERT(state);
-                next_state = std::move(state);
-            }
-
-            bool add_op_state(async_rw_mutex_operation_state_base* op_state)
-            {
-                op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
-                    op_state_head.load(std::memory_order_relaxed));
-                do {
-                    if (op_state->next == static_cast<void*>(this)) { return false; }
-                } while (!op_state_head.compare_exchange_weak(op_state->next,
-                    static_cast<void*>(op_state), std::memory_order_release,
-                    std::memory_order_relaxed));
-
-                return true;
-            }
         };
     }    // namespace detail
 
