@@ -16,6 +16,7 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     g++ \
     gcc \
     gdb \
+    gfortran \
     git \
     gnupg2 \
     jq \
