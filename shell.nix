@@ -5,24 +5,22 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 { pkgs ? import <nixpkgs> { } }:
-pkgs.mkShell.override { stdenv = pkgs.gcc13Stdenv; } {
+pkgs.mkShell.override { stdenv = pkgs.gcc14Stdenv; } {
   buildInputs = with pkgs; [
     boost
     ccache
     cmake-format
     cmakeCurses
+    doxygen
     fmt
     gperftools
     hwloc
+    jemalloc
+    mimalloc
     mpich
     ninja
     pkg-config
     spdlog
-    doxygen
-    python311Packages.breathe
-    python311Packages.sphinx
-    python311Packages.sphinx-material
-    python311Packages.recommonmark
   ];
 
   hardeningDisable = [ "fortify" ];
