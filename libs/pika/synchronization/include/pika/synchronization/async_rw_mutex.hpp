@@ -8,19 +8,14 @@
 
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
-#include <pika/concurrency/spinlock.hpp>
-#include <pika/datastructures/detail/small_vector.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
-#include <pika/execution_base/this_thread.hpp>
 
 #include <atomic>
 #include <cstddef>
 #include <exception>
 #include <memory>
-#include <mutex>
-#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -223,7 +218,6 @@ namespace pika::execution::experimental {
             T& get_value()
             {
                 PIKA_ASSERT(value);
-                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
                 return *value;
             }
         };
