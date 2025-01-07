@@ -119,6 +119,8 @@ namespace pika::execution::experimental {
     namespace detail {
         struct async_rw_mutex_operation_state_base
         {
+            // This is most of the time an async_rw_mutex_operation_state_base*, but can also
+            // contain the special value of the address of the shared state, hence this is a void*.
             void* next{nullptr};
             virtual void continuation() noexcept = 0;
         };
