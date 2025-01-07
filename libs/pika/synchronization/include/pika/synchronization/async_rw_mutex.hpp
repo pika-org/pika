@@ -120,7 +120,7 @@ namespace pika::execution::experimental {
         struct async_rw_mutex_operation_state_base
         {
             void* next{nullptr};
-            virtual void continuation() = 0;
+            virtual void continuation() noexcept = 0;
         };
 
         struct async_rw_mutex_shared_state_base
@@ -150,7 +150,7 @@ namespace pika::execution::experimental {
                 }
             }
 
-            void set_next_state(shared_state_ptr_type state)
+            void set_next_state(shared_state_ptr_type state) noexcept
             {
                 // The next state should only be set once
                 PIKA_ASSERT(!next_state);
@@ -158,7 +158,7 @@ namespace pika::execution::experimental {
                 next_state = std::move(state);
             }
 
-            bool add_op_state(async_rw_mutex_operation_state_base* op_state)
+            bool add_op_state(async_rw_mutex_operation_state_base* op_state) noexcept
             {
                 op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
                     op_state_head.load(std::memory_order_relaxed));
@@ -208,14 +208,14 @@ namespace pika::execution::experimental {
             using value_ptr_type = std::shared_ptr<T>;
             value_ptr_type value{nullptr};
 
-            void set_value(value_ptr_type v)
+            void set_value(value_ptr_type v) noexcept
             {
                 PIKA_ASSERT(v);
                 PIKA_ASSERT(!value);
                 value = std::move(v);
             }
 
-            T& get_value()
+            T& get_value() noexcept
             {
                 PIKA_ASSERT(value);
                 return *value;
@@ -252,18 +252,19 @@ namespace pika::execution::experimental {
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state) noexcept
           : state(std::move(state))
         {
         }
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) noexcept = default;
         async_rw_mutex_access_wrapper& operator=(
             async_rw_mutex_access_wrapper&&) noexcept = default;
-        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = default;
-        async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = default;
+        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) noexcept = default;
+        async_rw_mutex_access_wrapper& operator=(
+            async_rw_mutex_access_wrapper const&) noexcept = default;
 
         /// \brief Access the wrapped type by const reference.
-        ReadT& get() const
+        ReadT& get() const noexcept
         {
             PIKA_ASSERT(state);
             return state->get_value();
@@ -289,7 +290,7 @@ namespace pika::execution::experimental {
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state) noexcept
           : state(std::move(state))
         {
         }
@@ -323,15 +324,16 @@ namespace pika::execution::experimental {
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state) noexcept
           : state(std::move(state))
         {
         }
         async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper&&) noexcept = default;
         async_rw_mutex_access_wrapper& operator=(
             async_rw_mutex_access_wrapper&&) noexcept = default;
-        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) = default;
-        async_rw_mutex_access_wrapper& operator=(async_rw_mutex_access_wrapper const&) = default;
+        async_rw_mutex_access_wrapper(async_rw_mutex_access_wrapper const&) noexcept = default;
+        async_rw_mutex_access_wrapper& operator=(
+            async_rw_mutex_access_wrapper const&) noexcept = default;
     };
 
     /// \brief A wrapper for read-write access granted by a \p void \ref async_rw_mutex.
@@ -346,7 +348,7 @@ namespace pika::execution::experimental {
 
     public:
         async_rw_mutex_access_wrapper() = delete;
-        explicit async_rw_mutex_access_wrapper(shared_state_type state)
+        explicit async_rw_mutex_access_wrapper(shared_state_type state) noexcept
           : state(std::move(state))
         {
         }
@@ -501,7 +503,7 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                void continuation() override
+                void continuation() noexcept override
                 {
                     try
                     {
@@ -683,7 +685,7 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                void continuation() override
+                void continuation() noexcept override
                 {
                     try
                     {
