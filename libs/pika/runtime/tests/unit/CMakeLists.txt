@@ -43,6 +43,28 @@ string(
     "All tests passed."
 )
 
+string(
+  CONCAT
+    first_pu_binding_one_thread_expected_output
+    "   0: PU L#[0-9]+\\(P#0\\), Core L#[0-9]+\\(P#[0-9]+\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
+    "All tests passed."
+)
+
+string(
+  CONCAT
+    second_pu_binding_one_thread_expected_output
+    "   0: PU L#[0-9]+\\(P#1\\), Core L#[0-9]+\\(P#[0-9]+\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
+    "All tests passed."
+)
+
+string(CONCAT no_binding_one_thread_expected_output
+              "   0: thread binding disabled, on pool \"default\"\n" "All tests passed."
+)
+
+string(CONCAT one_thread_expected_output "   0:.*\n" "All tests passed.")
+string(CONCAT two_threads_expected_output "   0:.*\n" "   1:.*\n" "All tests passed.")
+
+# The test sets the mask 0x3 and expects two threads to be bound, unless on macOS.
 if(APPLE)
   set(process_mask_flag_expected_output "${no_binding_expected_output}")
 else()
@@ -88,7 +110,7 @@ function(
   endif()
 endfunction()
 
-# This tests the default behaviour with two threads. This test is identical to the process_mask_flag
+# This tests the default behaviour with two threads. This test is similar to the process_mask_flag
 # test above.
 if(APPLE)
   set(configuration_precedence_expected_output "${no_binding_expected_output}")
@@ -99,7 +121,7 @@ pika_add_configuration_precedence_test(
   configuration_precedence 1 2 "--pika:print-bind" "${configuration_precedence_expected_output}" ""
 )
 
-# Disable binding through environment variable.
+# Disable binding through environment variable. Threads should not be bound.
 pika_add_configuration_precedence_test(
   configuration_precedence 2 2 "--pika:print-bind" "${no_binding_expected_output}" "PIKA_BIND=none"
 )
@@ -112,23 +134,19 @@ pika_add_configuration_precedence_test(
 )
 
 # Disable binding through environment variable, but enable it through command line option. The
-# latter should take precedence.
+# latter should take precedence. On macOS there should be no binding.
+if(APPLE)
+  set(configuration_precedence_expected_output "${no_binding_expected_output}")
+else()
+  set(configuration_precedence_expected_output "${balanced_binding_expected_output}")
+endif()
 pika_add_configuration_precedence_test(
   configuration_precedence 4 2 "--pika:print-bind --pika:bind=balanced"
-  "${balanced_binding_expected_output}" "PIKA_BIND=none"
+  "${configuration_precedence_expected_output}" "PIKA_BIND=none"
 )
 
-string(
-  CONCAT
-    second_pu_binding_one_thread_expected_output
-    "   0: PU L#[0-9]+\\(P#1\\), Core L#[0-9]+\\(P#[0-9]+\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
-    "All tests passed."
-)
-string(CONCAT no_binding_one_thread_expected_output
-              "   0: thread binding disabled, on pool \"default\"\n" "All tests passed."
-)
-
-# Set process mask through command line option.
+# Set process mask through command line option. One thread should be bound to the second PU, unless
+# on macOS.
 if(APPLE)
   set(configuration_precedence_expected_output "${no_binding_one_thread_expected_output}")
 else()
@@ -139,7 +157,7 @@ pika_add_configuration_precedence_test(
   "${configuration_precedence_expected_output}" ""
 )
 
-# Set process mask through environment variable.
+# Set process mask through environment variable. The result should be the same as above.
 if(APPLE)
   set(configuration_precedence_expected_output "${no_binding_one_thread_expected_output}")
 else()
@@ -162,23 +180,72 @@ pika_add_configuration_precedence_test(
   "${configuration_precedence_expected_output}" "PIKA_PROCESS_MASK=0x4"
 )
 
-string(CONCAT one_thread_expected_output "   0:.*\n" "All tests passed.")
-string(CONCAT two_threads_expected_output "   0:.*\n" "   1:.*\n" "All tests passed.")
-
-# Set number of threads through command line option.
+# Set number of threads through command line option. There should only be one thread.
 pika_add_configuration_precedence_test(
   configuration_precedence 8 -3 "--pika:print-bind --pika:threads=1"
   "${one_thread_expected_output}" ""
 )
 
-# Set number of threads through environment variable.
+# Set number of threads through environment variable. There should be two threads.
 pika_add_configuration_precedence_test(
   configuration_precedence 9 -3 "--pika:print-bind" "${two_threads_expected_output}"
   "PIKA_THREADS=2"
 )
 
-# Set number of threads through environment variable and command line option.
+# Set number of threads through environment variable and command line option. The latter should take
+# precedence and there should be two threads.
 pika_add_configuration_precedence_test(
   configuration_precedence 10 -3 "--pika:print-bind --pika:threads=2"
   "${two_threads_expected_output}" "PIKA_THREADS=1"
+)
+
+# Ignore process mask with command line option. One thread should be bound to the first PU, despite
+# a mask being set. On macOS no binding is expected.
+if(APPLE)
+  set(configuration_precedence_expected_output "${no_binding_one_thread_expected_output}")
+else()
+  set(configuration_precedence_expected_output "${first_pu_binding_one_thread_expected_output}")
+endif()
+pika_add_configuration_precedence_test(
+  configuration_precedence 11 -3
+  "--pika:print-bind --pika:threads=1 --pika:process-mask=0x2 --pika:ignore-process-mask"
+  "${configuration_precedence_expected_output}" ""
+)
+
+# Ignore process mask with environment variable. One thread should be bound to the first PU, despite
+# a mask being set. On macOS no binding is expected.
+if(APPLE)
+  set(configuration_precedence_expected_output "${no_binding_one_thread_expected_output}")
+else()
+  set(configuration_precedence_expected_output "${first_pu_binding_one_thread_expected_output}")
+endif()
+pika_add_configuration_precedence_test(
+  configuration_precedence 12 -3 "--pika:print-bind --pika:threads=1 --pika:process-mask=0x2"
+  "${configuration_precedence_expected_output}" "PIKA_IGNORE_PROCESS_MASK=1"
+)
+
+# Explicitly do not ignore process mask with environment variable. One thread should be bound to the
+# second PU, unless on macOS.
+if(APPLE)
+  set(configuration_precedence_expected_output "${no_binding_one_thread_expected_output}")
+else()
+  set(configuration_precedence_expected_output "${second_pu_binding_one_thread_expected_output}")
+endif()
+pika_add_configuration_precedence_test(
+  configuration_precedence 13 -3 "--pika:print-bind --pika:threads=1 --pika:process-mask=0x2"
+  "${configuration_precedence_expected_output}" "PIKA_IGNORE_PROCESS_MASK=0"
+)
+
+# Ignore process mask with command line option, Explicitly do not ignore process mask with
+# environment variable. One thread should be bound to the first PU since the command line option
+# takes precedence, unless on macOS.
+if(APPLE)
+  set(configuration_precedence_expected_output "${no_binding_one_thread_expected_output}")
+else()
+  set(configuration_precedence_expected_output "${first_pu_binding_one_thread_expected_output}")
+endif()
+pika_add_configuration_precedence_test(
+  configuration_precedence 14 -3
+  "--pika:print-bind --pika:threads=1 --pika:process-mask=0x2 --pika:ignore-process-mask"
+  "${configuration_precedence_expected_output}" "PIKA_IGNORE_PROCESS_MASK=0"
 )
