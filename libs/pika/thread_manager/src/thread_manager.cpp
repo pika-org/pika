@@ -260,7 +260,7 @@ namespace pika::threads::detail {
                 pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=local-priority-lifo is not configured in "
+                    "Command line option --pika:scheduler=local-priority-lifo is not configured in "
                     "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
@@ -356,7 +356,7 @@ namespace pika::threads::detail {
                 pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=abp-priority-fifo is not configured in "
+                    "Command line option --pika:scheduler=abp-priority-fifo is not configured in "
                     "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
@@ -396,7 +396,7 @@ namespace pika::threads::detail {
                 pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=abp-priority-lifo is not configured in "
+                    "Command line option --pika:scheduler=abp-priority-lifo is not configured in "
                     "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;

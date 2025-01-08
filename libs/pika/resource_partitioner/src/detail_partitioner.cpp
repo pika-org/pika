@@ -437,7 +437,7 @@ namespace pika::resource::detail {
         else
         {
             throw pika::detail::command_line_error(
-                "Bad value for command line option --pika:queuing");
+                "Bad value for command line option --pika:scheduler");
         }
 
         // set this scheduler on the pools that do not have a specified scheduler yet

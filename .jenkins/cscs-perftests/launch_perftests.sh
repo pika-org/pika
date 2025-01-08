@@ -11,7 +11,7 @@ set -ex
 pika_targets=("task_overhead_report_test")
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
-    --pika:queuing=local-priority --pika:threads=4 \
+    --pika:scheduler=local-priority --pika:threads=4 \
     --repetitions=100 --tasks=500000")
 
 # Build binaries for performance tests

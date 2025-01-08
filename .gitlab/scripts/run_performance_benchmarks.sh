@@ -41,7 +41,7 @@ pika_targets=(
 )
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
---pika:queuing=local-priority \
+--pika:scheduler=local-priority \
 --repetitions=100 \
 --tasks=500000"
 

@@ -48,7 +48,7 @@ namespace pika::detail {
         std::ostringstream strm;
 
         // default scheduler used for this run
-        strm << "  {scheduler}: " << cfg.queuing_ << "\n";
+        strm << "  {scheduler}: " << cfg.scheduler_ << "\n";
 
         // amount of threads and cores configured for this run
         strm << "  {os-threads}: " << cfg.num_threads_ << "\n";
@@ -132,11 +132,11 @@ namespace pika::detail {
         return mask_string;
     }
 
-    std::string handle_queuing(detail::manage_config& cfgmap,
+    std::string handle_scheduler(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
-        if (vm.count("pika:queuing")) return vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:scheduler")) return vm["pika:scheduler"].as<std::string>();
 
         // use either cfgmap value or default
         return cfgmap.get_value<std::string>("pika.scheduler", default_);
@@ -453,9 +453,9 @@ namespace pika::detail {
         }
 
         // handle setting related to schedulers
-        queuing_ = detail::handle_queuing(
+        scheduler_ = detail::handle_scheduler(
             cfgmap, vm, rtcfg_.get_entry("pika.scheduler", "local-priority-fifo"));
-        ini_config.emplace_back("pika.scheduler=" + queuing_);
+        ini_config.emplace_back("pika.scheduler=" + scheduler_);
 
         affinity_domain_ =
             detail::handle_affinity(cfgmap, vm, rtcfg_.get_entry("pika.affinity", "pu"));
@@ -557,11 +557,11 @@ namespace pika::detail {
                     "(--pika:threads)");
             }
 
-            if (!(queuing_ == "local-priority" || queuing_ == "abp-priority"))
+            if (!(scheduler_ == "local-priority" || scheduler_ == "abp-priority"))
             {
                 throw pika::detail::command_line_error(
                     "Invalid command line option --pika:high-priority-threads, valid for "
-                    "--pika:queuing=local-priority and --pika:queuing=abp-priority only");
+                    "--pika:scheduler=local-priority and --pika:scheduler=abp-priority only");
             }
 
             ini_config.emplace_back("pika.thread_queue.high_priority_queues!=" +
