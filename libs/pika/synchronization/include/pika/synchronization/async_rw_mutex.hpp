@@ -175,18 +175,15 @@ namespace pika::execution::experimental {
 
             void done(shared_state_ptr_type p) noexcept
             {
-                void* expected = op_state_head.load(std::memory_order_relaxed);
-
                 // `this` is not an async_rw_mutex_operation_state_base*, but is a known value to
                 // signal that the queue has been processed
-                while (!op_state_head.compare_exchange_weak(expected, static_cast<void*>(this),
-                    std::memory_order_acquire, std::memory_order_relaxed));
+                void* current =
+                    op_state_head.exchange(static_cast<void*>(this), std::memory_order_acquire);
 
                 // We have now successfully acquired the head of the queue, and signaled to other
                 // threads that they can't add any more items to the queue. We can now process the
                 // queue without further synchronization.
-                void* current = expected;
-
+                //
                 // We are also not accessing this shared state directly anymore, so we can
                 // reset p early.
                 p.reset();
