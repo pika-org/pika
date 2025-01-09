@@ -45,6 +45,8 @@ gcc12_build:
     - .variables_gcc12_config
     - .test_common_eiger_mc
     - .test_template
+  variables:
+    TEST_TIMEOUT: 600
 
 gcc12_test_release:
   extends: [.gcc12_test_common]
