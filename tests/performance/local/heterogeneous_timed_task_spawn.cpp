@@ -46,7 +46,11 @@ using pika::chrono::detail::high_resolution_timer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables.
+# if defined(PIKA_HAVE_VALGRIND)
+std::uint64_t tasks = 500;
+# else
 std::uint64_t tasks = 500000;
+# endif
 std::uint64_t min_delay = 0;
 std::uint64_t max_delay = 0;
 std::uint64_t total_delay = 0;

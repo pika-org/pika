@@ -94,7 +94,7 @@ int pika_main()
     // attach continuations to them that run on different
     // random pools
 #if defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_HAVE_VALGRIND)
-    constexpr int loops = 20;
+    constexpr int loops = 5;
 #else
     constexpr int loops = 500;
 #endif
