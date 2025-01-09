@@ -21,14 +21,22 @@ set(tests
     used_pus
 )
 
-set(cross_pool_injection_PARAMETERS THREADS -1)
-set(scheduler_binding_check_PARAMETERS THREADS -1)
+# If tests are running with valgrind, don't use all hyperthreads in some tests, only use one worker
+# thread per core, to reduce test times.
+if(PIKA_WITH_VALGRIND AND PIKA_WITH_TESTS_VALGRIND)
+  set(all_threads -2)
+else()
+  set(all_threads -1)
+endif()
+
+set(cross_pool_injection_PARAMETERS THREADS ${all_threads})
+set(scheduler_binding_check_PARAMETERS THREADS ${all_threads})
 
 set(named_pool_executor_PARAMETERS THREADS 4)
 set(resource_partitioner_info_PARAMETERS THREADS 4)
 set(used_pus_PARAMETERS THREADS 4 RUN_SERIAL)
 
-set(scheduler_priority_check_PARAMETERS THREADS -1)
+set(scheduler_priority_check_PARAMETERS THREADS ${all_threads})
 set(shutdown_suspended_pus_PARAMETERS THREADS 4)
 set(suspend_disabled_PARAMETERS THREADS 4)
 set(suspend_pool_PARAMETERS THREADS 4 COST 30)
