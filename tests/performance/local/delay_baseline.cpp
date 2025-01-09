@@ -77,6 +77,8 @@ void print_results(variables_map& vm, double sum_, double mean_)
 int app_main(variables_map& vm)
 {
     if (vm.count("no-header")) header = false;
+    tasks = vm["tasks"].as<std::uint64_t>();
+    delay = vm["delay"].as<std::uint64_t>();
 
     if (0 == tasks) throw std::invalid_argument("count of 0 tasks specified\n");
 
@@ -102,14 +104,13 @@ int main(int argc, char* argv[])
 
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
+    // clang-format off
     cmdline.add_options()("help,h", "print out program usage (this message)")
-
         ("tasks", value<std::uint64_t>(&tasks)->default_value(100000), "number of tasks to invoke")
-
-            ("delay", value<std::uint64_t>(&delay)->default_value(5),
-                "duration of delay in microseconds")
-
-                ("no-header", "do not print out the csv header row");
+        ("delay", value<std::uint64_t>(&delay)->default_value(5),
+         "duration of delay in microseconds")
+        ("no-header", "do not print out the csv header row");
+    // clang-format on
 
     store(command_line_parser(argc, argv).options(cmdline).run(), vm);
 
