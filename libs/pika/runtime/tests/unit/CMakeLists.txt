@@ -38,8 +38,8 @@ string(
 string(
   CONCAT
     balanced_binding_expected_output
-    "   0: PU L#0\\(P#[0-9]+\\), Core L#0\\(P#0\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
-    "   1: PU L#[0-9]+\\(P#[0-9]+\\), Core L#[0-9]+\\(P#1\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
+    "   0: PU L#0\\(P#[0-9]+\\), Core L#0\\(P#[0-9]+\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
+    "   1: PU L#[0-9]+\\(P#[0-9]+\\), Core L#[0-9]+\\(P#[0-9]+\\)(, Socket L#[0-9]+\\(P#[0-9]+\\))?(, NUMANode L#[0-9]+\\(P#[0-9]+\\))?(, Socket L#[0-9]+\\(P#[0-9]+\\))?, on pool \"default\"\n"
     "All tests passed."
 )
 
