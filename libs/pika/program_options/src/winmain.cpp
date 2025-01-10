@@ -16,7 +16,7 @@
 
 using std::size_t;
 
-namespace pika { namespace program_options {
+namespace pika::program_options {
 
     // Take a command line string and splits in into tokens, according
     // to the rules windows command line processor uses.
@@ -102,6 +102,6 @@ namespace pika { namespace program_options {
         return result;
     }
 
-}}    // namespace pika::program_options
+}    // namespace pika::program_options
 
 #endif

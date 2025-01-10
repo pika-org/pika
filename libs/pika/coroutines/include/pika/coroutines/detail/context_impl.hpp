@@ -105,10 +105,10 @@
 #if defined(PIKA_HAVE_BOOST_CONTEXT)
 
 # include <pika/coroutines/detail/context_generic_context.hpp>
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     template <typename CoroutineImpl>
     using default_context_impl = generic_context::fcontext_context_impl<CoroutineImpl>;
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 
 #elif (defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)) &&        \
     !defined(__bgq__) && !defined(__powerpc__) && !defined(__s390x__) && !defined(__arm__) &&      \
@@ -125,18 +125,18 @@ namespace pika::threads::coroutines::detail {
     defined(__aarch64__)
 
 # include <pika/coroutines/detail/context_posix.hpp>
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     template <typename CoroutineImpl>
     using default_context_impl = posix::ucontext_context_impl<CoroutineImpl>;
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 
 #elif defined(PIKA_HAVE_FIBER_BASED_COROUTINES)
 
 # include <pika/coroutines/detail/context_windows_fibers.hpp>
-namespace pika { namespace threads { namespace coroutines { namespace detail {
+namespace pika::threads::coroutines::detail {
     template <typename CoroutineImpl>
     using default_context_impl = windows::fibers_context_impl<CoroutineImpl>;
-}}}}    // namespace pika::threads::coroutines::detail
+}    // namespace pika::threads::coroutines::detail
 
 #else
 

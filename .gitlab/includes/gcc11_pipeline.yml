@@ -22,18 +22,18 @@ include:
 gcc11_spack_compiler_image:
   extends:
     - .variables_gcc11_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 gcc11_spack_image:
   needs: [gcc11_spack_compiler_image]
   extends:
     - .variables_gcc11_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 gcc11_build:
   needs: [gcc11_spack_image]
   extends:
-    - .build_template_rosa
+    - .build_template_zen2
     - .variables_gcc11_config
 
 .gcc11_test_common:

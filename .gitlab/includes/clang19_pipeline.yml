@@ -29,19 +29,19 @@ include:
 clang19_spack_compiler_image:
   extends:
     - .variables_clang19_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 clang19_spack_image:
   needs: [clang19_spack_compiler_image]
   extends:
     - .variables_clang19_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 clang19_build:
   needs: [clang19_spack_image]
   extends:
     - .variables_clang19_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .clang19_test_common:
   needs: [clang19_build]

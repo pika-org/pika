@@ -46,6 +46,12 @@ std::uint64_t shuffler(std::mt19937_64& prng, std::uint64_t high)
 ///////////////////////////////////////////////////////////////////////////////
 int app_main(variables_map&)
 {
+    tasks = vm["tasks"].as<std::uint64_t>();
+    min_delay = vm["min-delay"].as<std::uint64_t>();
+    max_delay = vm["max-delay"].as<std::uint64_t>();
+    total_delay = vm["total-delay"].as<std::uint64_t>();
+    seed = vm["seed"].as<std::uint64_t>();
+
     ///////////////////////////////////////////////////////////////////////
     // Initialize the PRNG seed.
     if (!seed) seed = std::uint64_t(std::time(nullptr));
@@ -136,22 +142,20 @@ int main(int argc, char* argv[])
 
     options_description cmdline("Usage: " PIKA_APPLICATION_STRING " [options]");
 
-    cmdline.add_options()("help,h", "print out program usage (this message)")
-
+    // clang-format off
+    cmdline.add_options()
+        ("help,h", "print out program usage (this message)")
         ("tasks", value<std::uint64_t>(&tasks)->default_value(500000), "number of tasks to invoke")
-
-            ("min-delay", value<std::uint64_t>(&min_delay)->default_value(0),
-                "minimum number of iterations in the delay loop")
-
-                ("max-delay", value<std::uint64_t>(&max_delay)->default_value(0),
-                    "maximum number of iterations in the delay loop")
-
-                    ("total-delay", value<std::uint64_t>(&total_delay)->default_value(0),
-                        "total number of delay iterations to be executed")
-
-                        ("seed", value<std::uint64_t>(&seed)->default_value(0),
-                            "seed for the pseudo random number generator (if 0, a seed is chosen "
-                            "based on the current system time)");
+        ("min-delay", value<std::uint64_t>(&min_delay)->default_value(0),
+         "minimum number of iterations in the delay loop")
+        ("max-delay", value<std::uint64_t>(&max_delay)->default_value(0),
+         "maximum number of iterations in the delay loop")
+        ("total-delay", value<std::uint64_t>(&total_delay)->default_value(0),
+         "total number of delay iterations to be executed")
+        ("seed", value<std::uint64_t>(&seed)->default_value(0),
+         "seed for the pseudo random number generator (if 0, a seed is chosen "
+         "based on the current system time)");
+    // clang-format on
 
     store(command_line_parser(argc, argv).options(cmdline).run(), vm);
 

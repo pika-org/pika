@@ -10,43 +10,41 @@ include:
 
 .variables_clang14_cuda11_config:
   variables:
-    SPACK_ARCH: linux-ubuntu24.04-haswell
+    SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
     BASE_COMPILER: gcc@11
     COMPILER: clang@14.0.6
     CXXSTD: 17
-    GPU_TARGET: '60'
+    GPU_TARGET: '80'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system
-      cxxstd=$CXXSTD +valgrind ^boost@1.79.0 ^cuda@11.5.0 +allow-unsupported-compilers ^hwloc@2.7.0 ^valgrind ~mpi"
+      cxxstd=$CXXSTD ^boost@1.79.0 ^cuda@11 ^hwloc@2.7.0"
     CMAKE_FLAGS: "-DCMAKE_CXX_CLANG_TIDY=clang-tidy -DPIKA_WITH_CXX_STANDARD=20 -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON -DCMAKE_CUDA_COMPILER=c++ \
                   -DCMAKE_CUDA_ARCHITECTURES=${GPU_TARGET} \
                   -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF \
-                  -DPIKA_WITH_VALGRIND=ON -DPIKA_WITH_TESTS_VALGRIND=ON \
-                  -DPIKA_WITH_TESTS_VALGRIND_OPTIONS='--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$SOURCE_DIR/tools/valgrind/memcheck.supp' \
                   -DPIKA_WITH_STACKOVERFLOW_DETECTION=OFF"
 
 clang14_cuda11_spack_compiler_image:
   extends:
     - .variables_clang14_cuda11_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_gh200
 
 clang14_cuda11_spack_image:
   needs: [clang14_cuda11_spack_compiler_image]
   extends:
     - .variables_clang14_cuda11_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_gh200
 
 clang14_cuda11_build:
   needs: [clang14_cuda11_spack_image]
   extends:
     - .variables_clang14_cuda11_config
-    - .build_template_rosa
+    - .build_template_gh200
 
 .clang14_cuda11_test_common:
   needs: [clang14_cuda11_build]
   extends:
     - .variables_clang14_cuda11_config
-    - .test_common_gpu_daint_cuda
+    - .test_common_daint_gh200
     - .test_template
 
 clang14_cuda11_test_release:

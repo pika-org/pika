@@ -34,7 +34,7 @@
 
 namespace ex = pika::execution::experimental;
 
-#if defined(PIKA_HAVE_VERIFY_LOCKS)
+#if defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_HAVE_VALGRIND)
 inline constexpr std::size_t num_tasks_per_worker_thread = 100;
 #else
 inline constexpr std::size_t num_tasks_per_worker_thread = 10000;

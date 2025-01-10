@@ -392,7 +392,11 @@ int main(int argc, char* argv[])
 
     // clang-format off
     cmdline.add_options()("tasks",
+#if defined(PIKA_HAVE_VALGRIND)
+        value<std::uint64_t>()->default_value(5000),
+#else
         value<std::uint64_t>()->default_value(500000),
+#endif
         "number of tasks to invoke")
 
         ("delay-iterations", value<std::uint64_t>()->default_value(0),

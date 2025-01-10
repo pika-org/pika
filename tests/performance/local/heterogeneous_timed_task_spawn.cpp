@@ -90,6 +90,11 @@ std::uint64_t shuffler(std::mt19937_64& prng, std::uint64_t high)
 int pika_main(variables_map& vm)
 {
     if (vm.count("no-header")) header = false;
+    tasks = vm["tasks"].as<std::uint64_t>();
+    min_delay = vm["min-delay"].as<std::uint64_t>();
+    max_delay = vm["max-delay"].as<std::uint64_t>();
+    total_delay = vm["total-delay"].as<std::uint64_t>();
+    seed = vm["seed"].as<std::uint64_t>();
 
     ///////////////////////////////////////////////////////////////////////////
     // Initialize the PRNG seed.
@@ -212,7 +217,11 @@ int main(int argc, char* argv[])
     // clang-format off
     cmdline.add_options()
         ( "tasks"
+# if defined(PIKA_HAVE_VALGRIND)
+        , value<std::uint64_t>(&tasks)->default_value(500)
+# else
         , value<std::uint64_t>(&tasks)->default_value(500000)
+# endif
         , "number of tasks to invoke")
 
         ( "min-delay"

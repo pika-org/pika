@@ -28,10 +28,9 @@ variables:
     reports:
       dotenv: base.env
 
-# We allow failure since santis is unstable
 base_spack_image_aarch64:
   extends: [.container-builder-cscs-gh200, .base_spack_image]
-  allow_failure: true
+
 base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
@@ -52,11 +51,11 @@ base_spack_image_x86_64:
     reports:
       dotenv: compiler.env
 
-.compiler_image_template_santis:
+.compiler_image_template_gh200:
   needs: [base_spack_image_aarch64]
   extends: [.container-builder-cscs-gh200, .compiler_image_template]
 
-.compiler_image_template_rosa:
+.compiler_image_template_zen2:
   needs: [base_spack_image_x86_64]
   extends: [.container-builder-cscs-zen2, .compiler_image_template]
 
@@ -75,10 +74,10 @@ base_spack_image_x86_64:
     reports:
       dotenv: dependencies.env
 
-.dependencies_image_template_santis:
+.dependencies_image_template_gh200:
   extends: [.container-builder-cscs-gh200, .dependencies_image_template]
 
-.dependencies_image_template_rosa:
+.dependencies_image_template_zen2:
   extends: [.container-builder-cscs-zen2, .dependencies_image_template]
 
 .parallel_build_types:
@@ -110,20 +109,22 @@ base_spack_image_x86_64:
     reports:
       dotenv: "$DOTENV_FILE"
 
-.build_template_santis:
+.build_template_gh200:
   extends: [.container-builder-cscs-gh200, .build_template]
 
-.build_template_rosa:
+.build_template_zen2:
   extends: [.container-builder-cscs-zen2, .build_template]
 
 .test_template:
   extends:
     - .cmake_variables_common
+  variables:
+    TEST_TIMEOUT: 300
   script:
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
-    - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 300 --output-on-failure --no-compress-output --no-tests=error"
+    - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout ${TEST_TIMEOUT} --output-on-failure --no-compress-output --no-tests=error"
     - export MIMALLOC_EAGER_COMMIT_DELAY=0
     - export MIMALLOC_ALLOW_LARGE_OS_PAGES=1
     - "${SOURCE_DIR}/.gitlab/scripts/run_performance_benchmarks.sh"
