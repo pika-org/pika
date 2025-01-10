@@ -48,7 +48,7 @@ namespace pika::detail {
         std::ostringstream strm;
 
         // default scheduler used for this run
-        strm << "  {scheduler}: " << cfg.queuing_ << "\n";
+        strm << "  {scheduler}: " << cfg.scheduler_ << "\n";
 
         // amount of threads and cores configured for this run
         strm << "  {os-threads}: " << cfg.num_threads_ << "\n";
@@ -101,12 +101,9 @@ namespace pika::detail {
 
     ///////////////////////////////////////////////////////////////////////
     std::string handle_process_mask(detail::manage_config& cfgmap,
-        pika::program_options::variables_map& vm, bool use_process_mask)
+        pika::program_options::variables_map& vm, std::string default_, bool use_process_mask)
     {
-        std::string mask_string = cfgmap.get_value<std::string>("pika.process_mask", "");
-
-        char const* mask_env = std::getenv("PIKA_PROCESS_MASK");
-        if (nullptr != mask_env) { mask_string = mask_env; }
+        std::string mask_string = cfgmap.get_value<std::string>("pika.process_mask", default_);
 
         if (vm.count("pika:process-mask"))
         {
@@ -135,11 +132,11 @@ namespace pika::detail {
         return mask_string;
     }
 
-    std::string handle_queuing(detail::manage_config& cfgmap,
+    std::string handle_scheduler(detail::manage_config& cfgmap,
         pika::program_options::variables_map& vm, std::string const& default_)
     {
         // command line options is used preferred
-        if (vm.count("pika:queuing")) return vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:scheduler")) return vm["pika:scheduler"].as<std::string>();
 
         // use either cfgmap value or default
         return cfgmap.get_value<std::string>("pika.scheduler", default_);
@@ -439,13 +436,15 @@ namespace pika::detail {
 #if defined(__APPLE__)
             false;
 #else
-            !((cfgmap.get_value<int>("pika.ignore_process_mask", 0) > 0) ||
+            !((cfgmap.get_value<int>("pika.ignore_process_mask",
+                   pika::detail::get_entry_as<int>(rtcfg_, "pika.ignore_process_mask", 0)) > 0) ||
                 (vm.count("pika:ignore-process-mask") > 0));
 #endif
 
         ini_config.emplace_back("pika.ignore_process_mask!=" + std::to_string(!use_process_mask_));
 
-        process_mask_ = handle_process_mask(cfgmap, vm, use_process_mask_);
+        process_mask_ = handle_process_mask(
+            cfgmap, vm, rtcfg_.get_entry("pika.process_mask", ""), use_process_mask_);
         ini_config.emplace_back("pika.process_mask!=" + process_mask_);
         if (!process_mask_.empty())
         {
@@ -454,15 +453,18 @@ namespace pika::detail {
         }
 
         // handle setting related to schedulers
-        queuing_ = detail::handle_queuing(cfgmap, vm, "local-priority-fifo");
-        ini_config.emplace_back("pika.scheduler=" + queuing_);
+        scheduler_ = detail::handle_scheduler(
+            cfgmap, vm, rtcfg_.get_entry("pika.scheduler", "local-priority-fifo"));
+        ini_config.emplace_back("pika.scheduler=" + scheduler_);
 
-        affinity_domain_ = detail::handle_affinity(cfgmap, vm, "pu");
+        affinity_domain_ =
+            detail::handle_affinity(cfgmap, vm, rtcfg_.get_entry("pika.affinity", "pu"));
         ini_config.emplace_back("pika.affinity=" + affinity_domain_);
 
         check_affinity_domain();
 
-        affinity_bind_ = detail::handle_affinity_bind(cfgmap, vm, "");
+        affinity_bind_ =
+            detail::handle_affinity_bind(cfgmap, vm, rtcfg_.get_entry("pika.bind", ""));
         if (!affinity_bind_.empty())
         {
 #if defined(__APPLE__)
@@ -479,7 +481,8 @@ namespace pika::detail {
 #endif
         }
 
-        pu_step_ = detail::handle_pu_step(cfgmap, vm, 1);
+        pu_step_ = detail::handle_pu_step(
+            cfgmap, vm, pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.pu_step", 1));
 #if defined(__APPLE__)
         if (pu_step_ != 1)
         {
@@ -494,7 +497,8 @@ namespace pika::detail {
 
         check_pu_step();
 
-        pu_offset_ = detail::handle_pu_offset(cfgmap, vm, std::size_t(-1));
+        pu_offset_ = detail::handle_pu_offset(cfgmap, vm,
+            pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.pu_offset", std::size_t(-1)));
 
         // NOLINTNEXTLINE(bugprone-branch-clone)
         if (pu_offset_ != std::size_t(-1))
@@ -514,7 +518,8 @@ namespace pika::detail {
 
         check_pu_offset();
 
-        numa_sensitive_ = detail::handle_numa_sensitive(cfgmap, vm, affinity_bind_.empty() ? 0 : 1);
+        numa_sensitive_ = detail::handle_numa_sensitive(
+            cfgmap, vm, pika::detail::get_entry_as<std::size_t>(rtcfg_, "pika.numa_sensitive", 0));
         ini_config.emplace_back("pika.numa_sensitive=" + std::to_string(numa_sensitive_));
 
         // default affinity mode is now 'balanced' (only if no pu-step or
@@ -552,11 +557,11 @@ namespace pika::detail {
                     "(--pika:threads)");
             }
 
-            if (!(queuing_ == "local-priority" || queuing_ == "abp-priority"))
+            if (!(scheduler_ == "local-priority" || scheduler_ == "abp-priority"))
             {
                 throw pika::detail::command_line_error(
                     "Invalid command line option --pika:high-priority-threads, valid for "
-                    "--pika:queuing=local-priority and --pika:queuing=abp-priority only");
+                    "--pika:scheduler=local-priority and --pika:scheduler=abp-priority only");
             }
 
             ini_config.emplace_back("pika.thread_queue.high_priority_queues!=" +

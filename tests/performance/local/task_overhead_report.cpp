@@ -27,7 +27,7 @@ using pika::program_options::variables_map;
 using pika::chrono::detail::high_resolution_timer;
 
 // global vars we stick here to make printouts easy for plotting
-static std::string queuing = "default";
+static std::string scheduler = "default";
 [[maybe_unused]] static std::size_t numa_sensitive = 0;
 [[maybe_unused]] static std::uint64_t num_threads = 1;
 static std::string info_string = "";
@@ -117,7 +117,7 @@ void measure_function_create_thread_hierarchical_placement(
 int pika_main(variables_map& vm)
 {
     {
-        if (vm.count("pika:queuing")) queuing = vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:scheduler")) scheduler = vm["pika:scheduler"].as<std::string>();
 
         if (vm.count("pika:numa-sensitive"))
             numa_sensitive = 1;

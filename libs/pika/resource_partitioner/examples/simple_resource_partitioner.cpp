@@ -194,7 +194,7 @@ void init_resource_partitioner_handler(
     if (pool_threads > 0)
     {
         // we use unspecified as the scheduler type and it will be set according to
-        // the --pika:queuing=xxx option or default.
+        // the --pika:scheduler=xxx option or default.
         auto deft = ::pika::threads::scheduler_mode::default_mode;
         rp.create_thread_pool(pool_name, pika::resource::scheduling_policy::shared_priority, deft);
         // add N pus to network pool
