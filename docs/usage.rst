@@ -148,6 +148,9 @@ command line option. Both take an explicit number of threads. They also support 
 Process masks
 -------------
 
+.. |hwloc_calc_man| replace:: man page of ``hwloc-calc``
+.. _hwloc_calc_man: https://linux.die.net/man/1/hwloc-calc
+
 Many batch systems and e.g. MPI can set a process mask on the application to restrict on what cores
 an application can run. pika will by default take this process mask into account when determining
 how many threads to use for the runtime. ``hwloc-bind`` can also be used to manually set a process
@@ -165,6 +168,16 @@ runtime. ``PIKA_PROCESS_MASK`` and ``--pika:process-mask`` take an explicit hexa
 (beginning with ``0x``) representing the process mask to use. ``--pika:print-bind`` can be used to
 verify that the bindings used by pika are correct. Exporting the environment variable
 ``PIKA_PRINT_BIND`` (any value) is equivalent to using the ``--pika:print-bind`` option.
+
+.. note::
+   If you find yourself in a situation where you need to explicitly generate a process mask, we
+   recommend the use of ``hwloc-calc``. ``hwloc-calc`` produces the format expected by pika with the
+   ``--taskset`` command line option. The |hwloc_calc_man|_ contains useful examples of generating
+   different process masks.
+
+   In addition to ``hwloc-calc``, ``hwloc-distrib`` (`man page
+   <https://linux.die.net/man/1/hwloc-distrib>`_) can be useful if you need to generate multiple
+   process masks that e.g. don't overlap.
 
 pika binds (or pins) worker threads to cores by default (except on macOS where thread binding is not
 supported) to avoid threads being scheduled on different cores, generally improving performance.
