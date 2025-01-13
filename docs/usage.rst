@@ -212,11 +212,13 @@ read the process mask. In that case you may need to either use
 ``PIKA_IGNORE_PROCESS_MASK``\/``--pika:ignore-process-mask`` to use all cores on the system or
 explicitly set a mask with ``--pika:process-mask``. If there is a process mask already set in the
 environment that is launching the application (e.g. in a SLURM job) you can read the mask before the
-application runs with hwloc:
+application runs with hwloc (see :ref:`pika_bind` for a more convenient option):
 
 .. code-block:: bash
 
    ./app --pika:process-mask=$(hwloc-bind --get --taskset)
+
+.. _pika_bind:
 
 ``pika-bind`` helper script
 ---------------------------
