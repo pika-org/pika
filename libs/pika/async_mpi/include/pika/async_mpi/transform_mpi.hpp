@@ -52,6 +52,7 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::continues_on;
             using pika::execution::experimental::just;
             using pika::execution::experimental::let_value;
+            using pika::execution::experimental::unique_any_sender;
             using pika::execution::experimental::unpack;
 
             // get mpi completion mode settings
@@ -63,40 +64,22 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            if (completions_inline)
-            {
-                auto f_completion = [mode, f = std::forward<F>(f)](auto&... args) mutable {
-                    return just(std::forward_as_tuple(args...)) | unpack() |
-                        dispatch_mpi(std::move(f)) | trigger_mpi(mode);
-                };
+            auto f_completion = [f = std::forward<F>(f), mode, completions_inline, p](
+                                    auto&... args) mutable -> unique_any_sender<> {
+                auto s = just(std::forward_as_tuple(args...)) | unpack() |
+                    dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                if (completions_inline) { return s; }
+                else { return std::move(s) | continues_on(default_pool_scheduler(p)); }
+            };
 
-                if (requests_inline)
-                {
-                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
-                }
-                else
-                {
-                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                        let_value(std::move(f_completion));
-                }
+            if (requests_inline)
+            {
+                return std::forward<Sender>(sender) | let_value(std::move(f_completion));
             }
             else
             {
-                auto f_completion = [mode, p, f = std::forward<F>(f)](auto&... args) mutable {
-                    return just(std::forward_as_tuple(args...)) | unpack() |
-                        dispatch_mpi(std::move(f)) | trigger_mpi(mode) |
-                        continues_on(default_pool_scheduler(p));
-                };
-
-                if (requests_inline)
-                {
-                    return std::forward<Sender>(sender) | let_value(std::move(f_completion));
-                }
-                else
-                {
-                    return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                        let_value(std::move(f_completion));
-                }
+                return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
+                    let_value(std::move(f_completion));
             }
         }
 
