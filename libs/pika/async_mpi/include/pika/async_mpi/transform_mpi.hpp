@@ -66,7 +66,7 @@ namespace pika::mpi::experimental {
 
             auto f_completion = [f = std::forward<F>(f), mode, completions_inline, p](
                                     auto&... args) mutable -> unique_any_sender<> {
-                auto s = just(std::forward_as_tuple(args...)) | unpack() |
+                unique_any_sender<> s = just(std::forward_as_tuple(args...)) | unpack() |
                     dispatch_mpi(std::move(f)) | trigger_mpi(mode);
                 if (completions_inline) { return s; }
                 else { return std::move(s) | continues_on(default_pool_scheduler(p)); }
