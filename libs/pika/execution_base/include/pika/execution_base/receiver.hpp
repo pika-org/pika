@@ -209,31 +209,6 @@ namespace pika::execution::experimental {
 }    // namespace pika::execution::experimental
 #endif
 
-namespace pika::execution::experimental::detail {
-    template <typename CPO>
-    struct is_receiver_cpo : std::false_type
-    {
-    };
-
-    template <>
-    struct is_receiver_cpo<set_value_t> : std::true_type
-    {
-    };
-
-    template <>
-    struct is_receiver_cpo<set_error_t> : std::true_type
-    {
-    };
-
-    template <>
-    struct is_receiver_cpo<set_stopped_t> : std::true_type
-    {
-    };
-
-    template <typename CPO>
-    inline constexpr bool is_receiver_cpo_v = is_receiver_cpo<CPO>::value;
-}    // namespace pika::execution::experimental::detail
-
 #if !defined(PIKA_STDEXEC_RECEIVER_CONCEPT)
 # define PIKA_STDEXEC_RECEIVER_CONCEPT using is_receiver = void;
 #endif
