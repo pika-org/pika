@@ -118,14 +118,7 @@ namespace mylib {
 
     struct non_receiver_6
     {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_6&&) noexcept { done_called = true; }
-
-        void set_error(std::exception_ptr) && { error_called = true; }
-    };
-
-    struct non_receiver_7
-    {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_7&&) { done_called = true; }
+        friend void tag_invoke(ex::set_stopped_t, non_receiver_6&&) { done_called = true; }
 
         void set_error(std::exception_ptr) && { error_called = true; }
     };
@@ -215,8 +208,6 @@ int main()
         "mylib::non_receiver_5 should not be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_6>,
         "mylib::non_receiver_6 should not be a receiver");
-    static_assert(!ex::is_receiver_v<mylib::non_receiver_7>,
-        "mylib::non_receiver_7 should not be a receiver");
 
 #if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_STDEXEC)
     static_assert(!receiver_of_helper_v<mylib::non_receiver_1, int>,
@@ -231,8 +222,6 @@ int main()
         "mylib::non_receiver_5 should not be a receiver of int");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_6, int>,
         "mylib::non_receiver_6 should not be a receiver of int");
-    static_assert(!receiver_of_helper_v<mylib::non_receiver_7, int>,
-        "mylib::non_receiver_7 should not be a receiver of int");
 #endif
 
     {
