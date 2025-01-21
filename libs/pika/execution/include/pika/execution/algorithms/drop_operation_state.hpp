@@ -44,9 +44,9 @@ namespace pika::drop_op_state_detail {
         OpState* op_state = nullptr;
 
         template <typename Error>
-        friend void tag_invoke(pika::execution::experimental::set_error_t,
-            drop_op_state_receiver_type r, Error&& error) noexcept
+        void set_error(Error&& error) && noexcept
         {
+            auto r = std::move(*this);
             PIKA_ASSERT(r.op_state != nullptr);
             PIKA_ASSERT(r.op_state->op_state.has_value());
 

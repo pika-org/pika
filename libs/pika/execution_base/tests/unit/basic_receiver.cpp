@@ -26,10 +26,7 @@ namespace mylib {
 
         friend void tag_invoke(ex::set_stopped_t, receiver_1&&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, receiver_1&&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
         void set_value(int) && noexcept { value_called = true; }
 
@@ -45,7 +42,7 @@ namespace mylib {
 
         friend void tag_invoke(ex::set_stopped_t, receiver_2&&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, receiver_2&&, int) noexcept { error_called = true; }
+        void set_error(int) && noexcept { error_called = true; }
 
         friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver_2 const&) noexcept
         {
@@ -59,10 +56,7 @@ namespace mylib {
 
         friend void tag_invoke(ex::set_stopped_t, receiver_3&&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, receiver_3&&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
         void set_value(int) && noexcept { value_called = true; }
 
@@ -76,10 +70,7 @@ namespace mylib {
     {
         friend void tag_invoke(ex::set_stopped_t, non_receiver_1&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_1&&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
         void set_value(int) noexcept { value_called = true; }
     };
@@ -88,10 +79,7 @@ namespace mylib {
     {
         friend void tag_invoke(ex::set_stopped_t, non_receiver_2&&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_2&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) & noexcept { error_called = true; }
 
         void set_value(int) && noexcept { value_called = true; }
     };
@@ -100,10 +88,7 @@ namespace mylib {
     {
         friend void tag_invoke(ex::set_stopped_t, non_receiver_3&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_3&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) & noexcept { error_called = true; }
 
         void set_value(int) noexcept { value_called = true; }
     };
@@ -114,10 +99,7 @@ namespace mylib {
 
         friend void tag_invoke(ex::set_stopped_t, non_receiver_4&&) noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_4&&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
         void set_value(int) & noexcept { value_called = true; }
 
@@ -131,30 +113,14 @@ namespace mylib {
     {
         friend void tag_invoke(ex::set_stopped_t, non_receiver_5&&) { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_5&&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) && noexcept { error_called = true; }
     };
 
     struct non_receiver_6
     {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_6&&) noexcept { done_called = true; }
+        friend void tag_invoke(ex::set_stopped_t, non_receiver_6&&) { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_6&&, std::exception_ptr)
-        {
-            error_called = true;
-        }
-    };
-
-    struct non_receiver_7
-    {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_7&&) { done_called = true; }
-
-        friend void tag_invoke(ex::set_error_t, non_receiver_7&&, std::exception_ptr)
-        {
-            error_called = true;
-        }
+        void set_error(std::exception_ptr) && { error_called = true; }
     };
 }    // namespace mylib
 
@@ -242,8 +208,6 @@ int main()
         "mylib::non_receiver_5 should not be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_6>,
         "mylib::non_receiver_6 should not be a receiver");
-    static_assert(!ex::is_receiver_v<mylib::non_receiver_7>,
-        "mylib::non_receiver_7 should not be a receiver");
 
 #if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_STDEXEC)
     static_assert(!receiver_of_helper_v<mylib::non_receiver_1, int>,
@@ -258,8 +222,6 @@ int main()
         "mylib::non_receiver_5 should not be a receiver of int");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_6, int>,
         "mylib::non_receiver_6 should not be a receiver of int");
-    static_assert(!receiver_of_helper_v<mylib::non_receiver_7, int>,
-        "mylib::non_receiver_7 should not be a receiver of int");
 #endif
 
     {
