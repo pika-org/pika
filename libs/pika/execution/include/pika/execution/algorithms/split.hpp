@@ -418,17 +418,15 @@ namespace pika::split_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(
-            pika::execution::experimental::connect_t, split_sender_type&& s, Receiver&& receiver)
+        operation_state<Receiver> connect(Receiver&& receiver) &&
         {
-            return {std::forward<Receiver>(receiver), std::move(s.state)};
+            return {std::forward<Receiver>(receiver), std::move(state)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-            split_sender_type const& s, Receiver&& receiver)
+        operation_state<Receiver> connect(Receiver&& receiver) const&
         {
-            return {std::forward<Receiver>(receiver), s.state};
+            return {std::forward<Receiver>(receiver), state};
         }
     };
 

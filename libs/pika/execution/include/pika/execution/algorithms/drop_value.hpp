@@ -105,19 +105,17 @@ namespace pika::drop_value_detail {
 #endif
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, drop_value_sender_type&& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(std::move(s.sender),
-                drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
+            return pika::execution::experimental::connect(
+                std::move(sender), drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            drop_value_sender_type const& r, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
+                sender, drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         friend decltype(auto) tag_invoke(

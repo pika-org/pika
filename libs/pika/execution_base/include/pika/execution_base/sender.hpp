@@ -210,8 +210,16 @@ namespace pika::execution::experimental {
     }    // namespace detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct connect_t : pika::functional::detail::tag<connect_t>
+    struct connect_t
     {
+        template <typename Sender, typename Receiver>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(Sender&& sender, Receiver&& receiver) noexcept(
+            noexcept(std::forward<Sender>(sender).connect(std::forward<Receiver>(receiver))))
+            -> decltype(std::forward<Sender>(sender).connect(std::forward<Receiver>(receiver)))
+        {
+            return std::forward<Sender>(sender).connect(std::forward<Receiver>(receiver));
+        }
     } connect{};
 
     namespace detail {

@@ -294,18 +294,16 @@ namespace pika::schedule_from_detail {
         };
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-            schedule_from_sender_type&& s, Receiver&& receiver)
+        operation_state<Receiver> connect(Receiver&& receiver) &&
         {
-            return {std::move(s.predecessor_sender), std::move(s.scheduler),
+            return {std::move(predecessor_sender), std::move(scheduler),
                 std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
-        friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-            schedule_from_sender_type const& s, Receiver&& receiver)
+        operation_state<Receiver> connect(Receiver&& receiver) const&
         {
-            return {s.predecessor_sender, s.scheduler, std::forward<Receiver>(receiver)};
+            return {predecessor_sender, scheduler, std::forward<Receiver>(receiver)};
         }
     };
 }    // namespace pika::schedule_from_detail

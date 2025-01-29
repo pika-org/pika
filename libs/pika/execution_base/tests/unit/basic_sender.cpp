@@ -105,7 +105,7 @@ struct sender_1
         void start() & noexcept { ex::set_value(std::move(r), 4711); };
     };
 
-    friend operation_state tag_invoke(ex::connect_t, sender_1&&, receiver r)
+    operation_state connect(receiver r) &&
     {
         ++friend_tag_invoke_connect_calls;
         return {r};
@@ -132,13 +132,13 @@ struct sender_2
         receiver r;
         void start() & noexcept { ex::set_value(std::move(r), 4711); };
     };
-};
 
-sender_2::operation_state tag_invoke(ex::connect_t, sender_2, receiver r)
-{
-    ++tag_invoke_connect_calls;
-    return {r};
-}
+    operation_state connect(receiver r)
+    {
+        ++tag_invoke_connect_calls;
+        return {r};
+    }
+};
 
 static std::size_t void_receiver_set_value_calls = 0;
 
