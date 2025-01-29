@@ -166,11 +166,7 @@ namespace pika::mpi::experimental::detail {
                         });
                 }
 
-                friend constexpr ex::empty_env tag_invoke(
-                    ex::get_env_t, dispatch_mpi_receiver const&) noexcept
-                {
-                    return {};
-                }
+                constexpr ex::empty_env get_env() const& noexcept { return {}; }
             };
 
             using operation_state_type =

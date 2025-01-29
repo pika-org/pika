@@ -159,8 +159,7 @@ namespace pika::split_tuple_detail {
                 r.state.set_predecessor_done();
             }
 
-            friend constexpr pika::execution::experimental::empty_env tag_invoke(
-                pika::execution::experimental::get_env_t, split_tuple_receiver const&) noexcept
+            constexpr pika::execution::experimental::empty_env get_env() const& noexcept
             {
                 return {};
             }

@@ -423,13 +423,34 @@ namespace pika::execution::experimental {
     {
     };
 
-    inline constexpr struct get_env_t final : pika::functional::detail::tag_fallback<get_env_t>
+    template <typename T, typename Enable = void>
+    struct has_get_env : std::false_type
+    {
+    };
+
+    template <typename T>
+    struct has_get_env<T, std::void_t<decltype(std::declval<T const&>().get_env())>>
+      : std::true_type
+    {
+    };
+
+    inline constexpr struct get_env_t
     {
         template <typename T>
-        friend constexpr auto tag_fallback_invoke(get_env_t const&, T const&) noexcept
+        constexpr auto PIKA_STATIC_CALL_OPERATOR(T const& t) noexcept
         {
-            if constexpr (is_sender_v<T>) { return empty_env{}; }
-            else { static_assert(sizeof(T) == 0, "No environment for type T"); }
+            if constexpr (has_get_env<T>::value)
+            {
+                static_assert(noexcept(t.get_env()),
+                    "std::execution get_env member function must be noexcept");
+                return t.get_env();
+            }
+            else if constexpr (is_sender_v<T>) { return empty_env{}; }
+            else
+            {
+                static_assert(sizeof(T) == 0, "No environment for type T");
+                return empty_env{};
+            }
         }
     } get_env{};
 }    // namespace pika::execution::experimental

@@ -88,9 +88,9 @@ struct scheduler_schedule_from
             }
         };
 
-        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -181,9 +181,9 @@ struct scheduler_transfer
             }
         };
 
-        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -226,10 +226,7 @@ struct sender_with_completion_scheduler : void_sender
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender_with_completion_scheduler const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 int main()

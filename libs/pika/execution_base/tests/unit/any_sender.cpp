@@ -243,11 +243,7 @@ struct error_receiver
         PIKA_TEST(false);
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, error_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <template <typename...> typename Sender, typename... Ts, typename F>

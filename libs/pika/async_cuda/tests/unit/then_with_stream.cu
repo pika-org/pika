@@ -78,11 +78,7 @@ struct const_reference_cuda_sender
         }
     };
 
-    friend env tag_invoke(
-        pika::execution::experimental::get_env_t, const_reference_cuda_sender const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 struct const_reference_error_cuda_sender
@@ -136,11 +132,7 @@ struct const_reference_error_cuda_sender
         }
     };
 
-    friend env tag_invoke(pika::execution::experimental::get_env_t,
-        const_reference_error_cuda_sender const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 struct dummy

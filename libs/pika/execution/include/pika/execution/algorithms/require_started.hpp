@@ -128,9 +128,7 @@ namespace pika {
                     std::move(r.op_state->receiver), std::forward<Ts>(ts)...);
             }
 
-            friend constexpr pika::execution::experimental::empty_env tag_invoke(
-                pika::execution::experimental::get_env_t,
-                require_started_receiver_type const&) noexcept
+            constexpr pika::execution::experimental::empty_env get_env() const& noexcept
             {
                 return {};
             }

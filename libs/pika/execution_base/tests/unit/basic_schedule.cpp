@@ -53,7 +53,7 @@ struct sender
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender const&) noexcept { return {}; }
+    env get_env() const& noexcept { return {}; }
 };
 
 struct non_scheduler_1

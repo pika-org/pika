@@ -227,11 +227,7 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const& s) noexcept
-            {
-                return {s.scheduler};
-            }
+            env get_env() const& noexcept { return {scheduler}; }
         };
 
         friend sender<thread_pool_scheduler> tag_invoke(schedule_t, thread_pool_scheduler&& sched)
