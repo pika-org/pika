@@ -264,8 +264,8 @@ namespace pika::execution::experimental {
         friend auto
         tag_invoke(schedule_from_t, thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
-                std::forward<Sender>(predecessor_sender),
+            return schedule_from_detail::schedule_from_sender<std::decay_t<Sender>,
+                thread_pool_scheduler>{std::forward<Sender>(predecessor_sender),
                 with_annotation(std::move(scheduler), scheduler.get_fallback_annotation())};
         }
 
@@ -273,8 +273,8 @@ namespace pika::execution::experimental {
         friend auto tag_invoke(
             schedule_from_t, thread_pool_scheduler const& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
-                std::forward<Sender>(predecessor_sender),
+            return schedule_from_detail::schedule_from_sender<std::decay_t<Sender>,
+                thread_pool_scheduler>{std::forward<Sender>(predecessor_sender),
                 with_annotation(scheduler, scheduler.get_fallback_annotation())};
         }
 #endif
