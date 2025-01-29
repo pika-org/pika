@@ -486,11 +486,7 @@ namespace pika::execution::experimental::detail {
             r.receiver->set_stopped();
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, any_receiver const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender, typename... Ts>

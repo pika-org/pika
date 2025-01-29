@@ -59,11 +59,7 @@ namespace pika::drop_value_detail {
             pika::execution::experimental::set_value(std::move(r.receiver));
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, drop_value_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender>
@@ -118,10 +114,9 @@ namespace pika::drop_value_detail {
                 sender, drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, drop_value_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::drop_value_detail

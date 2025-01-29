@@ -434,8 +434,7 @@ namespace pika::thread_pool_bulk_detail {
                     r.do_work_local(r.op_state->shape, chunk_size, local_worker_thread);
                 }
 
-                friend constexpr pika::execution::experimental::empty_env tag_invoke(
-                    pika::execution::experimental::get_env_t, bulk_receiver const&) noexcept
+                constexpr pika::execution::experimental::empty_env get_env() const& noexcept
                 {
                     return {};
                 }
@@ -491,11 +490,7 @@ namespace pika::thread_pool_bulk_detail {
                 scheduler, sender, shape, f, std::forward<Receiver>(receiver)};
         }
 
-        friend auto tag_invoke(
-            pika::execution::experimental::get_env_t, thread_pool_bulk_sender const& s) noexcept
-        {
-            return pika::execution::experimental::get_env(s.sender);
-        }
+        auto get_env() const& noexcept { return pika::execution::experimental::get_env(sender); }
     };
 }    // namespace pika::thread_pool_bulk_detail
 

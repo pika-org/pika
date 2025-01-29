@@ -33,10 +33,7 @@ namespace mylib {
 
         void set_value(int) && noexcept { value_called = true; }
 
-        friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver_1 const&) noexcept
-        {
-            return {};
-        }
+        constexpr ex::empty_env get_env() const& noexcept { return {}; }
     };
 
     struct receiver_2
@@ -47,10 +44,7 @@ namespace mylib {
 
         friend void tag_invoke(ex::set_error_t, receiver_2&&, int) noexcept { error_called = true; }
 
-        friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver_2 const&) noexcept
-        {
-            return {};
-        }
+        constexpr ex::empty_env get_env() const& noexcept { return {}; }
     };
 
     struct receiver_3
@@ -66,10 +60,7 @@ namespace mylib {
 
         void set_value(int) && noexcept { value_called = true; }
 
-        friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver_3 const&) noexcept
-        {
-            return {};
-        }
+        constexpr ex::empty_env get_env() const& noexcept { return {}; }
     };
 
     struct non_receiver_1
@@ -121,10 +112,7 @@ namespace mylib {
 
         void set_value(int) & noexcept { value_called = true; }
 
-        friend constexpr ex::empty_env tag_invoke(ex::get_env_t, non_receiver_4 const&) noexcept
-        {
-            return {};
-        }
+        constexpr ex::empty_env get_env() const& noexcept { return {}; }
     };
 
     struct non_receiver_5

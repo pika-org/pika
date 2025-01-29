@@ -104,11 +104,7 @@ namespace pika::drop_op_state_detail {
             }
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, drop_op_state_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender, typename Receiver>

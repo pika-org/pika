@@ -64,11 +64,7 @@ namespace pika::unpack_detail {
                 std::forward<Ts>(ts));
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, unpack_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
 #if defined(PIKA_HAVE_STDEXEC)
@@ -187,10 +183,9 @@ namespace pika::unpack_detail {
                 sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, unpack_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::unpack_detail

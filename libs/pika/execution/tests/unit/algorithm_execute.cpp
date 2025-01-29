@@ -56,7 +56,7 @@ struct sender
         }
     };
 
-    friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
+    env get_env() const& noexcept
     {
         return {};
     }

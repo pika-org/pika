@@ -76,10 +76,7 @@ struct receiver
 
     void set_value(int v) && noexcept { i.get() = v; }
 
-    friend constexpr ex::empty_env tag_invoke(ex::get_env_t, receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr ex::empty_env get_env() const& noexcept { return {}; }
 
     std::reference_wrapper<int> i;
 };
@@ -152,10 +149,7 @@ struct void_receiver
 
     void set_value() && noexcept { ++void_receiver_set_value_calls; }
 
-    friend constexpr ex::empty_env tag_invoke(ex::get_env_t, void_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr ex::empty_env get_env() const& noexcept { return {}; }
 };
 
 #if !defined(PIKA_HAVE_STDEXEC)

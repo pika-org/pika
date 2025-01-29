@@ -153,11 +153,7 @@ struct callback_receiver
         r.set_value_called = true;
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <typename F>
@@ -190,11 +186,7 @@ struct error_callback_receiver
         PIKA_TEST(r.expect_set_value);
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, error_callback_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <typename F>
@@ -489,9 +481,9 @@ struct scheduler
             }
         };
 
-        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -566,9 +558,9 @@ struct scheduler2
             }
         };
 
-        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -677,10 +669,7 @@ namespace my_namespace {
                 }
             };
 
-            friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
-            {
-                return {};
-            }
+            env get_env() const& noexcept { return {}; }
         };
 
         friend sender tag_invoke(pika::execution::experimental::schedule_t, my_scheduler)
