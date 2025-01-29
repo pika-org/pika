@@ -130,22 +130,13 @@ namespace pika::when_all_impl {
     };
 
     template <typename... Senders>
-    struct when_all_sender_impl
-    {
-        struct when_all_sender_type;
-    };
-
-    template <typename... Senders>
-    using when_all_sender = typename when_all_sender_impl<Senders...>::when_all_sender_type;
-
-    template <typename... Senders>
-    struct when_all_sender_impl<Senders...>::when_all_sender_type
+    struct when_all_sender
     {
         using senders_type = pika::util::detail::member_pack_for<std::decay_t<Senders>...>;
         senders_type senders;
 
         template <typename... Senders_>
-        explicit constexpr when_all_sender_type(Senders_&&... senders)
+        explicit constexpr when_all_sender(Senders_&&... senders)
           : senders(std::piecewise_construct, std::forward<Senders_>(senders)...)
         {
         }

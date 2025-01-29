@@ -348,17 +348,7 @@ namespace pika::split_tuple_detail {
     };
 
     template <typename Sender, typename Allocator, std::size_t Index>
-    struct split_tuple_sender_impl
-    {
-        struct split_tuple_sender_type;
-    };
-
-    template <typename Sender, typename Allocator, std::size_t Index>
-    using split_tuple_sender =
-        typename split_tuple_sender_impl<Sender, Allocator, Index>::split_tuple_sender_type;
-
-    template <typename Sender, typename Allocator, std::size_t Index>
-    struct split_tuple_sender_impl<Sender, Allocator, Index>::split_tuple_sender_type
+    struct split_tuple_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -420,15 +410,15 @@ namespace pika::split_tuple_detail {
 
         pika::intrusive_ptr<shared_state_type> state;
 
-        explicit split_tuple_sender_type(pika::intrusive_ptr<shared_state_type> state)
+        explicit split_tuple_sender(pika::intrusive_ptr<shared_state_type> state)
           : state(std::move(state))
         {
         }
 
-        split_tuple_sender_type(split_tuple_sender_type const&) = default;
-        split_tuple_sender_type& operator=(split_tuple_sender_type const&) = default;
-        split_tuple_sender_type(split_tuple_sender_type&&) = default;
-        split_tuple_sender_type& operator=(split_tuple_sender_type&&) = default;
+        split_tuple_sender(split_tuple_sender const&) = default;
+        split_tuple_sender& operator=(split_tuple_sender const&) = default;
+        split_tuple_sender(split_tuple_sender&&) = default;
+        split_tuple_sender& operator=(split_tuple_sender&&) = default;
 
         template <typename Receiver>
         struct operation_state

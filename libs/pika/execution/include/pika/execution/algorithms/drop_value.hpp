@@ -63,16 +63,7 @@ namespace pika::drop_value_detail {
     };
 
     template <typename Sender>
-    struct drop_value_sender_impl
-    {
-        struct drop_value_sender_type;
-    };
-
-    template <typename Sender>
-    using drop_value_sender = typename drop_value_sender_impl<Sender>::drop_value_sender_type;
-
-    template <typename Sender>
-    struct drop_value_sender_impl<Sender>::drop_value_sender_type
+    struct drop_value_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 

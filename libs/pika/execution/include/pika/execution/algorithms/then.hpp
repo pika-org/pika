@@ -92,16 +92,7 @@ namespace pika::then_detail {
     };
 
     template <typename Sender, typename F>
-    struct then_sender_impl
-    {
-        struct then_sender_type;
-    };
-
-    template <typename Sender, typename F>
-    using then_sender = typename then_sender_impl<Sender, F>::then_sender_type;
-
-    template <typename Sender, typename F>
-    struct then_sender_impl<Sender, F>::then_sender_type
+    struct then_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;

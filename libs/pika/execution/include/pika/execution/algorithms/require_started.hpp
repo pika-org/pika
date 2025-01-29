@@ -209,17 +209,7 @@ namespace pika {
         };
 
         template <typename Sender>
-        struct require_started_sender_impl
-        {
-            struct require_started_sender_type;
-        };
-
-        template <typename Sender>
-        using require_started_sender =
-            typename require_started_sender_impl<Sender>::require_started_sender_type;
-
-        template <typename Sender>
-        struct require_started_sender_impl<Sender>::require_started_sender_type
+        struct require_started_sender
         {
             PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -247,8 +237,8 @@ namespace pika {
 
             template <typename Sender_,
                 typename Enable = std::enable_if_t<
-                    !std::is_same_v<std::decay_t<Sender_>, require_started_sender_type>>>
-            explicit require_started_sender_type(Sender_&& sender
+                    !std::is_same_v<std::decay_t<Sender_>, require_started_sender>>>
+            explicit require_started_sender(Sender_&& sender
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 ,
                 require_started_mode mode = require_started_mode::terminate_on_unstarted
@@ -261,7 +251,7 @@ namespace pika {
             {
             }
 
-            require_started_sender_type(require_started_sender_type&& other) noexcept
+            require_started_sender(require_started_sender&& other) noexcept
               : sender(std::exchange(other.sender, std::nullopt))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(other.mode)
@@ -270,8 +260,8 @@ namespace pika {
             {
             }
 
-            require_started_sender_type& operator=(
-                require_started_sender_type&& other) PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
+            require_started_sender& operator=(
+                require_started_sender&& other) PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (sender.has_value() && !connected)
                 {
@@ -301,7 +291,7 @@ namespace pika {
                 return *this;
             }
 
-            require_started_sender_type(require_started_sender_type const& other)
+            require_started_sender(require_started_sender const& other)
               : sender(other.sender)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(other.mode)
@@ -310,7 +300,7 @@ namespace pika {
             {
             }
 
-            require_started_sender_type& operator=(require_started_sender_type const& other)
+            require_started_sender& operator=(require_started_sender const& other)
             {
                 if (sender.has_value() && !connected)
                 {
@@ -340,7 +330,7 @@ namespace pika {
                 return *this;
             }
 
-            ~require_started_sender_type() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
+            ~require_started_sender() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (sender.has_value() && !connected)
                 {

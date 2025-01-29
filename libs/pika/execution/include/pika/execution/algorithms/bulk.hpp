@@ -32,16 +32,7 @@
 
 namespace pika::bulk_detail {
     template <typename Sender, typename Shape, typename F>
-    struct bulk_sender_impl
-    {
-        struct bulk_sender_type;
-    };
-
-    template <typename Sender, typename Shape, typename F>
-    using bulk_sender = typename bulk_sender_impl<Sender, Shape, F>::bulk_sender_type;
-
-    template <typename Sender, typename Shape, typename F>
-    struct bulk_sender_impl<Sender, Shape, F>::bulk_sender_type
+    struct bulk_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;

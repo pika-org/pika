@@ -29,30 +29,30 @@ namespace pika::just_detail {
     template <typename std::size_t... Is, typename... Ts>
     struct just_sender_impl<pika::util::detail::index_pack<Is...>, Ts...>
     {
-        struct just_sender_type
+        struct just_sender
         {
             pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts;
 
-            constexpr just_sender_type() = default;
+            constexpr just_sender() = default;
 
             template <typename T,
-                typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, just_sender_type>>>
-            explicit constexpr just_sender_type(T&& t)
+                typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, just_sender>>>
+            explicit constexpr just_sender(T&& t)
               : ts(std::piecewise_construct, std::forward<T>(t))
             {
             }
 
             template <typename T0, typename T1, typename... Ts_>
-            explicit constexpr just_sender_type(T0&& t0, T1&& t1, Ts_&&... ts)
+            explicit constexpr just_sender(T0&& t0, T1&& t1, Ts_&&... ts)
               : ts(std::piecewise_construct, std::forward<T0>(t0), std::forward<T1>(t1),
                     std::forward<Ts_>(ts)...)
             {
             }
 
-            just_sender_type(just_sender_type&&) = default;
-            just_sender_type(just_sender_type const&) = default;
-            just_sender_type& operator=(just_sender_type&&) = default;
-            just_sender_type& operator=(just_sender_type const&) = default;
+            just_sender(just_sender&&) = default;
+            just_sender(just_sender const&) = default;
+            just_sender& operator=(just_sender&&) = default;
+            just_sender& operator=(just_sender const&) = default;
 
             template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = Variant<Tuple<std::decay_t<Ts>...>>;
@@ -110,7 +110,7 @@ namespace pika::just_detail {
     };
 
     template <typename Is, typename... Ts>
-    using just_sender = typename just_sender_impl<Is, Ts...>::just_sender_type;
+    using just_sender = typename just_sender_impl<Is, Ts...>::just_sender;
 }    // namespace pika::just_detail
 
 namespace pika::execution::experimental {
