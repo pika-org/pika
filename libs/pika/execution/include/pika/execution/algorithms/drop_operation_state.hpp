@@ -108,36 +108,26 @@ namespace pika::drop_op_state_detail {
     };
 
     template <typename Sender, typename Receiver>
-    struct drop_op_state_op_state_impl
-    {
-        struct drop_op_state_op_state_type;
-    };
-
-    template <typename Sender, typename Receiver>
-    using drop_op_state_op_state =
-        typename drop_op_state_op_state_impl<Sender, Receiver>::drop_op_state_op_state_type;
-
-    template <typename Sender, typename Receiver>
-    struct drop_op_state_op_state_impl<Sender, Receiver>::drop_op_state_op_state_type
+    struct drop_op_state_op_state
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
         using operation_state_type = pika::execution::experimental::connect_result_t<Sender,
-            drop_op_state_receiver<drop_op_state_op_state_type>>;
+            drop_op_state_receiver<drop_op_state_op_state>>;
         std::optional<operation_state_type> op_state;
 
         template <typename Receiver_>
-        drop_op_state_op_state_type(std::decay_t<Sender> sender, Receiver_&& receiver)
-          : receiver(std::forward<Receiver_>(receiver))
+        drop_op_state_op_state(std::decay_t<Sender> sender, Receiver_&& receiver)
+          : receiver(std::forward<Receiver>(receiver))
           , op_state(pika::detail::with_result_of([&]() mutable {
               return pika::execution::experimental::connect(
-                  std::move(sender), drop_op_state_receiver<drop_op_state_op_state_type>{this});
+                  std::move(sender), drop_op_state_receiver<drop_op_state_op_state>{this});
           }))
         {
         }
-        drop_op_state_op_state_type(drop_op_state_op_state_type&) = delete;
-        drop_op_state_op_state_type& operator=(drop_op_state_op_state_type&) = delete;
-        drop_op_state_op_state_type(drop_op_state_op_state_type const&) = delete;
-        drop_op_state_op_state_type& operator=(drop_op_state_op_state_type const&) = delete;
+        drop_op_state_op_state(drop_op_state_op_state&) = delete;
+        drop_op_state_op_state& operator=(drop_op_state_op_state&) = delete;
+        drop_op_state_op_state(drop_op_state_op_state const&) = delete;
+        drop_op_state_op_state& operator=(drop_op_state_op_state const&) = delete;
 
         void start() & noexcept
         {
