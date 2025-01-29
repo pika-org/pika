@@ -23,6 +23,40 @@
 # include <utility>
 
 namespace pika::just_detail {
+    template <typename Receiver, typename Is, typename... Ts>
+    struct operation_state;
+
+    template <typename Receiver, typename std::size_t... Is, typename... Ts>
+    struct operation_state<Receiver, pika::util::detail::index_pack<Is...>, Ts...>
+    {
+        PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
+        pika::util::detail::member_pack_for<Ts...> ts;
+
+        template <typename Receiver_>
+        operation_state(Receiver_&& receiver, pika::util::detail::member_pack_for<Ts...> ts)
+          : receiver(std::forward<Receiver_>(receiver))
+          , ts(std::move(ts))
+        {
+        }
+
+        operation_state(operation_state&&) = delete;
+        operation_state& operator=(operation_state&&) = delete;
+        operation_state(operation_state const&) = delete;
+        operation_state& operator=(operation_state const&) = delete;
+
+        void start() & noexcept
+        {
+            pika::detail::try_catch_exception_ptr(
+                [&]() {
+                    pika::execution::experimental::set_value(
+                        std::move(receiver), std::move(ts).template get<Is>()...);
+                },
+                [&](std::exception_ptr ep) {
+                    pika::execution::experimental::set_error(std::move(receiver), std::move(ep));
+                });
+        }
+    };
+
     template <typename Is, typename... Ts>
     struct just_sender_impl;
 
@@ -31,7 +65,7 @@ namespace pika::just_detail {
     {
         struct just_sender
         {
-            pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts;
+            pika::util::detail::member_pack_for<Ts...> ts;
 
             constexpr just_sender() = default;
 
@@ -55,7 +89,7 @@ namespace pika::just_detail {
             just_sender& operator=(just_sender const&) = default;
 
             template <template <typename...> class Tuple, template <typename...> class Variant>
-            using value_types = Variant<Tuple<std::decay_t<Ts>...>>;
+            using value_types = Variant<Tuple<Ts...>>;
 
             template <template <typename...> class Variant>
             using error_types = Variant<std::exception_ptr>;
@@ -63,48 +97,17 @@ namespace pika::just_detail {
             static constexpr bool sends_done = false;
 
             template <typename Receiver>
-            struct operation_state
-            {
-                PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
-                pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts;
-
-                template <typename Receiver_>
-                operation_state(Receiver_&& receiver,
-                    pika::util::detail::member_pack_for<std::decay_t<Ts>...> ts)
-                  : receiver(std::forward<Receiver_>(receiver))
-                  , ts(std::move(ts))
-                {
-                }
-
-                operation_state(operation_state&&) = delete;
-                operation_state& operator=(operation_state&&) = delete;
-                operation_state(operation_state const&) = delete;
-                operation_state& operator=(operation_state const&) = delete;
-
-                void start() & noexcept
-                {
-                    pika::detail::try_catch_exception_ptr(
-                        [&]() {
-                            pika::execution::experimental::set_value(
-                                std::move(receiver), std::move(ts).template get<Is>()...);
-                        },
-                        [&](std::exception_ptr ep) {
-                            pika::execution::experimental::set_error(
-                                std::move(receiver), std::move(ep));
-                        });
-                }
-            };
-
-            template <typename Receiver>
             auto connect(Receiver&& receiver) &&
             {
-                return operation_state<Receiver>{std::forward<Receiver>(receiver), std::move(ts)};
+                return operation_state<Receiver, pika::util::detail::index_pack<Is...>, Ts...>{
+                    std::forward<Receiver>(receiver), std::move(ts)};
             }
 
             template <typename Receiver>
             auto connect(Receiver&& receiver) const&
             {
-                return operation_state<Receiver>{std::forward<Receiver>(receiver), ts};
+                return operation_state<Receiver, pika::util::detail::index_pack<Is...>, Ts...>{
+                    std::forward<Receiver>(receiver), ts};
             }
         };
     };
@@ -120,8 +123,8 @@ namespace pika::execution::experimental {
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Ts&&... ts)
         {
             return just_detail::just_sender<
-                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type, Ts...>{
-                std::forward<Ts>(ts)...};
+                typename pika::util::detail::make_index_pack<sizeof...(Ts)>::type,
+                std::decay_t<Ts>...>{std::forward<Ts>(ts)...};
         }
     } just{};
 }    // namespace pika::execution::experimental
