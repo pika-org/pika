@@ -213,7 +213,7 @@ namespace pika::when_all_vector_detail {
                 }
             };
 
-            std::size_t const num_predecessors;
+            std::size_t num_predecessors;
             std::decay_t<Receiver> receiver;
 
             // Number of predecessor senders that have not yet called any of
@@ -318,25 +318,24 @@ namespace pika::when_all_vector_detail {
                 }
             }
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
                 // If there are no predecessors we can signal the
                 // continuation as soon as start is called.
-                if (os.num_predecessors == 0)
+                if (num_predecessors == 0)
                 {
                     // If the predecessor sender type sends nothing, we also
                     // send nothing to the continuation.
                     if constexpr (is_void_value_type)
                     {
-                        pika::execution::experimental::set_value(std::move(os.receiver));
+                        pika::execution::experimental::set_value(std::move(receiver));
                     }
                     // If the predecessor sender type sends something we
                     // send an empty vector of that type to the continuation.
                     else
                     {
                         pika::execution::experimental::set_value(
-                            std::move(os.receiver), std::vector<element_value_type>{});
+                            std::move(receiver), std::vector<element_value_type>{});
                     }
                 }
                 // Otherwise we start all the operation states and wait for
@@ -347,12 +346,12 @@ namespace pika::when_all_vector_detail {
                     // when_all_vector operation state may already have been released. We read the
                     // number of predecessors from the operation state into a stack-local variable
                     // so that the loop can end without reading freed memory.
-                    auto const num_predecessors = os.num_predecessors;
-                    for (std::size_t i = 0; i < num_predecessors; ++i)
+                    std::size_t const num_predecessors_local = num_predecessors;
+                    for (std::size_t i = 0; i < num_predecessors_local; ++i)
                     {
-                        PIKA_ASSERT(os.op_states[i].has_value());
+                        PIKA_ASSERT(op_states[i].has_value());
                         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                        pika::execution::experimental::start(*(os.op_states.get()[i]));
+                        pika::execution::experimental::start(*(op_states.get()[i]));
                     }
                 }
             }

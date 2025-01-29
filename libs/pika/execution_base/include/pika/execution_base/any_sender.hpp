@@ -565,11 +565,7 @@ namespace pika::execution::experimental::detail {
         any_operation_state& operator=(any_operation_state&&) = delete;
         any_operation_state& operator=(any_operation_state const&) = delete;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, any_operation_state& os) noexcept
-        {
-            os.op_state.start();
-        }
+        void start() & noexcept { op_state.start(); }
     };
 
     [[noreturn]] PIKA_EXPORT void throw_bad_any_call(

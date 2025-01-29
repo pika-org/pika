@@ -159,19 +159,19 @@ namespace pika::execution::experimental {
             operation_state& operator=(operation_state&&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        os.scheduler.execute(
-                            [&os]() mutable {
-                                pika::execution::experimental::set_value(std::move(os.receiver));
+                        scheduler.execute(
+                            [&]() mutable {
+                                pika::execution::experimental::set_value(std::move(receiver));
                             },
-                            os.fallback_annotation);
+                            fallback_annotation);
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            std::move(os.receiver), std::move(ep));
+                            std::move(receiver), std::move(ep));
                     });
             }
         };

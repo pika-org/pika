@@ -35,7 +35,7 @@ struct sender
 
     struct operation_state
     {
-        friend operation_state tag_invoke(ex::start_t, operation_state&) noexcept { return {}; }
+        void start() & noexcept {}
     };
 
     template <typename R>

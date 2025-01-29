@@ -463,11 +463,7 @@ namespace pika::ensure_started_detail {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                os.state->add_continuation(os.receiver);
-            }
+            void start() & noexcept { state->add_continuation(receiver); }
         };
 
         template <typename Receiver>

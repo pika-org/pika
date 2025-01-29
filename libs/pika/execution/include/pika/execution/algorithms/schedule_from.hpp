@@ -290,11 +290,7 @@ namespace pika::schedule_from_detail {
                     scheduler_sender_value_visitor{std::move(receiver)}, std::move(ts));
             }
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::start(os.sender_os);
-            }
+            void start() & noexcept { pika::execution::experimental::start(sender_os); }
         };
 
         template <typename Receiver>
