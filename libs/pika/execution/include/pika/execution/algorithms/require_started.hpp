@@ -135,20 +135,10 @@ namespace pika {
         };
 
         template <typename Sender, typename Receiver>
-        struct require_started_op_state_impl
-        {
-            struct require_started_op_state_type;
-        };
-
-        template <typename Sender, typename Receiver>
-        using require_started_op_state =
-            typename require_started_op_state_impl<Sender, Receiver>::require_started_op_state_type;
-
-        template <typename Sender, typename Receiver>
-        struct require_started_op_state_impl<Sender, Receiver>::require_started_op_state_type
+        struct require_started_op_state
         {
             using operation_state_type = pika::execution::experimental::connect_result_t<Sender,
-                require_started_receiver<require_started_op_state_type>>;
+                require_started_receiver<require_started_op_state>>;
 
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             std::optional<operation_state_type> op_state{std::nullopt};
@@ -158,7 +148,7 @@ namespace pika {
             bool started{false};
 
             template <typename Receiver_>
-            require_started_op_state_type(std::decay_t<Sender> sender, Receiver_&& receiver
+            require_started_op_state(std::decay_t<Sender> sender, Receiver_&& receiver
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 ,
                 require_started_mode mode
@@ -166,8 +156,8 @@ namespace pika {
                 )
               : receiver(std::forward<Receiver_>(receiver))
               , op_state(pika::detail::with_result_of([&]() {
-                  return pika::execution::experimental::connect(std::move(sender),
-                      require_started_receiver<require_started_op_state_type>{this});
+                  return pika::execution::experimental::connect(
+                      std::move(sender), require_started_receiver<require_started_op_state>{this});
               }))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(mode)
@@ -175,7 +165,7 @@ namespace pika {
             {
             }
 
-            ~require_started_op_state_type() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
+            ~require_started_op_state() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (!started)
                 {
@@ -192,10 +182,10 @@ namespace pika {
 #endif
                 }
             }
-            require_started_op_state_type(require_started_op_state_type&) = delete;
-            require_started_op_state_type& operator=(require_started_op_state_type&) = delete;
-            require_started_op_state_type(require_started_op_state_type const&) = delete;
-            require_started_op_state_type& operator=(require_started_op_state_type const&) = delete;
+            require_started_op_state(require_started_op_state&) = delete;
+            require_started_op_state& operator=(require_started_op_state&) = delete;
+            require_started_op_state(require_started_op_state const&) = delete;
+            require_started_op_state& operator=(require_started_op_state const&) = delete;
 
             void start() & noexcept
             {
