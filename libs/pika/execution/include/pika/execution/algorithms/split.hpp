@@ -70,16 +70,7 @@ namespace pika::split_detail {
     };
 
     template <typename Sender, typename Allocator>
-    struct split_sender_impl
-    {
-        struct split_sender_type;
-    };
-
-    template <typename Sender, typename Allocator>
-    using split_sender = typename split_sender_impl<Sender, Allocator>::split_sender_type;
-
-    template <typename Sender, typename Allocator>
-    struct split_sender_impl<Sender, Allocator>::split_sender_type
+    struct split_sender
     {
         struct split_sender_tag
         {
@@ -370,7 +361,7 @@ namespace pika::split_detail {
         pika::intrusive_ptr<shared_state> state;
 
         template <typename Sender_>
-        split_sender_type(Sender_&& sender, Allocator const& allocator)
+        split_sender(Sender_&& sender, Allocator const& allocator)
         {
             using allocator_type = Allocator;
             using other_allocator =
@@ -387,10 +378,10 @@ namespace pika::split_detail {
             state = p.release();
         }
 
-        split_sender_type(split_sender_type const&) = default;
-        split_sender_type& operator=(split_sender_type const&) = default;
-        split_sender_type(split_sender_type&&) = default;
-        split_sender_type& operator=(split_sender_type&&) = default;
+        split_sender(split_sender const&) = default;
+        split_sender& operator=(split_sender const&) = default;
+        split_sender(split_sender&&) = default;
+        split_sender& operator=(split_sender&&) = default;
 
         template <typename Receiver>
         struct operation_state

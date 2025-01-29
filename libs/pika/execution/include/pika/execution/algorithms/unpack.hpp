@@ -133,16 +133,7 @@ namespace pika::unpack_detail {
 #endif
 
     template <typename Sender>
-    struct unpack_sender_impl
-    {
-        struct unpack_sender_type;
-    };
-
-    template <typename Sender>
-    using unpack_sender = typename unpack_sender_impl<Sender>::unpack_sender_type;
-
-    template <typename Sender>
-    struct unpack_sender_impl<Sender>::unpack_sender_type
+    struct unpack_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 

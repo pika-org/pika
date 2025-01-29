@@ -36,21 +36,9 @@ namespace pika::mpi::experimental::detail {
     namespace ex = execution::experimental;
 
     // -----------------------------------------------------------------
-    // route calls through an impl layer for ADL isolation
-    template <typename Sender, typename F>
-    struct dispatch_mpi_sender_impl
-    {
-        struct dispatch_mpi_sender_type;
-    };
-
-    template <typename Sender, typename F>
-    using dispatch_mpi_sender =
-        typename dispatch_mpi_sender_impl<Sender, F>::dispatch_mpi_sender_type;
-
-    // -----------------------------------------------------------------
     // transform MPI adapter - sender type
     template <typename Sender, typename F>
-    struct dispatch_mpi_sender_impl<Sender, F>::dispatch_mpi_sender_type
+    struct dispatch_mpi_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 

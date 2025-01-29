@@ -73,17 +73,7 @@ namespace pika::ensure_started_detail {
     };
 
     template <typename Sender, typename Allocator>
-    struct ensure_started_sender_impl
-    {
-        struct ensure_started_sender_type;
-    };
-
-    template <typename Sender, typename Allocator>
-    using ensure_started_sender =
-        typename ensure_started_sender_impl<Sender, Allocator>::ensure_started_sender_type;
-
-    template <typename Sender, typename Allocator>
-    struct ensure_started_sender_impl<Sender, Allocator>::ensure_started_sender_type
+    struct ensure_started_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -421,7 +411,7 @@ namespace pika::ensure_started_detail {
         pika::intrusive_ptr<shared_state> state;
 
         template <typename Sender_>
-        ensure_started_sender_type(Sender_&& sender, Allocator const& allocator)
+        ensure_started_sender(Sender_&& sender, Allocator const& allocator)
         {
             using allocator_type = Allocator;
             using other_allocator =
@@ -440,10 +430,10 @@ namespace pika::ensure_started_detail {
             state->start();
         }
 
-        ensure_started_sender_type(ensure_started_sender_type&&) = default;
-        ensure_started_sender_type& operator=(ensure_started_sender_type&&) = default;
-        ensure_started_sender_type(ensure_started_sender_type const&) = delete;
-        ensure_started_sender_type& operator=(ensure_started_sender_type const&) = delete;
+        ensure_started_sender(ensure_started_sender&&) = default;
+        ensure_started_sender& operator=(ensure_started_sender&&) = default;
+        ensure_started_sender(ensure_started_sender const&) = delete;
+        ensure_started_sender& operator=(ensure_started_sender const&) = delete;
 
         template <typename Receiver>
         struct operation_state
