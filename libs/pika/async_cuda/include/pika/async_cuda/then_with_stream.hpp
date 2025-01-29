@@ -379,9 +379,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                         });
                 }
 
-                friend constexpr pika::execution::experimental::empty_env tag_invoke(
-                    pika::execution::experimental::get_env_t,
-                    then_with_cuda_stream_receiver const&) noexcept
+                constexpr pika::execution::experimental::empty_env get_env() const& noexcept
                 {
                     return {};
                 }
@@ -490,11 +488,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             return operation_state<Receiver>(std::forward<Receiver>(receiver), f, sched, sender);
         }
 
-        friend auto tag_invoke(pika::execution::experimental::get_env_t,
-            then_with_cuda_stream_sender_type const& s) noexcept
-        {
-            return pika::execution::experimental::get_env(s.sender);
-        }
+        auto get_env() const& noexcept { return pika::execution::experimental::get_env(sender); }
     };
 
     /// This is a helper that calls f with the values sent by sender and a
