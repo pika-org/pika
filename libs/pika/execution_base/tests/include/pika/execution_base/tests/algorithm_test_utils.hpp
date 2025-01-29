@@ -37,10 +37,7 @@ struct void_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            pika::execution::experimental::set_value(std::move(os.r));
-        }
+        void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); }
     };
 
     template <typename R>
@@ -72,7 +69,7 @@ struct error_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             try
             {
@@ -80,7 +77,7 @@ struct error_sender
             }
             catch (...)
             {
-                pika::execution::experimental::set_error(std::move(os.r), std::current_exception());
+                pika::execution::experimental::set_error(std::move(r), std::current_exception());
             }
         }
     };
@@ -114,10 +111,10 @@ struct const_reference_error_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             auto const e = std::make_exception_ptr(std::runtime_error("error"));
-            pika::execution::experimental::set_error(std::move(os.r), e);
+            pika::execution::experimental::set_error(std::move(r), e);
         }
     };
 
@@ -287,10 +284,10 @@ struct custom_sender
     {
         std::atomic<bool>& start_called;
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            os.start_called = true;
-            pika::execution::experimental::set_value(std::move(os.r));
+            start_called = true;
+            pika::execution::experimental::set_value(std::move(r));
         };
     };
 
@@ -331,10 +328,10 @@ struct custom_typed_sender
         std::decay_t<T> x;
         std::atomic<bool>& start_called;
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            os.start_called = true;
-            pika::execution::experimental::set_value(std::move(os.r), std::move(os.x));
+            start_called = true;
+            pika::execution::experimental::set_value(std::move(r), std::move(x));
         };
     };
 
@@ -379,9 +376,9 @@ struct const_reference_sender
         std::reference_wrapper<std::decay_t<T>> const x;
         std::decay_t<R> r;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
+            pika::execution::experimental::set_value(std::move(r), x.get());
         };
     };
 
@@ -474,11 +471,7 @@ struct scheduler
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
@@ -555,11 +548,7 @@ struct scheduler2
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
@@ -665,11 +654,7 @@ namespace my_namespace {
             {
                 std::decay_t<R> r;
 
-                friend void tag_invoke(
-                    pika::execution::experimental::start_t, operation_state& os) noexcept
-                {
-                    pika::execution::experimental::set_value(std::move(os.r));
-                };
+                void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
             };
 
             template <typename R>
@@ -733,10 +718,9 @@ namespace my_namespace {
         struct operation_state
         {
             std::decay_t<R> r;
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
-                pika::execution::experimental::set_value(std::move(os.r), Ts{}...);
+                pika::execution::experimental::set_value(std::move(r), Ts{}...);
             }
         };
 

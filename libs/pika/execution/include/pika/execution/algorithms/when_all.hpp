@@ -333,13 +333,6 @@ namespace pika::when_all_impl {
             }
         };
 
-        template <typename Receiver, typename SendersPack>
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state<Receiver, SendersPack, num_predecessors - 1>& os) noexcept
-        {
-            os.start();
-        }
-
         template <typename Receiver>
         friend auto tag_invoke(
             pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)

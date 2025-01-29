@@ -53,9 +53,9 @@ struct const_reference_cuda_sender
         std::reference_wrapper<std::decay_t<T>> const x;
         std::decay_t<R> r;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
+            pika::execution::experimental::set_value(std::move(r), x.get());
         };
     };
 
@@ -111,10 +111,10 @@ struct const_reference_error_cuda_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             auto const e = std::make_exception_ptr(std::runtime_error("error"));
-            pika::execution::experimental::set_error(std::move(os.r), e);
+            pika::execution::experimental::set_error(std::move(r), e);
         }
     };
 

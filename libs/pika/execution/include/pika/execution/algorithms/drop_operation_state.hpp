@@ -143,12 +143,11 @@ namespace pika::drop_op_state_detail {
         drop_op_state_op_state_type(drop_op_state_op_state_type const&) = delete;
         drop_op_state_op_state_type& operator=(drop_op_state_op_state_type const&) = delete;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, drop_op_state_op_state_type& os) noexcept
+        void start() & noexcept
         {
-            PIKA_ASSERT(os.op_state.has_value());
+            PIKA_ASSERT(op_state.has_value());
             // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-            pika::execution::experimental::start(*(os.op_state));
+            pika::execution::experimental::start(*(op_state));
         }
     };
 

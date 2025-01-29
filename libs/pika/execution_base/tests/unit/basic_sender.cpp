@@ -102,10 +102,7 @@ struct sender_1
     struct operation_state
     {
         receiver r;
-        friend void tag_invoke(ex::start_t, operation_state& os) noexcept
-        {
-            ex::set_value(std::move(os.r), 4711);
-        };
+        void start() & noexcept { ex::set_value(std::move(r), 4711); };
     };
 
     friend operation_state tag_invoke(ex::connect_t, sender_1&&, receiver r)
@@ -133,10 +130,7 @@ struct sender_2
     struct operation_state
     {
         receiver r;
-        friend void tag_invoke(ex::start_t, operation_state& os) noexcept
-        {
-            ex::set_value(std::move(os.r), 4711);
-        };
+        void start() & noexcept { ex::set_value(std::move(r), 4711); };
     };
 };
 

@@ -199,15 +199,14 @@ namespace pika {
             require_started_op_state_type(require_started_op_state_type const&) = delete;
             require_started_op_state_type& operator=(require_started_op_state_type const&) = delete;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, require_started_op_state_type& os) noexcept
+            void start() & noexcept
             {
-                PIKA_ASSERT(os.op_state.has_value());
+                PIKA_ASSERT(op_state.has_value());
 
-                os.started = true;
+                started = true;
 
                 // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                pika::execution::experimental::start(*(os.op_state));
+                pika::execution::experimental::start(*(op_state));
             }
         };
 

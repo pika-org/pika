@@ -54,8 +54,16 @@ namespace pika::execution::experimental {
     struct is_operation_state;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct start_t : pika::functional::detail::tag_noexcept<start_t>
+    struct start_t
     {
+        template <typename OperationState>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(OperationState& os) noexcept -> decltype(os.start())
+        {
+            static_assert(noexcept(os.start()),
+                "std::execution operation state start member function must be noexcept");
+            os.start();
+        }
     } start{};
 
     namespace detail {

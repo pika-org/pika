@@ -37,10 +37,7 @@ struct sender
     {
         std::decay_t<R> receiver;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            pika::execution::experimental::set_value(std::move(os.receiver));
-        };
+        void start() & noexcept { pika::execution::experimental::set_value(std::move(receiver)); };
     };
 
     template <typename R>
