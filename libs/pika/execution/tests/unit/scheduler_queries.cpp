@@ -33,7 +33,7 @@ struct uncustomized_scheduler
         };
 
         template <typename R>
-        friend auto tag_invoke(ex::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }

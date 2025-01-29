@@ -196,18 +196,16 @@ namespace pika::mpi::experimental::detail {
         };
 
         template <typename Receiver>
-        friend constexpr auto
-        tag_invoke(ex::connect_t, dispatch_mpi_sender_type const& s, Receiver&& receiver)
+        constexpr auto connect(Receiver&& receiver) const&
         {
-            return operation_state<Receiver>(std::forward<Receiver>(receiver), s.f, s.sender);
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), f, sender);
         }
 
         template <typename Receiver>
-        friend constexpr auto
-        tag_invoke(ex::connect_t, dispatch_mpi_sender_type&& s, Receiver&& receiver)
+        constexpr auto connect(Receiver&& receiver) &&
         {
             return operation_state<Receiver>(
-                std::forward<Receiver>(receiver), std::move(s.f), std::move(s.sender));
+                std::forward<Receiver>(receiver), std::move(f), std::move(sender));
         }
     };
 

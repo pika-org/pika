@@ -334,19 +334,17 @@ namespace pika::when_all_impl {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
             return operation_state<Receiver, senders_type&&, num_predecessors - 1>(
-                std::forward<Receiver>(receiver), std::move(s.senders));
+                std::forward<Receiver>(receiver), std::move(senders));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_sender_type const& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return operation_state<Receiver, senders_type&, num_predecessors - 1>(
-                std::forward<Receiver>(receiver), s.senders);
+                std::forward<Receiver>(receiver), senders);
         }
     };
 }    // namespace pika::when_all_impl

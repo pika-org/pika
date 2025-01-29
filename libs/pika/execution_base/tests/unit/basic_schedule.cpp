@@ -39,7 +39,7 @@ struct sender
     };
 
     template <typename R>
-    friend operation_state tag_invoke(ex::connect_t, sender, R&&) noexcept
+    operation_state connect(R&&) noexcept
     {
         return {};
     }

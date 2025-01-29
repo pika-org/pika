@@ -85,8 +85,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Receiver>
-            tag_invoke(connect_t, sender const&, Receiver&& receiver)
+            operation_state<Receiver> connect(Receiver&& receiver) const&
             {
                 return {std::forward<Receiver>(receiver)};
             }

@@ -358,18 +358,15 @@ namespace pika::when_all_vector_detail {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_vector_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return operation_state<Receiver>(
-                std::forward<Receiver>(receiver), std::move(s.senders));
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), std::move(senders));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_vector_sender_type const& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
-            return operation_state<Receiver>(std::forward<Receiver>(receiver), s.senders);
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), senders);
         }
     };
 }    // namespace pika::when_all_vector_detail

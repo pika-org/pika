@@ -202,18 +202,16 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Scheduler, Receiver>
-            tag_invoke(connect_t, sender&& s, Receiver&& receiver)
+            operation_state<Scheduler, Receiver> connect(Receiver&& receiver) &&
             {
-                return {std::move(s.scheduler), std::forward<Receiver>(receiver),
-                    s.fallback_annotation};
+                return {
+                    std::move(scheduler), std::forward<Receiver>(receiver), fallback_annotation};
             }
 
             template <typename Receiver>
-            friend operation_state<Scheduler, Receiver>
-            tag_invoke(connect_t, sender const& s, Receiver&& receiver)
+            operation_state<Scheduler, Receiver> connect(Receiver&& receiver) const&
             {
-                return {s.scheduler, std::forward<Receiver>(receiver), s.fallback_annotation};
+                return {scheduler, std::forward<Receiver>(receiver), fallback_annotation};
             }
 
             struct env

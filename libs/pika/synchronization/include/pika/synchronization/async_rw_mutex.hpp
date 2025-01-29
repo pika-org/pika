@@ -512,10 +512,10 @@ namespace pika::execution::experimental {
             };
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
+            auto connect(R&& r) &&
             {
                 return operation_state<R>{
-                    std::forward<R>(r), std::move(s.prev_state), std::move(s.state)};
+                    std::forward<R>(r), std::move(prev_state), std::move(state)};
             }
         };
 
@@ -719,14 +719,14 @@ namespace pika::execution::experimental {
             };
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
+            auto connect(R&& r) &&
             {
                 return operation_state<R>{
-                    std::forward<R>(r), std::move(s.prev_state), std::move(s.state)};
+                    std::forward<R>(r), std::move(prev_state), std::move(state)};
             }
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
+            auto connect(R&& r) const&
             {
                 if constexpr (AccessType == async_rw_mutex_access_type::readwrite)
                 {
@@ -735,7 +735,7 @@ namespace pika::execution::experimental {
                         "connectable");
                 }
 
-                return operation_state<R>{std::forward<R>(r), s.prev_state, s.state};
+                return operation_state<R>{std::forward<R>(r), prev_state, state};
             }
         };
 

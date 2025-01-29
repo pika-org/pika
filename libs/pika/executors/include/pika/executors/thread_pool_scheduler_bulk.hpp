@@ -478,20 +478,17 @@ namespace pika::thread_pool_bulk_detail {
 
     public:
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            thread_pool_bulk_sender&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return operation_state<std::decay_t<Receiver>>{std::move(s.scheduler),
-                std::move(s.sender), std::move(s.shape), std::move(s.f),
-                std::forward<Receiver>(receiver)};
+            return operation_state<std::decay_t<Receiver>>{std::move(scheduler), std::move(sender),
+                std::move(shape), std::move(f), std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, thread_pool_bulk_sender& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return operation_state<std::decay_t<Receiver>>{
-                s.scheduler, s.sender, s.shape, s.f, std::forward<Receiver>(receiver)};
+                scheduler, sender, shape, f, std::forward<Receiver>(receiver)};
         }
 
         friend auto tag_invoke(

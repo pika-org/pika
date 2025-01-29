@@ -265,16 +265,14 @@ namespace pika::let_value_detail {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, let_value_sender_type&& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
             return operation_state<Receiver>(
-                std::move(s.predecessor_sender), std::forward<Receiver>(receiver), std::move(s.f));
+                std::move(predecessor_sender), std::forward<Receiver>(receiver), std::move(f));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, let_value_sender_type const&, Receiver&&)
+        auto connect(Receiver&&) const&
         {
             static_assert(sizeof(Receiver) == 0,
                 "Are you missing a std::move? The let_value sender is not copyable and thus not "
