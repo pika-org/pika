@@ -117,17 +117,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
     }
 
     template <typename Sender, typename F>
-    struct then_with_cuda_stream_sender_impl
-    {
-        struct then_with_cuda_stream_sender_type;
-    };
-
-    template <typename Sender, typename F>
-    using then_with_cuda_stream_sender =
-        typename then_with_cuda_stream_sender_impl<Sender, F>::then_with_cuda_stream_sender_type;
-
-    template <typename Sender, typename F>
-    struct then_with_cuda_stream_sender_impl<Sender, F>::then_with_cuda_stream_sender_type
+    struct then_with_cuda_stream_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -136,18 +126,17 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         cuda_scheduler sched;
 
         template <typename Sender_, typename F_>
-        then_with_cuda_stream_sender_type(Sender_&& sender, F_&& f, cuda_scheduler sched)
+        then_with_cuda_stream_sender(Sender_&& sender, F_&& f, cuda_scheduler sched)
           : sender(std::forward<Sender_>(sender))
-          , f(std::forward<F_>(f))
+          , f(std::forward<F>(f))
           , sched(std::move(sched))
         {
         }
 
-        then_with_cuda_stream_sender_type(then_with_cuda_stream_sender_type&&) = default;
-        then_with_cuda_stream_sender_type& operator=(then_with_cuda_stream_sender_type&&) = default;
-        then_with_cuda_stream_sender_type(then_with_cuda_stream_sender_type const&) = default;
-        then_with_cuda_stream_sender_type& operator=(
-            then_with_cuda_stream_sender_type const&) = default;
+        then_with_cuda_stream_sender(then_with_cuda_stream_sender&&) = default;
+        then_with_cuda_stream_sender& operator=(then_with_cuda_stream_sender&&) = default;
+        then_with_cuda_stream_sender(then_with_cuda_stream_sender const&) = default;
+        then_with_cuda_stream_sender& operator=(then_with_cuda_stream_sender const&) = default;
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename... Ts>
@@ -446,16 +435,15 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         pika::execution::experimental::value_types_of_t<
-                            then_with_cuda_stream_sender_type,
-                            pika::execution::experimental::empty_env, pika::util::detail::pack,
-                            pika::util::detail::pack>,
+                            then_with_cuda_stream_sender, pika::execution::experimental::empty_env,
+                            pika::util::detail::pack, pika::util::detail::pack>,
                         result_types_helper>,
                     pika::detail::monostate>>>;
 #else
             using result_type = pika::util::detail::change_pack_t<pika::detail::variant,
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
-                        then_with_cuda_stream_sender_type::value_types<pika::util::detail::pack,
+                        then_with_cuda_stream_sender::value_types<pika::util::detail::pack,
                             pika::util::detail::pack>,
                         result_types_helper>,
                     pika::detail::monostate>>>;

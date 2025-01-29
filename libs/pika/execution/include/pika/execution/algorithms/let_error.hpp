@@ -28,17 +28,7 @@
 
 namespace pika::let_error_detail {
     template <typename PredecessorSender, typename F>
-    struct let_error_sender_impl
-    {
-        struct let_error_sender_type;
-    };
-
-    template <typename PredecessorSender, typename F>
-    using let_error_sender =
-        typename let_error_sender_impl<PredecessorSender, F>::let_error_sender_type;
-
-    template <typename PredecessorSender, typename F>
-    struct let_error_sender_impl<PredecessorSender, F>::let_error_sender_type
+    struct let_error_sender
     {
         PIKA_NO_UNIQUE_ADDRESS typename std::decay_t<PredecessorSender> predecessor_sender;
         PIKA_NO_UNIQUE_ADDRESS typename std::decay_t<F> f;

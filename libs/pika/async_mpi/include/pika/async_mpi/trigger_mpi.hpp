@@ -36,20 +36,9 @@ namespace pika::mpi::experimental::detail {
     namespace ex = pika::execution::experimental;
 
     // -----------------------------------------------------------------
-    // route calls through an impl layer for ADL isolation
-    template <typename Sender>
-    struct trigger_mpi_sender_impl
-    {
-        struct trigger_mpi_sender_type;
-    };
-
-    template <typename Sender>
-    using trigger_mpi_sender = typename trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type;
-
-    // -----------------------------------------------------------------
     // transform MPI adapter - sender type
     template <typename Sender>
-    struct trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type
+    struct trigger_mpi_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
         std::decay_t<Sender> sender;

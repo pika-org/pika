@@ -148,17 +148,7 @@ namespace pika::drop_op_state_detail {
     };
 
     template <typename Sender>
-    struct drop_op_state_sender_impl
-    {
-        struct drop_op_state_sender_type;
-    };
-
-    template <typename Sender>
-    using drop_op_state_sender =
-        typename drop_op_state_sender_impl<Sender>::drop_op_state_sender_type;
-
-    template <typename Sender>
-    struct drop_op_state_sender_impl<Sender>::drop_op_state_sender_type
+    struct drop_op_state_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -202,16 +192,16 @@ namespace pika::drop_op_state_detail {
 
         template <typename Sender_,
             typename Enable =
-                std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, drop_op_state_sender_type>>>
-        explicit drop_op_state_sender_type(Sender_&& sender)
+                std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, drop_op_state_sender>>>
+        explicit drop_op_state_sender(Sender_&& sender)
           : sender(std::forward<Sender_>(sender))
         {
         }
 
-        drop_op_state_sender_type(drop_op_state_sender_type const&) = default;
-        drop_op_state_sender_type& operator=(drop_op_state_sender_type const&) = default;
-        drop_op_state_sender_type(drop_op_state_sender_type&&) = default;
-        drop_op_state_sender_type& operator=(drop_op_state_sender_type&&) = default;
+        drop_op_state_sender(drop_op_state_sender const&) = default;
+        drop_op_state_sender& operator=(drop_op_state_sender const&) = default;
+        drop_op_state_sender(drop_op_state_sender&&) = default;
+        drop_op_state_sender& operator=(drop_op_state_sender&&) = default;
 
         template <typename Receiver>
         drop_op_state_op_state<Sender, Receiver> connect(Receiver&& receiver) &&

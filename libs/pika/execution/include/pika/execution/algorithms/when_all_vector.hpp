@@ -35,29 +35,19 @@
 
 namespace pika::when_all_vector_detail {
     template <typename Sender>
-    struct when_all_vector_sender_impl
-    {
-        struct when_all_vector_sender_type;
-    };
-
-    template <typename Sender>
-    using when_all_vector_sender =
-        typename when_all_vector_sender_impl<Sender>::when_all_vector_sender_type;
-
-    template <typename Sender>
-    struct when_all_vector_sender_impl<Sender>::when_all_vector_sender_type
+    struct when_all_vector_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
         using senders_type = std::vector<Sender>;
         senders_type senders;
 
-        explicit constexpr when_all_vector_sender_type(senders_type&& senders)
+        explicit constexpr when_all_vector_sender(senders_type&& senders)
           : senders(std::move(senders))
         {
         }
 
-        explicit constexpr when_all_vector_sender_type(senders_type const& senders)
+        explicit constexpr when_all_vector_sender(senders_type const& senders)
           : senders(senders)
         {
         }

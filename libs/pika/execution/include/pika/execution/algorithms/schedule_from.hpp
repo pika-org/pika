@@ -32,17 +32,7 @@
 
 namespace pika::schedule_from_detail {
     template <typename Sender, typename Scheduler>
-    struct schedule_from_sender_impl
-    {
-        struct schedule_from_sender_type;
-    };
-
-    template <typename Sender, typename Scheduler>
-    using schedule_from_sender =
-        typename schedule_from_sender_impl<Sender, Scheduler>::schedule_from_sender_type;
-
-    template <typename Sender, typename Scheduler>
-    struct schedule_from_sender_impl<Sender, Scheduler>::schedule_from_sender_type
+    struct schedule_from_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> predecessor_sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;

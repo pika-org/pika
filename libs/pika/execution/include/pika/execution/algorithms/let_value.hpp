@@ -29,17 +29,7 @@
 
 namespace pika::let_value_detail {
     template <typename PredecessorSender, typename F>
-    struct let_value_sender_impl
-    {
-        struct let_value_sender_type;
-    };
-
-    template <typename PredecessorSender, typename F>
-    using let_value_sender =
-        typename let_value_sender_impl<PredecessorSender, F>::let_value_sender_type;
-
-    template <typename PredecessorSender, typename F>
-    struct let_value_sender_impl<PredecessorSender, F>::let_value_sender_type
+    struct let_value_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<PredecessorSender> predecessor_sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
