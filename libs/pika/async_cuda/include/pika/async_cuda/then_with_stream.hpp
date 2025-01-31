@@ -478,19 +478,16 @@ namespace pika::cuda::experimental::then_with_stream_detail {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_with_cuda_stream_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return operation_state<Receiver>(std::forward<Receiver>(receiver), std::move(s.f),
-                std::move(s.sched), std::move(s.sender));
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), std::move(f),
+                std::move(sched), std::move(sender));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            then_with_cuda_stream_sender_type const& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
-            return operation_state<Receiver>(
-                std::forward<Receiver>(receiver), s.f, s.sched, s.sender);
+            return operation_state<Receiver>(std::forward<Receiver>(receiver), f, sched, sender);
         }
 
         friend auto tag_invoke(pika::execution::experimental::get_env_t,

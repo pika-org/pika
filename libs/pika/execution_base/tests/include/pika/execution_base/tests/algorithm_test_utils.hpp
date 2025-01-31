@@ -41,8 +41,7 @@ struct void_sender
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, void_sender, R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -83,8 +82,7 @@ struct error_sender
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, error_sender, R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -119,8 +117,7 @@ struct const_reference_error_sender
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_error_sender, R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -253,7 +250,7 @@ struct custom_sender_tag_invoke
     };
 
     template <typename R>
-    operation_state<R> connect(R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -292,10 +289,10 @@ struct custom_sender
     };
 
     template <typename R>
-    friend auto tag_invoke(pika::execution::experimental::connect_t, custom_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        s.connect_called = true;
-        return operation_state<R>{s.start_called, std::forward<R>(r)};
+        connect_called = true;
+        return operation_state<R>{start_called, std::forward<R>(r)};
     }
 };
 
@@ -336,10 +333,10 @@ struct custom_typed_sender
     };
 
     template <typename R>
-    friend auto tag_invoke(pika::execution::experimental::connect_t, custom_typed_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        s.connect_called = true;
-        return operation_state<R>{std::move(s.x), s.start_called, std::forward<R>(r)};
+        connect_called = true;
+        return operation_state<R>{std::move(x), start_called, std::forward<R>(r)};
     }
 };
 
@@ -383,17 +380,15 @@ struct const_reference_sender
     };
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+        return operation_state<R>{std::move(x), std::forward<R>(r)};
     }
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_sender const& s, R&& r)
+    auto connect(R&& r) const&
     {
-        return operation_state<R>{s.x, std::forward<R>(r)};
+        return operation_state<R>{x, std::forward<R>(r)};
     }
 };
 
@@ -475,7 +470,7 @@ struct scheduler
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -552,7 +547,7 @@ struct scheduler2
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -658,7 +653,7 @@ namespace my_namespace {
             };
 
             template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+            auto connect(R&& r) &&
             {
                 return operation_state<R>{std::forward<R>(r)};
             }
@@ -725,8 +720,7 @@ namespace my_namespace {
         };
 
         template <typename R>
-        friend operation_state<R>
-        tag_invoke(pika::execution::experimental::connect_t, my_sender, R&& r)
+        operation_state<R> connect(R&& r) &&
         {
             return {std::forward<R>(r)};
         }

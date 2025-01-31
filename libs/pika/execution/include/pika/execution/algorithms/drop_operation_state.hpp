@@ -218,19 +218,15 @@ namespace pika::drop_op_state_detail {
         drop_op_state_sender_type& operator=(drop_op_state_sender_type&&) = default;
 
         template <typename Receiver>
-        friend drop_op_state_op_state<Sender, Receiver>
-        tag_invoke(pika::execution::experimental::connect_t, drop_op_state_sender_type&& s,
-            Receiver&& receiver)
+        drop_op_state_op_state<Sender, Receiver> connect(Receiver&& receiver) &&
         {
-            return {std::move(s.sender), std::forward<Receiver>(receiver)};
+            return {std::move(sender), std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
-        friend drop_op_state_op_state<Sender, Receiver>
-        tag_invoke(pika::execution::experimental::connect_t, drop_op_state_sender_type const& s,
-            Receiver&& receiver)
+        drop_op_state_op_state<Sender, Receiver> connect(Receiver&& receiver) const&
         {
-            return {s.sender, std::forward<Receiver>(receiver)};
+            return {sender, std::forward<Receiver>(receiver)};
         }
     };
 }    // namespace pika::drop_op_state_detail

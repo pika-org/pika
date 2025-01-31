@@ -60,10 +60,9 @@ struct const_reference_cuda_sender
     };
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_cuda_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+        return operation_state<R>{std::move(x), std::forward<R>(r)};
     }
 
     struct env
@@ -119,8 +118,7 @@ struct const_reference_error_cuda_sender
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_error_cuda_sender, R&& r)
+    operation_state<R> connect(R&& r)
     {
         return {std::forward<R>(r)};
     }

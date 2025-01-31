@@ -41,8 +41,7 @@ struct sender
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& receiver) noexcept
+    operation_state<R> connect(R&& receiver) && noexcept
     {
         return {std::forward<R>(receiver)};
     }

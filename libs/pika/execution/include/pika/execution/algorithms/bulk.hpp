@@ -112,20 +112,18 @@ namespace pika::bulk_detail {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, bulk_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(std::move(s.sender),
+            return pika::execution::experimental::connect(std::move(sender),
                 bulk_receiver<Receiver>(
-                    std::forward<Receiver>(receiver), std::move(s.shape), std::move(s.f)));
+                    std::forward<Receiver>(receiver), std::move(shape), std::move(f)));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, bulk_sender_type const& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                s.sender, bulk_receiver<Receiver>(std::forward<Receiver>(receiver), s.shape, s.f));
+                sender, bulk_receiver<Receiver>(std::forward<Receiver>(receiver), shape, f));
         }
     };
 }    // namespace pika::bulk_detail

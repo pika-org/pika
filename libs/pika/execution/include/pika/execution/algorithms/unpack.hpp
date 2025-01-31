@@ -174,19 +174,17 @@ namespace pika::unpack_detail {
 #endif
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, unpack_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
             return pika::execution::experimental::connect(
-                std::move(s.sender), unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
+                std::move(sender), unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            unpack_sender_type const& r, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
+                sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         friend decltype(auto) tag_invoke(

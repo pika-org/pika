@@ -361,14 +361,12 @@ namespace pika {
             }
 
             template <typename Receiver>
-            friend require_started_op_state<Sender, Receiver>
-            tag_invoke(pika::execution::experimental::connect_t, require_started_sender_type&& s,
-                Receiver&& receiver)
+            require_started_op_state<Sender, Receiver> connect(Receiver&& receiver) &&
             {
-                if (!s.sender.has_value())
+                if (!sender.has_value())
                 {
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::connect(require_started_sender&&)",
                         "Trying to connect an empty require_started sender");
 #else
@@ -378,25 +376,23 @@ namespace pika {
 #endif
                 }
 
-                s.connected = true;
+                connected = true;
                 return {// NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                    *std::exchange(s.sender, std::nullopt), std::forward<Receiver>(receiver)
+                    *std::exchange(sender, std::nullopt), std::forward<Receiver>(receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                                                                ,
-                    s.mode
+                                                              ,
+                    mode
 #endif
                 };
             }
 
             template <typename Receiver>
-            friend require_started_op_state<Sender, Receiver>
-            tag_invoke(pika::execution::experimental::connect_t,
-                require_started_sender_type const& s, Receiver&& receiver)
+            require_started_op_state<Sender, Receiver> connect(Receiver&& receiver) const&
             {
-                if (!s.sender.has_value())
+                if (!sender.has_value())
                 {
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::connect(require_started_sender const&)",
                         "Trying to connect an empty require_started sender");
 #else
@@ -406,11 +402,11 @@ namespace pika {
 #endif
                 }
 
-                s.connected = true;
-                return {*s.sender, std::forward<Receiver>(receiver)
+                connected = true;
+                return {*sender, std::forward<Receiver>(receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                                       ,
-                    s.mode
+                                     ,
+                    mode
 #endif
                 };
             }

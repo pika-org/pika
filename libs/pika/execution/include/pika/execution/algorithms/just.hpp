@@ -96,17 +96,15 @@ namespace pika::just_detail {
             };
 
             template <typename Receiver>
-            friend auto tag_invoke(
-                pika::execution::experimental::connect_t, just_sender_type&& s, Receiver&& receiver)
+            auto connect(Receiver&& receiver) &&
             {
-                return operation_state<Receiver>{std::forward<Receiver>(receiver), std::move(s.ts)};
+                return operation_state<Receiver>{std::forward<Receiver>(receiver), std::move(ts)};
             }
 
             template <typename Receiver>
-            friend auto tag_invoke(pika::execution::experimental::connect_t,
-                just_sender_type const& s, Receiver&& receiver)
+            auto connect(Receiver&& receiver) const&
             {
-                return operation_state<Receiver>{std::forward<Receiver>(receiver), s.ts};
+                return operation_state<Receiver>{std::forward<Receiver>(receiver), ts};
             }
         };
     };

@@ -797,20 +797,18 @@ namespace pika::execution::experimental {
             pika::execution::experimental::set_stopped_t()>;
 
         template <typename Receiver>
-        friend detail::any_operation_state<Receiver, Ts...> tag_invoke(
-            pika::execution::experimental::connect_t, unique_any_sender&& s, Receiver&& receiver)
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&& receiver) &&
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
             // std::move(storage.get()).connect(...) would leave us with a
             // non-empty any_sender holding a moved-from sender.
-            auto moved_storage = std::move(s.storage);
+            auto moved_storage = std::move(storage);
             return {std::move(moved_storage.get()), std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
-        friend detail::any_operation_state<Receiver, Ts...>
-        tag_invoke(pika::execution::experimental::connect_t, unique_any_sender const&, Receiver&&)
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&&) const&
         {
             static_assert(sizeof(Receiver) == 0,
                 "Are you missing a std::move? unique_any_sender is not copyable and thus not "
@@ -923,21 +921,19 @@ namespace pika::execution::experimental {
             pika::execution::experimental::set_stopped_t()>;
 
         template <typename Receiver>
-        friend detail::any_operation_state<Receiver, Ts...> tag_invoke(
-            pika::execution::experimental::connect_t, any_sender const& s, Receiver&& receiver)
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&& receiver) const&
         {
-            return {s.storage.get(), std::forward<Receiver>(receiver)};
+            return {storage.get(), std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
-        friend detail::any_operation_state<Receiver, Ts...>
-        tag_invoke(pika::execution::experimental::connect_t, any_sender&& s, Receiver&& receiver)
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&& receiver) &&
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
             // std::move(storage.get()).connect(...) would leave us with a
             // non-empty any_sender holding a moved-from sender.
-            auto moved_storage = std::move(s.storage);
+            auto moved_storage = std::move(storage);
             return {std::move(moved_storage.get()), std::forward<Receiver>(receiver)};
         }
 

@@ -132,19 +132,17 @@ namespace pika::then_detail {
         static constexpr bool sends_done = false;
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, then_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(std::move(s.sender),
-                then_receiver<Receiver, F>{std::forward<Receiver>(receiver), std::move(s.f)});
+            return pika::execution::experimental::connect(std::move(sender),
+                then_receiver<Receiver, F>{std::forward<Receiver>(receiver), std::move(f)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, then_sender_type const& r,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, then_receiver<Receiver, F>{std::forward<Receiver>(receiver), r.f});
+                sender, then_receiver<Receiver, F>{std::forward<Receiver>(receiver), f});
         }
 
         friend decltype(auto) tag_invoke(
