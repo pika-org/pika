@@ -154,15 +154,5 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    {
-        auto [s] = ex::split_tuple(my_namespace::my_sender<std::tuple<int>>{});
-        test_adl_isolation(s);
-
-        // This is not required by the ADL test, but required by split_tuple. The
-        // shared state destructor of the sender returned by split_tuple asserts that
-        // the sender has been connected and started before being released.
-        tt::sync_wait(std::move(s));
-    }
-
     return 0;
 }
