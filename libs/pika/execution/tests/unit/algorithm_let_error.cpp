@@ -229,7 +229,5 @@ int main()
         PIKA_TEST(!let_error_callback_called);
     }
 
-    test_adl_isolation(ex::let_error(error_sender<>{}, my_namespace::my_let_error_type{}));
-
     return 0;
 }

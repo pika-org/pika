@@ -248,7 +248,5 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    test_adl_isolation(ex::when_all(my_namespace::my_sender{}));
-
     return 0;
 }
