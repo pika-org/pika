@@ -48,7 +48,7 @@ jobs:
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_BUILD_TYPE= ${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
-                -DPIKA_WITH_MPI=OFF \
+                -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
