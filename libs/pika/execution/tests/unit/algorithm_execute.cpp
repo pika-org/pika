@@ -56,10 +56,7 @@ struct sender
         }
     };
 
-    friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
-    {
-        return {};
-    }
+    env get_env() const& noexcept { return {}; }
 };
 
 struct scheduler_1

@@ -59,10 +59,9 @@ namespace pika::bulk_detail {
 
         static constexpr bool sends_done = false;
 
-        friend constexpr decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, bulk_sender_type const& s) noexcept
+        constexpr decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
 
         template <typename Receiver>

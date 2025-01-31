@@ -145,10 +145,9 @@ namespace pika::then_detail {
                 sender, then_receiver<Receiver, F>{std::forward<Receiver>(receiver), f});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, then_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::then_detail

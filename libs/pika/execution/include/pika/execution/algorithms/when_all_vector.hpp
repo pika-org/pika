@@ -205,9 +205,7 @@ namespace pika::when_all_vector_detail {
                     r.op_state.finish();
                 }
 
-                friend constexpr pika::execution::experimental::empty_env tag_invoke(
-                    pika::execution::experimental::get_env_t,
-                    when_all_vector_receiver const&) noexcept
+                constexpr pika::execution::experimental::empty_env get_env() const& noexcept
                 {
                     return {};
                 }

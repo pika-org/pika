@@ -101,11 +101,7 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend constexpr env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const&) noexcept
-            {
-                return {};
-            }
+            constexpr env get_env() const& noexcept { return {}; }
         };
 
         friend sender tag_invoke(schedule_t, std_thread_scheduler const&) { return {}; }
