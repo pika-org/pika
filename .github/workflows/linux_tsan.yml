@@ -37,6 +37,10 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ccache-linux-sanitizers-thread-${{ matrix.build_type }}
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
       - name: Switch OpenMPI to MPICH
         shell: bash
         run: |
@@ -44,6 +48,20 @@ jobs:
             apt-get remove --yes mpi-default-dev
             apt-get autoremove --yes
             apt-get install --no-install-recommends --yes libmpich-dev
+      # Works around https://bugs.launchpad.net/ubuntu/+source/mpich/+bug/2072338. Workaround based
+      # on https://stackoverflow.com/a/78832608
+      - name: Install custom version of prterun
+        shell: bash
+        run: |
+            apt-get install --no-install-recommends --yes libevent-dev libpmix-bin libpmix-dev
+            curl --output prrte.tar.bz2 --location https://github.com/openpmix/prrte/releases/download/v3.0.8/prrte-3.0.8.tar.bz2
+            sha256sum prrte.tar.bz2
+            (echo "e798192fa0ab38172818a109a6c89bcc37e4b1123ca150d8c115dee5231750de prrte.tar.bz2" | sha256sum --check)
+            tar xvf prrte.tar.bz2
+            cd prrte-3.0.8
+            CC="ccache cc" ./configure
+            make -j$(nproc)
+            make install
       - name: Configure
         shell: bash
         run: |
@@ -55,7 +73,8 @@ jobs:
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
-                -DPIKA_WITH_MPI=OFF \
+                -DMPIEXEC_EXECUTABLE=$(command -v prterun) \
+                -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
