@@ -261,11 +261,7 @@ namespace pika::let_value_detail {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::start(os.predecessor_op_state);
-            }
+            void start() & noexcept { pika::execution::experimental::start(predecessor_op_state); }
         };
 
         template <typename Receiver>

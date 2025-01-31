@@ -473,11 +473,7 @@ namespace pika::thread_pool_bulk_detail {
             {
             }
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::start(os.op_state);
-            }
+            void start() & noexcept { pika::execution::experimental::start(op_state); }
         };
 
     public:

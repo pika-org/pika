@@ -449,11 +449,10 @@ namespace pika::split_tuple_detail {
             operation_state(operation_state const&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
-                os.state->start();
-                os.state->template add_continuation<Index>(os.receiver);
+                state->start();
+                state->template add_continuation<Index>(receiver);
             }
         };
 

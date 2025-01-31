@@ -473,41 +473,40 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
-                    pika::execution::experimental::start_t, operation_state& os) noexcept
+                void start() & noexcept
                 {
-                    PIKA_ASSERT_MSG(os.state,
+                    PIKA_ASSERT_MSG(state,
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [&os](shared_state_ptr_type state) mutable {
+                    auto continuation = [&](shared_state_ptr_type state) mutable {
                         try
                         {
                             pika::execution::experimental::set_value(
-                                std::move(os.r), access_type{std::move(state)});
+                                std::move(r), access_type{std::move(state)});
                         }
                         catch (...)
                         {
                             pika::execution::experimental::set_error(
-                                std::move(os.r), std::current_exception());
+                                std::move(r), std::current_exception());
                         }
                     };
 
-                    if (auto p = os.prev_state.lock())
+                    if (auto p = prev_state.lock())
                     {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
                         p->add_continuation(std::move(continuation));
-                        os.state.reset();
-                        os.prev_state.reset();
+                        state.reset();
+                        prev_state.reset();
                     }
                     else
                     {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation(std::move(os.state));
+                        continuation(std::move(state));
                     }
                 }
             };
@@ -681,41 +680,40 @@ namespace pika::execution::experimental {
                 operation_state(operation_state const&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
-                    pika::execution::experimental::start_t, operation_state& os) noexcept
+                void start() & noexcept
                 {
-                    PIKA_ASSERT_MSG(os.state,
+                    PIKA_ASSERT_MSG(state,
                         "async_rw_lock::sender::operation_state state is empty, was the sender "
                         "already started?");
 
-                    auto continuation = [&os](shared_state_ptr_type state) mutable {
+                    auto continuation = [&](shared_state_ptr_type state) mutable {
                         try
                         {
                             pika::execution::experimental::set_value(
-                                std::move(os.r), access_type{std::move(state)});
+                                std::move(r), access_type{std::move(state)});
                         }
                         catch (...)
                         {
                             pika::execution::experimental::set_error(
-                                std::move(os.r), std::current_exception());
+                                std::move(r), std::current_exception());
                         }
                     };
 
-                    if (auto p = os.prev_state.lock())
+                    if (auto p = prev_state.lock())
                     {
                         // If the previous state is set and it's still alive,
                         // add a continuation to be triggered when the previous
                         // state is released.
                         p->add_continuation(std::move(continuation));
-                        os.state.reset();
-                        os.prev_state.reset();
+                        state.reset();
+                        prev_state.reset();
                     }
                     else
                     {
                         // There is no previous state on the first access or the
                         // previous state has already been released. We can run
                         // the continuation immediately.
-                        continuation(std::move(os.state));
+                        continuation(std::move(state));
                     }
                 }
             };

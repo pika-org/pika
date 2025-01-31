@@ -192,10 +192,7 @@ namespace pika::mpi::experimental::detail {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("operation_state")));
             }
 
-            friend constexpr auto tag_invoke(ex::start_t, operation_state& os) noexcept
-            {
-                return ex::start(os.op_state);
-            }
+            void start() & noexcept { return ex::start(op_state); }
         };
 
         template <typename Receiver>

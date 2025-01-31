@@ -52,18 +52,18 @@ namespace pika::execution::experimental {
             operation_state& operator=(operation_state&&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        std::thread t{[&os]() mutable {
-                            pika::execution::experimental::set_value(std::move(os.receiver));
+                        std::thread t{[&]() mutable {
+                            pika::execution::experimental::set_value(std::move(receiver));
                         }};
                         t.detach();
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            std::move(os.receiver), std::move(ep));
+                            std::move(receiver), std::move(ep));
                     });
             }
         };

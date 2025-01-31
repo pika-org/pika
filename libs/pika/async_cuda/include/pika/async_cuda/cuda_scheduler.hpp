@@ -113,13 +113,12 @@ namespace pika::cuda::experimental {
                 operation_state& operator=(operation_state&&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
-                    pika::execution::experimental::start_t, operation_state& os) noexcept
+                void start() & noexcept
                 {
                     // This currently only acts as an inline scheduler to signal
                     // downstream senders that they should use the
                     // cuda_scheduler.
-                    pika::execution::experimental::set_value(std::move(os.receiver));
+                    pika::execution::experimental::set_value(std::move(receiver));
                 }
             };
 

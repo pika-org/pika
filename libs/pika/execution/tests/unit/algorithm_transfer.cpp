@@ -58,11 +58,7 @@ struct scheduler_schedule_from
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
@@ -155,11 +151,7 @@ struct scheduler_transfer
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>

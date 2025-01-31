@@ -474,11 +474,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             {
             }
 
-            friend constexpr void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::start(os.op_state);
-            }
+            void start() & noexcept { pika::execution::experimental::start(op_state); }
         };
 
         template <typename Receiver>
