@@ -1117,48 +1117,11 @@ namespace pika::detail {
         PIKA_LOG(info, "runtime: exiting wait state");
     }
 
-    void runtime::wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running)
-    {
-        // signal successful initialization
-        {
-            std::lock_guard<std::mutex> lk(mtx);
-            running = true;
-            cond.notify_all();
-        }
-
-        std::string fullname("pika/main-thread#wait_helper");
-        std::string shortname("pika/waithelper");
-        detail::set_thread_name(fullname, shortname);
-
-#if defined(PIKA_HAVE_APEX)
-        // not registering helper threads - for now
-        //detail::external_timer::register_thread(thread_name.c_str());
-#endif
-
-        wait_finalize();
-    }
-
     int runtime::wait()
     {
         PIKA_LOG(info, "runtime: about to enter wait state");
 
-        // start the wait_helper in a separate thread
-        std::mutex mtx;
-        std::condition_variable cond;
-        bool running = false;
-
-        std::thread t(pika::util::detail::bind(
-            &runtime::wait_helper, this, std::ref(mtx), std::ref(cond), std::ref(running)));
-
-        // wait for the thread to run
-        {
-            std::unique_lock<std::mutex> lk(mtx);
-            cond.wait(lk, [&] { return running; });
-        }
-
-        // block main thread
-        t.join();
-
+        wait_finalize();
         thread_manager_->wait();
 
         PIKA_LOG(info, "runtime: exiting wait state");
