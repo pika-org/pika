@@ -44,8 +44,6 @@ int main(int argc, char** argv)
 
     std::uint64_t threads = pika::resource::get_num_threads("default");
 
-    auto sched = ex::thread_pool_scheduler{};
-
     std::cout << "threads, resume [s], execute [s], suspend [s]" << std::endl;
 
     double suspend_time = 0;
@@ -59,11 +57,6 @@ int main(int argc, char** argv)
         pika::resume();
         auto t_resume = timer.elapsed();
         resume_time += t_resume;
-
-        for (std::size_t thread = 0; thread < threads; ++thread)
-        {
-            ex::execute(sched, [] {});
-        }
 
         auto t_execute = timer.elapsed();
 

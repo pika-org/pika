@@ -66,12 +66,6 @@ int main(int argc, char** argv)
         auto t_start = timer.elapsed();
         start_time += t_start;
 
-        auto sched = ex::thread_pool_scheduler{};
-        for (std::size_t thread = 0; thread < threads; ++thread)
-        {
-            ex::execute(sched, [] {});
-        }
-
         auto t_execute = timer.elapsed();
 
         pika::stop();
