@@ -15,6 +15,8 @@
 #include <pika/testing/performance.hpp>
 #include <pika/thread.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -23,18 +25,19 @@ namespace ex = pika::execution::experimental;
 
 int main(int argc, char** argv)
 {
-    pika::program_options::options_description desc_commandline;
-    desc_commandline.add_options()("repetitions",
-        pika::program_options::value<std::uint64_t>()->default_value(100), "Number of repetitions");
+    using namespace pika::program_options;
+    options_description desc_commandline;
+    // clang-format off
+    desc_commandline.add_options()
+        ("repetitions", value<std::uint64_t>()->default_value(100), "Number of repetitions")
+        ("perftest-json", bool_switch(), "Print average resume-suspend time in json format for use with performance CI");
+    // clang-format on
 
-    pika::program_options::variables_map vm;
-    pika::program_options::store(pika::program_options::command_line_parser(argc, argv)
-                                     .allow_unregistered()
-                                     .options(desc_commandline)
-                                     .run(),
-        vm);
+    variables_map vm;
+    store(command_line_parser(argc, argv).allow_unregistered().options(desc_commandline).run(), vm);
 
-    std::uint64_t repetitions = vm["repetitions"].as<std::uint64_t>();
+    auto const repetitions = vm["repetitions"].as<std::uint64_t>();
+    auto const perftest_json = vm["perftest-json"].as<bool>();
 
     pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
@@ -44,7 +47,7 @@ int main(int argc, char** argv)
 
     std::uint64_t threads = pika::resource::get_num_threads("default");
 
-    std::cout << "threads, resume [s], execute [s], suspend [s]" << std::endl;
+    if (!perftest_json) { std::cout << "threads, resume [s], suspend [s]" << std::endl; }
 
     double suspend_time = 0;
     pika::chrono::detail::high_resolution_timer timer;
@@ -56,17 +59,24 @@ int main(int argc, char** argv)
         pika::resume();
         auto t_resume = timer.elapsed();
 
-        auto t_execute = timer.elapsed();
-
         pika::suspend();
         auto t_suspend = timer.elapsed();
         suspend_time += t_suspend;
 
-        std::cout << threads << ", " << t_resume << ", " << t_execute << ", " << t_suspend
-                  << std::endl;
+        if (!perftest_json)
+        {
+            std::cout << threads << ", " << t_resume << ", " << t_suspend << std::endl;
+        }
     }
 
     pika::resume();
     pika::finalize();
     pika::stop();
+
+    if (perftest_json)
+    {
+        pika::util::detail::json_perf_times t;
+        t.add(fmt::format("resume_suspend - {} threads", threads), suspend_time / repetitions);
+        std::cout << t;
+    }
 }
