@@ -47,7 +47,6 @@ int main(int argc, char** argv)
     std::cout << "threads, resume [s], execute [s], suspend [s]" << std::endl;
 
     double suspend_time = 0;
-    double resume_time = 0;
     pika::chrono::detail::high_resolution_timer timer;
 
     for (std::size_t i = 0; i < repetitions; ++i)
@@ -56,7 +55,6 @@ int main(int argc, char** argv)
 
         pika::resume();
         auto t_resume = timer.elapsed();
-        resume_time += t_resume;
 
         auto t_execute = timer.elapsed();
 
@@ -67,9 +65,6 @@ int main(int argc, char** argv)
         std::cout << threads << ", " << t_resume << ", " << t_execute << ", " << t_suspend
                   << std::endl;
     }
-
-    pika::util::print_cdash_timing("ResumeTime", resume_time);
-    pika::util::print_cdash_timing("SuspendTime", suspend_time);
 
     pika::resume();
     pika::finalize();
