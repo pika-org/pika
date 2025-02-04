@@ -238,8 +238,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator==(stop_token const& lhs, stop_token const& rhs) noexcept
+        friend bool operator==(stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
@@ -248,8 +247,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator!=(stop_token const& lhs, stop_token const& rhs) noexcept
+        friend bool operator!=(stop_token const& lhs, stop_token const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -377,8 +375,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator==(stop_source const& lhs, stop_source const& rhs) noexcept
+        friend bool operator==(stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return lhs.state_ == rhs.state_;
         }
@@ -386,8 +383,7 @@ namespace pika {
 #if !defined(__NVCC__)
         [[nodiscard]]
 #endif
-        friend bool
-        operator!=(stop_source const& lhs, stop_source const& rhs) noexcept
+        friend bool operator!=(stop_source const& lhs, stop_source const& rhs) noexcept
         {
             return !(lhs == rhs);
         }
@@ -412,15 +408,15 @@ namespace pika {
         //
         // Preconditions: Callback and CB model constructible_from<Callback, CB>.
         //
-        // Effects: Initializes callback with PIKA_FORWARD(CB, cb). If
-        //      st.stop_requested() is true, then PIKA_FORWARD(CB, cb)() is
+        // Effects: Initializes callback with std::forward<CB>(cb). If
+        //      st.stop_requested() is true, then std::forward<CB>(cb)() is
         //      evaluated in the current thread before the constructor returns.
         //      Otherwise, if st has ownership of a stop state, acquires shared
         //      ownership of that stop state and registers the callback with
-        //      that stop state such that PIKA_FORWARD(CB, cb)() is evaluated by
+        //      that stop state such that std::forward<CB>(cb)() is evaluated by
         //      the first call to request_stop() on an associated stop_source.
         //
-        // Remarks: If evaluating PIKA_FORWARD(CB, cb)() exits via
+        // Remarks: If evaluating std::forward<CB>(cb)() exits via
         //      an exception, then std::terminate is called (14.6.1).
         //
         // Throws: Any exception thrown by the initialization of callback.
@@ -429,7 +425,7 @@ namespace pika {
                 typename std::enable_if<std::is_constructible<Callback, CB>::value>::type>
         explicit stop_callback(stop_token const& st, CB&& cb) noexcept(
             std::is_nothrow_constructible<Callback, CB>::value)
-          : callback_(PIKA_FORWARD(CB, cb))
+          : callback_(std::forward<CB>(cb))
           , state_(st.state_)
         {
             if (state_) state_->add_callback(this);
@@ -440,8 +436,8 @@ namespace pika {
                 typename std::enable_if<std::is_constructible<Callback, CB>::value>::type>
         explicit stop_callback(stop_token&& st, CB&& cb) noexcept(
             std::is_nothrow_constructible<Callback, CB>::value)
-          : callback_(PIKA_FORWARD(CB, cb))
-          , state_(PIKA_MOVE(st.state_))
+          : callback_(std::forward<CB>(cb))
+          , state_(std::move(st.state_))
         {
             if (state_) state_->add_callback(this);
         }
@@ -486,13 +482,13 @@ namespace pika {
     template <typename Callback>
     stop_callback<std::decay_t<Callback>> make_stop_callback(stop_token const& st, Callback&& cb)
     {
-        return stop_callback<std::decay_t<Callback>>(st, PIKA_FORWARD(Callback, cb));
+        return stop_callback<std::decay_t<Callback>>(st, std::forward<Callback>(cb));
     }
 
     template <typename Callback>
     stop_callback<std::decay_t<Callback>> make_stop_callback(stop_token&& st, Callback&& cb)
     {
-        return stop_callback<std::decay_t<Callback>>(PIKA_MOVE(st), PIKA_FORWARD(Callback, cb));
+        return stop_callback<std::decay_t<Callback>>(std::move(st), std::forward<Callback>(cb));
     }
 
     // clang-format produces inconsistent result between different versions

@@ -288,7 +288,7 @@ namespace pika::threads::coroutines::detail {
         {
             PIKA_ASSERT(status != ctx_not_exited);
             PIKA_ASSERT(m_state == ctx_running);
-            m_type_info = PIKA_MOVE(info);
+            m_type_info = std::move(info);
             m_state = ctx_exited;
             m_exit_status = status;
 #if defined(PIKA_HAVE_ADDRESS_SANITIZER)

@@ -47,17 +47,6 @@ namespace pika::execution::experimental {
 namespace pika::execution::experimental {
 
 # if defined(DOXYGEN)
-    /// set_value is a customization point object. The expression
-    /// `pika::execution::set_value(r, as...)` is equivalent to:
-    ///     * `r.set_value(as...)`, if that expression is valid. If the function selected
-    ///       does not send the value(s) `as...` to the Receiver `r`'s value channel,
-    ///       the program is ill-formed (no diagnostic required).
-    ///     * Otherwise, `set_value(r, as...), if that expression is valid, with
-    ///       overload resolution performed in a context that include the declaration
-    ///       `void set_value();`
-    ///     * Otherwise, the expression is ill-formed.
-    ///
-    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename... As>
     void set_value(R&& r, As&&... as);
 
@@ -131,8 +120,18 @@ namespace pika::execution::experimental {
     struct is_receiver_of;
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_value_t : pika::functional::detail::tag<set_value_t>
+    struct set_value_t
     {
+        template <typename Receiver, typename... Ts>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver, Ts&&... ts) noexcept
+            -> decltype(std::forward<Receiver>(receiver).set_value(std::forward<Ts>(ts)...))
+        {
+            static_assert(
+                noexcept(std::forward<Receiver>(receiver).set_value(std::forward<Ts>(ts)...)),
+                "std::execution receiver set_value member function must be noexcept");
+            return std::forward<Receiver>(receiver).set_value(std::forward<Ts>(ts)...);
+        }
     } set_value{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE

@@ -10,14 +10,16 @@ function submit_logstash {
         jq . "${1}"
     fi
 
+    array_of_objects_file=$(mktemp --tmpdir metadata.XXXXXXXXXX.json)
+    jq --null-input '[inputs]' <"${1}" >"${array_of_objects_file}"
     curl \
         --silent \
         --show-error \
         --request POST \
         --header "Content-Type: application/json" \
-        --data "@${1}" \
-        "${CSCS_LOGSTASH_URL}" \
-        || true
+        --data "@${array_of_objects_file}" \
+        "${CSCS_LOGSTASH_URL}" ||
+        true
 }
 
 function json_merge {

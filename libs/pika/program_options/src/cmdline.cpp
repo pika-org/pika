@@ -467,7 +467,7 @@ namespace pika::program_options::detail {
             }
             else { name = tok.substr(2); }
             option opt;
-            opt.string_key = PIKA_MOVE(name);
+            opt.string_key = std::move(name);
             if (!adjacent.empty()) opt.value.push_back(adjacent);
             opt.original_tokens.push_back(tok);
             result.push_back(opt);
@@ -551,7 +551,7 @@ namespace pika::program_options::detail {
             string adjacent = tok.substr(2);
 
             option opt;
-            opt.string_key = PIKA_MOVE(name);
+            opt.string_key = std::move(name);
             if (!adjacent.empty()) opt.value.push_back(adjacent);
             opt.original_tokens.push_back(tok);
             result.push_back(opt);

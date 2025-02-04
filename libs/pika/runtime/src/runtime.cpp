@@ -15,7 +15,6 @@
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/functional/bind.hpp>
 #include <pika/functional/function.hpp>
-#include <pika/itt_notify/thread_name.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
 #include <pika/modules/thread_manager.hpp>
@@ -29,7 +28,7 @@
 #include <pika/runtime/state.hpp>
 #include <pika/runtime/thread_hooks.hpp>
 #include <pika/string_util/from_string.hpp>
-#include <pika/thread_support/set_thread_name.hpp>
+#include <pika/thread_support/thread_name.hpp>
 #include <pika/threading_base/external_timer.hpp>
 #include <pika/threading_base/scheduler_mode.hpp>
 #include <pika/threading_base/thread_helpers.hpp>
@@ -67,6 +66,7 @@
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -287,7 +287,7 @@ namespace pika::detail {
 
     void runtime::set_notification_policies(notification_policy_type&& notifier)
     {
-        notifier_ = PIKA_MOVE(notifier);
+        notifier_ = std::move(notifier);
 
         thread_manager_.reset(new pika::threads::detail::thread_manager(rtcfg_, notifier_));
     }
@@ -439,7 +439,7 @@ namespace pika::detail {
     pika::threads::callback_notifier::on_startstop_type runtime::on_start_func(
         pika::threads::callback_notifier::on_startstop_type&& f)
     {
-        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = std::move(f);
         std::swap(on_start_func_, newf);
         return newf;
     }
@@ -447,7 +447,7 @@ namespace pika::detail {
     pika::threads::callback_notifier::on_startstop_type runtime::on_stop_func(
         pika::threads::callback_notifier::on_startstop_type&& f)
     {
-        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = std::move(f);
         std::swap(on_stop_func_, newf);
         return newf;
     }
@@ -455,7 +455,7 @@ namespace pika::detail {
     pika::threads::callback_notifier::on_error_type runtime::on_error_func(
         pika::threads::callback_notifier::on_error_type&& f)
     {
-        pika::threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_error_type newf = std::move(f);
         std::swap(on_error_func_, newf);
         return newf;
     }
@@ -492,9 +492,9 @@ namespace pika::detail {
         pika::threads::callback_notifier::on_startstop_type&& f)
     {
         runtime* rt = get_runtime_ptr();
-        if (nullptr != rt) { return rt->on_start_func(PIKA_MOVE(f)); }
+        if (nullptr != rt) { return rt->on_start_func(std::move(f)); }
 
-        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = std::move(f);
         std::swap(global_on_start_func, newf);
         return newf;
     }
@@ -503,9 +503,9 @@ namespace pika::detail {
         pika::threads::callback_notifier::on_startstop_type&& f)
     {
         runtime* rt = get_runtime_ptr();
-        if (nullptr != rt) { return rt->on_stop_func(PIKA_MOVE(f)); }
+        if (nullptr != rt) { return rt->on_stop_func(std::move(f)); }
 
-        pika::threads::callback_notifier::on_startstop_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_startstop_type newf = std::move(f);
         std::swap(global_on_stop_func, newf);
         return newf;
     }
@@ -514,9 +514,9 @@ namespace pika::detail {
         pika::threads::callback_notifier::on_error_type&& f)
     {
         runtime* rt = get_runtime_ptr();
-        if (nullptr != rt) { return rt->on_error_func(PIKA_MOVE(f)); }
+        if (nullptr != rt) { return rt->on_error_func(std::move(f)); }
 
-        pika::threads::callback_notifier::on_error_type newf = PIKA_MOVE(f);
+        pika::threads::callback_notifier::on_error_type newf = std::move(f);
         std::swap(global_on_error_func, newf);
         return newf;
     }
@@ -532,13 +532,6 @@ namespace pika::detail {
     {
         static runtime* runtime_ = nullptr;
         return runtime_;
-    }
-
-    std::string get_thread_name()
-    {
-        std::string& thread_name = detail::thread_name();
-        if (thread_name.empty()) return "<unknown>";
-        return thread_name;
     }
 
     // Register the current kernel thread with pika, this should be done once
@@ -814,9 +807,9 @@ namespace pika::detail {
                     "Too late to register a new pre-startup function.");
                 return;
             }
-            rt->add_pre_startup_function(PIKA_MOVE(f));
+            rt->add_pre_startup_function(std::move(f));
         }
-        else { detail::global_pre_startup_functions.push_back(PIKA_MOVE(f)); }
+        else { detail::global_pre_startup_functions.push_back(std::move(f)); }
     }
 
     void register_startup_function(startup_function_type f)
@@ -830,9 +823,9 @@ namespace pika::detail {
                     "Too late to register a new startup function.");
                 return;
             }
-            rt->add_startup_function(PIKA_MOVE(f));
+            rt->add_startup_function(std::move(f));
         }
-        else { detail::global_startup_functions.push_back(PIKA_MOVE(f)); }
+        else { detail::global_startup_functions.push_back(std::move(f)); }
     }
 
     void register_pre_shutdown_function(shutdown_function_type f)
@@ -846,9 +839,9 @@ namespace pika::detail {
                     "Too late to register a new pre-shutdown function.");
                 return;
             }
-            rt->add_pre_shutdown_function(PIKA_MOVE(f));
+            rt->add_pre_shutdown_function(std::move(f));
         }
-        else { detail::global_pre_shutdown_functions.push_back(PIKA_MOVE(f)); }
+        else { detail::global_pre_shutdown_functions.push_back(std::move(f)); }
     }
 
     void register_shutdown_function(shutdown_function_type f)
@@ -862,9 +855,9 @@ namespace pika::detail {
                     "Too late to register a new shutdown function.");
                 return;
             }
-            rt->add_shutdown_function(PIKA_MOVE(f));
+            rt->add_shutdown_function(std::move(f));
         }
-        else { detail::global_shutdown_functions.push_back(PIKA_MOVE(f)); }
+        else { detail::global_shutdown_functions.push_back(std::move(f)); }
     }
 
     void runtime::call_startup_functions(bool pre_startup)
@@ -1353,37 +1346,50 @@ namespace pika::detail {
         std::size_t global_thread_num, char const* pool_name, char const* postfix)
     // NOLINTEND(bugprone-easily-swappable-parameters)
     {
-        std::ostringstream fullname;
-        fullname << "pika/" << context;
-        if (pool_name && *pool_name) { fullname << "/pool:" << pool_name; }
-        if (postfix && *postfix) { fullname << '/' << postfix; }
-        if (global_thread_num != std::size_t(-1))
+        PIKA_ASSERT(context != nullptr);
+        PIKA_ASSERT(context[0]);
+
+        // Only set thread name for threads that we create
+        if (std::string_view(context) != std::string_view("main-thread"))
         {
-            fullname << "/global:" + std::to_string(global_thread_num);
-        }
-        if (local_thread_num != std::size_t(-1))
-        {
-            fullname << "/local:" + std::to_string(local_thread_num);
-        }
+            std::ostringstream fullname;
+            std::ostringstream shortname;
+            fullname << "pika/" << context;
+            shortname << "pika/" << context[0];
+            if (pool_name && *pool_name)
+            {
+                fullname << "/pool:" << pool_name;
+                shortname << '/' << pool_name[0];
+            }
+            if (postfix && *postfix) { fullname << '/' << postfix; }
+            if (global_thread_num != std::size_t(-1))
+            {
+                fullname << "/global:" + std::to_string(global_thread_num);
+            }
+            if (local_thread_num != std::size_t(-1))
+            {
+                fullname << "/local:" + std::to_string(local_thread_num);
+                shortname << '/' << std::to_string(local_thread_num);
+            }
 
-        PIKA_ASSERT(detail::thread_name().empty());
-        detail::thread_name() = PIKA_MOVE(fullname).str();
+            PIKA_ASSERT(detail::get_thread_name_internal().empty());
+            detail::set_thread_name(fullname.str(), shortname.str());
+            PIKA_ASSERT(!detail::get_thread_name_internal().empty());
+#if defined(PIKA_HAVE_APEX) || defined(PIKA_HAVE_TRACY)
+            // Use internal name to ensure C-strings are backed by strings that
+            // will not go out of scope.
+            char const* name = detail::get_thread_name_internal().c_str();
 
-        char const* name = detail::thread_name().c_str();
+# if defined(PIKA_HAVE_APEX)
+            if (std::strstr(name, "worker") != nullptr)
+                detail::external_timer::register_thread(name);
+# endif
 
-        // register this thread with any possibly active Intel tool
-        PIKA_ITT_THREAD_SET_NAME(name);
-
-        // set thread name as shown in Visual Studio
-        detail::set_thread_name(name);
-
-#if defined(PIKA_HAVE_APEX)
-        if (std::strstr(name, "worker") != nullptr) detail::external_timer::register_thread(name);
+# ifdef PIKA_HAVE_TRACY
+            tracy::SetThreadName(name);
+# endif
 #endif
-
-#ifdef PIKA_HAVE_TRACY
-        tracy::SetThreadName(name);
-#endif
+        }
 
         // call thread-specific user-supplied on_start handler
         if (on_start_func_)
@@ -1400,31 +1406,31 @@ namespace pika::detail {
         if (on_stop_func_) { on_stop_func_(global_thread_num, global_thread_num, "", context); }
 
         // reset thread local storage
-        detail::thread_name().clear();
+        detail::set_thread_name("", "");
     }
 
     void runtime::add_pre_startup_function(startup_function_type f)
     {
         std::lock_guard<std::mutex> l(mtx_);
-        pre_startup_functions_.push_back(PIKA_MOVE(f));
+        pre_startup_functions_.push_back(std::move(f));
     }
 
     void runtime::add_startup_function(startup_function_type f)
     {
         std::lock_guard<std::mutex> l(mtx_);
-        startup_functions_.push_back(PIKA_MOVE(f));
+        startup_functions_.push_back(std::move(f));
     }
 
     void runtime::add_pre_shutdown_function(shutdown_function_type f)
     {
         std::lock_guard<std::mutex> l(mtx_);
-        pre_shutdown_functions_.push_back(PIKA_MOVE(f));
+        pre_shutdown_functions_.push_back(std::move(f));
     }
 
     void runtime::add_shutdown_function(shutdown_function_type f)
     {
         std::lock_guard<std::mutex> l(mtx_);
-        shutdown_functions_.push_back(PIKA_MOVE(f));
+        shutdown_functions_.push_back(std::move(f));
     }
 
     /// Register an external OS-thread with pika
@@ -1441,7 +1447,7 @@ namespace pika::detail {
     /// Unregister an external OS-thread with pika
     bool runtime::unregister_thread()
     {
-        deinit_tss_helper(detail::thread_name().c_str(), pika::get_worker_thread_num());
+        deinit_tss_helper(detail::get_thread_name().c_str(), pika::get_worker_thread_num());
         return true;
     }
 

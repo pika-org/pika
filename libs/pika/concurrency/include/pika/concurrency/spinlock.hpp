@@ -11,7 +11,6 @@
 #include <pika/config.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/lock_registration/detail/register_locks.hpp>
-#include <pika/modules/itt_notify.hpp>
 #include <pika/thread_support/spinlock.hpp>
 
 #include <atomic>
@@ -26,18 +25,15 @@ namespace pika::concurrency::detail {
         std::atomic<bool> v_;
 
     public:
-        spinlock(char const* const desc = "pika::concurrency::detail::spinlock")
+        spinlock(char const* const = "pika::concurrency::detail::spinlock")
           : v_(false)
         {
-            PIKA_ITT_SYNC_CREATE(this, desc, "");
         }
 
-        ~spinlock() { PIKA_ITT_SYNC_DESTROY(this); }
+        ~spinlock() {}
 
         void lock()
         {
-            PIKA_ITT_SYNC_PREPARE(this);
-
             // Checking for the value in is_locked() ensures that
             // acquire_lock is only called when is_locked computes
             // to false. This way we spin only on a load operation
@@ -66,34 +62,25 @@ namespace pika::concurrency::detail {
                     "pika::concurrency::detail::spinlock::lock", false);
             } while (!acquire_lock());
 
-            PIKA_ITT_SYNC_ACQUIRED(this);
             util::register_lock(this);
         }
 
         bool try_lock()
         {
-            PIKA_ITT_SYNC_PREPARE(this);
-
             bool r = acquire_lock();    //-V707
 
             if (r)
             {
-                PIKA_ITT_SYNC_ACQUIRED(this);
                 util::register_lock(this);
                 return true;
             }
 
-            PIKA_ITT_SYNC_CANCEL(this);
             return false;
         }
 
         void unlock()
         {
-            PIKA_ITT_SYNC_RELEASING(this);
-
             relinquish_lock();
-
-            PIKA_ITT_SYNC_RELEASED(this);
             util::unregister_lock(this);
         }
 

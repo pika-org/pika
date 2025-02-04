@@ -35,7 +35,7 @@ namespace pika::util::detail {
     template <typename F, typename... Ts>
     constexpr PIKA_HOST_DEVICE std::invoke_result_t<F, Ts...> invoke(F&& f, Ts&&... vs)
     {
-        return PIKA_INVOKE(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
+        return PIKA_INVOKE(std::forward<F>(f), std::forward<Ts>(vs)...);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -46,6 +46,6 @@ namespace pika::util::detail {
     template <typename R, typename F, typename... Ts>
     constexpr PIKA_HOST_DEVICE R invoke_r(F&& f, Ts&&... vs)
     {
-        return PIKA_INVOKE_R(R, PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
+        return PIKA_INVOKE_R(R, std::forward<F>(f), std::forward<Ts>(vs)...);
     }
 }    // namespace pika::util::detail

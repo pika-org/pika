@@ -20,7 +20,7 @@ jobs:
     name: github/linux/fetchcontent/fast
     if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-24.04
-    container: pikaorg/pika-ci-base:27
+    container: pikaorg/pika-ci-base:29
 
     steps:
       - uses: actions/checkout@v4

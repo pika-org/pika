@@ -281,21 +281,21 @@ namespace pika::detail {
             ("pika:pu-offset", value<std::size_t>(),
                 "the first processing unit this instance of pika should be "
                 "run on (default: 0), valid for "
-                "--pika:queuing=local, --pika:queuing=abp-priority, "
-                "--pika:queuing=static, --pika:queuing=static-priority, "
-                "and --pika:queuing=local-priority only")
+                "--pika:scheduler=local, --pika:scheduler=abp-priority, "
+                "--pika:scheduler=static, --pika:scheduler=static-priority, "
+                "and --pika:scheduler=local-priority only")
             ("pika:pu-step", value<std::size_t>(),
                 "the step between used processing unit numbers for this "
                 "instance of pika (default: 1), valid for "
-                "--pika:queuing=local, --pika:queuing=abp-priority, "
-                "--pika:queuing=static, --pika:queuing=static-priority "
-                "and --pika:queuing=local-priority only")
+                "--pika:scheduler=local, --pika:scheduler=abp-priority, "
+                "--pika:scheduler=static, --pika:scheduler=static-priority "
+                "and --pika:scheduler=local-priority only")
             ("pika:affinity", value<std::string>(),
                 "the affinity domain the OS threads will be confined to, "
                 "possible values: pu, core, numa, machine (default: pu), valid for "
-                "--pika:queuing=local, --pika:queuing=abp-priority, "
-                "--pika:queuing=static, --pika:queuing=static-priority "
-                " and --pika:queuing=local-priority only")
+                "--pika:scheduler=local, --pika:scheduler=abp-priority, "
+                "--pika:scheduler=static, --pika:scheduler=static-priority "
+                " and --pika:scheduler=local-priority only")
             ("pika:bind", value<std::vector<std::string> >()->composing(),
                 "the detailed affinity description for the OS threads, see "
                 "the documentation for a detailed description of possible "
@@ -322,7 +322,7 @@ namespace pika::detail {
                 "the number of cores to utilize for the pika "
                 "runtime (default: 'all', i.e. the number of cores is based on "
                 "the number of total cores in the system)")
-            ("pika:queuing", value<std::string>(),
+            ("pika:scheduler", value<std::string>(),
                 "the queue scheduling policy to use, options are "
                 "'local', 'local-priority-fifo','local-priority-lifo', "
                 "'abp-priority-fifo', 'abp-priority-lifo', 'static', and "
@@ -331,8 +331,8 @@ namespace pika::detail {
             ("pika:high-priority-threads", value<std::size_t>(),
                 "the number of operating system threads maintaining a high "
                 "priority queue (default: number of OS threads), valid for "
-                "--pika:queuing=local-priority,--pika:queuing=static-priority, "
-                " and --pika:queuing=abp-priority only)")
+                "--pika:scheduler=local-priority,--pika:scheduler=static-priority, "
+                " and --pika:scheduler=abp-priority only)")
             ("pika:numa-sensitive", value<std::size_t>()->implicit_value(0),
                 "makes the local-priority scheduler NUMA sensitive ("
                 "allowed values: 0 - no NUMA sensitivity, 1 - allow only for "

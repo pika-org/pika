@@ -164,6 +164,8 @@ namespace pika::threads::detail {
                 threads::detail::get_thread_id_data(thrd)->rebind(data);
             }
             else
+# else
+            PIKA_UNUSED(heap);
 # endif
 #endif
             {
@@ -243,7 +245,7 @@ namespace pika::threads::detail {
                 // pushing the new thread into the pending queue of the
                 // specified thread_queue
                 ++added;
-                schedule_thread(PIKA_MOVE(thrd));
+                schedule_thread(std::move(thrd));
             }
 
             if (added) { PIKA_LOG(debug, "add_new: added {} tasks to queues", added); }
@@ -641,7 +643,7 @@ namespace pika::threads::detail {
                     {
                         // return the thread_id_ref of the newly created thread
                         if (id) { *id = thrd; }
-                        schedule_thread(PIKA_MOVE(thrd));
+                        schedule_thread(std::move(thrd));
                     }
                     else
                     {
@@ -649,7 +651,7 @@ namespace pika::threads::detail {
                         // returned to the caller as otherwise the thread would
                         // go out of scope right away.
                         PIKA_ASSERT(id != nullptr);
-                        *id = PIKA_MOVE(thrd);
+                        *id = std::move(thrd);
                     }
 
                     if (&ec != &throws) ec = make_success_code();
@@ -673,11 +675,11 @@ namespace pika::threads::detail {
             task_description* td = task_description_alloc_.allocate(1);
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
             using namespace std::chrono;
-            new (td) task_description{PIKA_MOVE(data),
+            new (td) task_description{std::move(data),
                 duration<std::uint64_t, std::nano>(high_resolution_clock::now().time_since_epoch())
                     .count()};
 #else
-            new (td) task_description{PIKA_MOVE(data)};    //-V106
+            new (td) task_description{std::move(data)};    //-V106
 #endif
             new_tasks_.push(td);
             if (&ec != &throws) ec = make_success_code();
@@ -763,7 +765,7 @@ namespace pika::threads::detail {
                     ++work_items_wait_count_;
                 }
 
-                thrd = PIKA_MOVE(tdesc->data);
+                thrd = std::move(tdesc->data);
                 delete tdesc;
 
                 return true;
@@ -786,7 +788,7 @@ namespace pika::threads::detail {
             ++work_items_count_.data_;
 #ifdef PIKA_HAVE_THREAD_QUEUE_WAITTIME
             using namespace std::chrono;
-            work_items_.push(new thread_description{PIKA_MOVE(thrd),
+            work_items_.push(new thread_description{std::move(thrd),
                                  duration<std::uint64_t, std::nano>(
                                      high_resolution_clock::now().time_since_epoch())
                                      .count()},

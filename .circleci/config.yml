@@ -21,24 +21,11 @@ setup_arm64_machine: &setup_arm64_machine
 
 docker_default: &docker_default
   docker:
-    - image: pikaorg/pika-ci-base:27
+    - image: pikaorg/pika-ci-base:29
 
 defaults: &defaults
   <<: *working_dir_default
   <<: *docker_default
-
-convert_xml: &convert_xml
-  name: Converting XML
-  when: always
-  command: |
-      mkdir -p ${CIRCLE_JOB}
-      curl \
-        https://raw.githubusercontent.com/Kitware/CDash/master/app/cdash/tests/circle/conv.xsl \
-        --fail -o $HOME/conv.xsl
-      xsltproc \
-        $HOME/conv.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml \
-        > ${CIRCLE_JOB}/Test.xml
-
 
 move_core_dump: &move_core_dump
   name: Moving core dumps
@@ -183,13 +170,13 @@ jobs:
           at: /pika
       - run:
           name: Check that shell scripts are correctly formatted with shfmt
+          working_directory: /pika/source
           command: |
-              cd /pika/source && shopt -s globstar # to activate the ** globbing
               shfmt --version
-              shfmt -w **/*.sh
-              git diff --exit-code > /tmp/modified_black_files.txt
+              fd --hidden --extension sh --exec shfmt --write
+              git diff --exit-code > /tmp/modified_shfmt_files.txt
       - store_artifacts:
-          path: /tmp/modified_black_files.txt
+          path: /tmp/modified_shfmt_files.txt
           destination: /pika/artifacts/modified_black_files.txt
 
   configure:
@@ -343,11 +330,10 @@ jobs:
                 -j4 \
                 --timeout 60 \
                 -T test \
+                --output-junit ${CIRCLE_JOB}/Test.xml \
                 --no-compress-output \
                 --output-on-failure \
                 -R tests.examples
-      - run:
-          <<: *convert_xml
       - run:
           <<: *move_core_dump
       - store_test_results:
@@ -384,12 +370,11 @@ jobs:
                 -j2 \
                 --timeout 120 \
                 -T test \
+                --output-junit ${CIRCLE_JOB}/Test.xml \
                 --no-compress-output \
                 --output-on-failure \
                 --tests-regex tests.unit \
                 --exclude-regex "tests.unit.modules.resource_partitioner.scheduler_binding_check"
-      - run:
-          <<: *convert_xml
       - run:
           <<: *move_core_dump
       - store_test_results:
@@ -415,11 +400,10 @@ jobs:
                 -j2 \
                 --timeout 60 \
                 -T test \
+                --output-junit ${CIRCLE_JOB}/Test.xml \
                 --no-compress-output \
                 --output-on-failure \
                 -R tests.regressions
-      - run:
-          <<: *convert_xml
       - run:
           <<: *move_core_dump
       - store_test_results:
@@ -440,11 +424,10 @@ jobs:
                 -j4 \
                 --timeout 60 \
                 -T test \
+                --output-junit ${CIRCLE_JOB}/Test.xml \
                 --no-compress-output \
                 --output-on-failure \
                 -R tests.headers
-      - run:
-          <<: *convert_xml
       - store_test_results:
           path: tests.headers
       - store_artifacts:
@@ -585,12 +568,10 @@ jobs:
             ctest \
               -j2 \
               --timeout 500 \
+              --output-junit ${CIRCLE_JOB}/Test.xml \
               -T test \
               --no-compress-output \
               --output-on-failure
-      - run:
-          <<: *convert_xml
-          working_directory: /home/circleci/project/build
       - run:
           <<: *move_core_dump
           working_directory: /home/circleci/project/build

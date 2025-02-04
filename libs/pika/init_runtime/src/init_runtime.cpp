@@ -177,9 +177,9 @@ namespace pika {
                 rt.get_config().load_application_configuration(config.c_str());
             }
 
-            if (!!startup) rt.add_startup_function(PIKA_MOVE(startup));
+            if (!!startup) rt.add_startup_function(std::move(startup));
 
-            if (!!shutdown) rt.add_shutdown_function(PIKA_MOVE(shutdown));
+            if (!!shutdown) rt.add_shutdown_function(std::move(shutdown));
 
             if (vm.count("pika:dump-config-initial"))
             {
@@ -198,7 +198,7 @@ namespace pika {
             pika::program_options::variables_map& vm, startup_function_type startup,
             shutdown_function_type shutdown)
         {
-            add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            add_startup_functions(rt, vm, std::move(startup), std::move(shutdown));
 
             // Run this runtime instance using the given function f.
             if (!f.empty()) return rt.run(pika::util::detail::bind_front(f, vm));
@@ -212,7 +212,7 @@ namespace pika {
             pika::program_options::variables_map& vm, startup_function_type startup,
             shutdown_function_type shutdown)
         {
-            add_startup_functions(rt, vm, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            add_startup_functions(rt, vm, std::move(startup), std::move(shutdown));
 
             if (!f.empty())
             {
@@ -230,11 +230,11 @@ namespace pika {
         {
             if (blocking)
             {
-                return run(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+                return run(*rt, cfg.pika_main_f_, cfg.vm_, std::move(startup), std::move(shutdown));
             }
 
             // non-blocking version
-            start(*rt, cfg.pika_main_f_, cfg.vm_, PIKA_MOVE(startup), PIKA_MOVE(shutdown));
+            start(*rt, cfg.pika_main_f_, cfg.vm_, std::move(startup), std::move(shutdown));
 
             // pointer to runtime is stored in TLS
             [[maybe_unused]] pika::detail::runtime* p = rt.release();
@@ -351,8 +351,8 @@ namespace pika {
             PIKA_LOG(info, "creating local runtime");
             rt.reset(new pika::detail::runtime(cmdline.rtcfg_, true));
 
-            return run_or_start(blocking, PIKA_MOVE(rt), cmdline, PIKA_MOVE(params.startup),
-                PIKA_MOVE(params.shutdown));
+            return run_or_start(blocking, std::move(rt), cmdline, std::move(params.startup),
+                std::move(params.shutdown));
         }
 
         int init_start_impl(
@@ -381,7 +381,7 @@ namespace pika {
     int init(std::function<int(pika::program_options::variables_map&)> f, int argc,
         char const* const* argv, init_params const& params)
     {
-        return detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(f), argc, argv, params, true);
     }
 
     int init(std::function<int(int, char**)> f, int argc, char const* const* argv,
@@ -389,26 +389,26 @@ namespace pika {
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind_back(pika::detail::init_helper, f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(main_f), argc, argv, params, true);
     }
 
     int init(std::function<int()> f, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind(f);
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(main_f), argc, argv, params, true);
     }
 
     int init(std::nullptr_t, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        return detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, true);
+        return detail::init_start_impl(std::move(main_f), argc, argv, params, true);
     }
 
     void start(std::function<int(pika::program_options::variables_map&)> f, int argc,
         char const* const* argv, init_params const& params)
     {
-        if (detail::init_start_impl(PIKA_MOVE(f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
@@ -419,7 +419,7 @@ namespace pika {
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind_back(pika::detail::init_helper, f);
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
@@ -429,7 +429,7 @@ namespace pika {
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f =
             pika::util::detail::bind(f);
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
@@ -438,7 +438,7 @@ namespace pika {
     void start(std::nullptr_t, int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }
@@ -447,7 +447,7 @@ namespace pika {
     void start(int argc, char const* const* argv, init_params const& params)
     {
         pika::util::detail::function<int(pika::program_options::variables_map&)> main_f;
-        if (detail::init_start_impl(PIKA_MOVE(main_f), argc, argv, params, false) != 0)
+        if (detail::init_start_impl(std::move(main_f), argc, argv, params, false) != 0)
         {
             PIKA_UNREACHABLE;
         }

@@ -49,8 +49,8 @@ namespace pika::util::detail {
         template <typename F_, typename... Ts_,
             typename = std::enable_if_t<std::is_constructible_v<F, F_&&>>>
         explicit constexpr PIKA_HOST_DEVICE deferred(F_&& f, Ts_&&... vs)
-          : _f(PIKA_FORWARD(F_, f))
-          , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
+          : _f(std::forward<F_>(f))
+          , _args(std::piecewise_construct, std::forward<Ts_>(vs)...)
         {
         }
 
@@ -58,8 +58,8 @@ namespace pika::util::detail {
         deferred(deferred&&) = default;
 #else
         constexpr PIKA_HOST_DEVICE deferred(deferred&& other)
-          : _f(PIKA_MOVE(other._f))
-          , _args(PIKA_MOVE(other._args))
+          : _f(std::move(other._f))
+          , _args(std::move(other._args))
         {
         }
 #endif
@@ -71,7 +71,7 @@ namespace pika::util::detail {
         PIKA_HOST_DEVICE
         PIKA_FORCEINLINE std::invoke_result_t<F, Ts...> operator()()
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f), PIKA_MOVE(_args).template get<Is>()...);
+            return PIKA_INVOKE(std::move(_f), std::move(_args).template get<Is>()...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -87,18 +87,6 @@ namespace pika::util::detail {
             return nullptr;
 #endif
         }
-
-#if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-        util::itt::string_handle get_function_annotation_itt() const
-        {
-# if defined(PIKA_HAVE_THREAD_DESCRIPTION)
-            return pika::detail::get_function_annotation_itt<F>::call(_f);
-# else
-            static util::itt::string_handle sh("deferred");
-            return sh;
-# endif
-        }
-#endif
 
     private:
         F _f;
@@ -116,7 +104,7 @@ namespace pika::util::detail {
         using result_type = deferred<std::decay_t<F>,
             util::detail::make_index_pack_t<sizeof...(Ts)>, ::pika::detail::decay_unwrap_t<Ts>...>;
 
-        return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
+        return result_type(std::forward<F>(f), std::forward<Ts>(vs)...);
     }
 
     // nullary functions do not need to be bound again
@@ -126,7 +114,7 @@ namespace pika::util::detail {
         static_assert(
             pika::detail::is_deferred_invocable_v<F>, "F shall be Callable with no arguments");
 
-        return PIKA_FORWARD(F, f);
+        return std::forward<F>(f);
     }
 }    // namespace pika::util::detail
 
@@ -152,17 +140,5 @@ namespace pika::detail {
             return f.get_function_annotation();
         }
     };
-
-# if PIKA_HAVE_ITTNOTIFY != 0 && !defined(PIKA_HAVE_APEX)
-    template <typename F, typename... Ts>
-    struct get_function_annotation_itt<pika::util::detail::deferred<F, Ts...>>
-    {
-        static util::itt::string_handle call(
-            pika::util::detail::deferred<F, Ts...> const& f) noexcept
-        {
-            return f.get_function_annotation_itt();
-        }
-    };
-# endif
 }    // namespace pika::detail
 #endif

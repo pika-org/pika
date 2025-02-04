@@ -49,7 +49,7 @@ namespace pika::threads::coroutines::detail {
 
         stackless_coroutine(
             functor_type&& f, thread_id_type id, std::ptrdiff_t /*stack_size*/ = default_stack_size)
-          : f_(PIKA_MOVE(f))
+          : f_(std::move(f))
           , state_(ctx_ready)
           , id_(id)
 #if defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)
@@ -116,7 +116,7 @@ namespace pika::threads::coroutines::detail {
         {
             PIKA_ASSERT(exited());
 
-            f_ = PIKA_MOVE(f);
+            f_ = std::move(f);
             id_ = id;
 
 #if defined(PIKA_HAVE_THREAD_PHASE_INFORMATION)

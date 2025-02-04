@@ -67,13 +67,14 @@ pika optionally depends on:
   ``nvc++``.
 * `HIP <https://rocmdocs.amd.com/en/latest/index.html>`__ 5.2.0 or greater. HIP support can be
   enabled with ``PIKA_WITH_HIP=ON``.
+* `whip <https://github.com/eth-cscs/whip>`__  when CUDA or HIP support is enabled.
 * `MPI <https://www.mpi-forum.org/>`__. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
 * `Boost.Context <https://boost.org>`__ on macOS or exotic platforms which are not supported by the
   default user-level thread implementations in pika. This can be enabled with
   ``PIKA_WITH_BOOST_CONTEXT=ON``.
 * `stdexec <https://github.com/NVIDIA/stdexec>`__. stdexec support can be enabled with
-  ``PIKA_WITH_STDEXEC=ON`` (currently tested with commit `8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd
-  <https://github.com/NVIDIA/stdexec/tree/8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd>`__).  The
+  ``PIKA_WITH_STDEXEC=ON`` (currently tested with the tag `nvhpc-24.09
+  <https://github.com/NVIDIA/stdexec/tree/nvhpc-24.09>`__).  The
   integration is experimental. See :ref:`pika_stdexec` for more information about the integration.
 
 If you are using `nix <https://nixos.org>`__ you can also use the ``shell.nix`` file provided at the
@@ -136,30 +137,65 @@ Controlling the number of threads and thread bindings
 
 The thread pool created by the pika runtime will by default be created with a number of threads
 equal to the number of cores on the system. The number of threads can explicitly be controlled by a
-few command line options. The most straightforward way of changing the number of threads is with the
-``--pika:threads`` command line option. It takes an explicit number of threads. Alternatively it can
-also be passed the special values ``cores`` (the default, use one thread per core) or ``all`` (use
-one thread per hyperthread).
+few environment variables or command line options. The most straightforward ways of changing the
+number of threads are with the environment variable ``PIKA_THREADS`` or the ``--pika:threads``
+command line option. Both take an explicit number of threads. They also support the special values
+``cores`` (the default, use one thread per core) or ``all`` (use one thread per hyperthread).
+
+.. note::
+   Command line options always take precedence over environment variables.
 
 Process masks
 -------------
+
+.. |hwloc_calc_man| replace:: man page of ``hwloc-calc``
+.. _hwloc_calc_man: https://linux.die.net/man/1/hwloc-calc
 
 Many batch systems and e.g. MPI can set a process mask on the application to restrict on what cores
 an application can run. pika will by default take this process mask into account when determining
 how many threads to use for the runtime. ``hwloc-bind`` can also be used to manually set a process
 mask on the application. When a process mask is set, the default behaviour is to use only one thread
-per core in the process mask. Setting ``--pika:threads`` to a number higher than the number of cores
-available in the mask is not allowed. Using ``--pika:threads=all`` will use all the hyperthreads in
-the process mask.
+per core in the process mask. Setting the number of threads to a number higher than the number of
+cores available in the mask is not allowed. Using ``all`` as the number of threads will use all the
+hyperthreads in the process mask.
 
-The process mask can explicitly be ignored with the option ``--pika:ignore-process-mask`` or
-overridden with ``--pika:process-mask``. With ``--pika:ignore-process-mask`` pika behaves as if no
-process mask is set. ``--pika:process-mask`` takes an explicit hexadecimal string (beginning with
-``0x``) representing the process mask to use. The mask can also be set with the environment variable
-``PIKA_PROCESS_MASK``. ``--pika:process-mask`` takes precedence over ``PIKA_PROCESS_MASK``.
-``--pika:print-bind`` can be used to verify that the bindings used by pika are correct. Exporting
-the environment variable ``PIKA_PRINT_BIND`` (any value) is equivalent to using the
-``--pika:print-bind`` option.
+The process mask can explicitly be ignored with the environment variable
+``PIKA_IGNORE_PROCESS_MASK=1`` or the command line option ``--pika:ignore-process-mask``. A process
+mask set on the process can explicitly be overridden with the environment variable
+``PIKA_PROCESS_MASK`` or the command line option ``--pika:process-mask``. When the process mask is
+ignored, pika behaves as if no process mask is set and all cores or hyperthreads can be used by the
+runtime. ``PIKA_PROCESS_MASK`` and ``--pika:process-mask`` take an explicit hexadecimal string
+(beginning with ``0x``) representing the process mask to use. ``--pika:print-bind`` can be used to
+verify that the bindings used by pika are correct. Exporting the environment variable
+``PIKA_PRINT_BIND`` (any value) is equivalent to using the ``--pika:print-bind`` option.
+
+.. note::
+   If you find yourself in a situation where you need to explicitly generate a process mask, we
+   recommend the use of ``hwloc-calc``. ``hwloc-calc`` produces the format expected by pika with the
+   ``--taskset`` command line option. The |hwloc_calc_man|_ contains useful examples of generating
+   different process masks.
+
+   In addition to ``hwloc-calc``, ``hwloc-distrib`` (`man page
+   <https://linux.die.net/man/1/hwloc-distrib>`_) can be useful if you need to generate multiple
+   process masks that e.g. don't overlap.
+
+pika binds (or pins) worker threads to cores by default (except on macOS where thread binding is not
+supported) to avoid threads being scheduled on different cores, generally improving performance.
+Thread binding can be disabled by setting the environment variable ``PIKA_BIND`` or the command line
+option ``--pika:bind`` to the value ``none``. Threads will in this case not be bound to any
+particular core and are free to migrate between cores. This is not recommended for most use cases,
+but can be beneficial e.g. if the system is oversubscribed and threads from different processes
+would otherwise be competing for time on the same core. The default value for the binding option is
+``balanced``, which will bind threads to cores in a "balanced" way, placing threads on consecutive
+cores, avoiding the use of hyperthreads (if available). A value of ``compact`` will fill all
+hyperthreads on a core with worker threads before filling the next core.
+
+.. note::
+   Command line options always take precedence over environment variables.
+
+.. note::
+   The ``PIKA_THREADS``, ``PIKA_IGNORE_PROCESS_MASK``, and ``PIKA_BIND`` environment variables were
+   added in 0.32.0.
 
 Interaction with OpenMP
 -----------------------
@@ -172,14 +208,17 @@ read the mask. Typically, OpenMP will bind threads to cores if the ``OMP_PROC_BI
 binding of the main thread only at the first parallel region which means that if pika is initialized
 before the first parallel region, the mask will most likely be read correctly. Other implementations
 (e.g. GNU) set the binding of the main thread in global constructors which may run before pika can
-read the process mask. In that case you may need to either use ``--pika:ignore-process-mask`` to use
-all cores on the system or explicitly set a mask with ``--pika:process-mask``. If there is a process
-mask already set in the environment that is launching the application (e.g. in a SLURM job) you can
-read the mask before the application runs with hwloc:
+read the process mask. In that case you may need to either use
+``PIKA_IGNORE_PROCESS_MASK``\/``--pika:ignore-process-mask`` to use all cores on the system or
+explicitly set a mask with ``--pika:process-mask``. If there is a process mask already set in the
+environment that is launching the application (e.g. in a SLURM job) you can read the mask before the
+application runs with hwloc (see :ref:`pika_bind` for a more convenient option):
 
 .. code-block:: bash
 
    ./app --pika:process-mask=$(hwloc-bind --get --taskset)
+
+.. _pika_bind:
 
 ``pika-bind`` helper script
 ---------------------------
@@ -188,6 +227,24 @@ Since version ``0.20.0``, the ``pika-bind`` helper script is bundled with pika. 
 ``PIKA_PROCESS_MASK`` environment variable based on process mask information found before the pika runtime is started,
 and then runs the given command. ``pika-bind`` is a more convenient alternative to manually setting ``PIKA_PROCESS_MASK``
 when pika is used together with a runtime that may reset the process mask of the main thread, like OpenMP.
+
+.. _cli_options:
+
+Command line options
+====================
+
+pika's behaviour can be controlled with command line options, or environment variables. Not all
+command line options are exposed as environment variables. When both are present, command line
+options take precedence over environment variables.
+
+If a command line option is not exposed as an environment variable, but it is necessary to set it,
+it is possible to use the ``PIKA_COMMANDLINE_OPTIONS`` environment variable.
+
+For example, the following disables thread binding and explicitly sets the number of threads:
+
+.. code-block:: bash
+
+   export PIKA_COMMANDLINE_OPTIONS="--pika:bind=none --pika:threads=4"
 
 .. _logging:
 

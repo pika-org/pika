@@ -90,7 +90,7 @@ namespace pika::detail {
         {
             // notify_one() returns false if no more threads are
             // waiting
-            if (!cond_.notify_one(PIKA_MOVE(l))) break;
+            if (!cond_.notify_one(std::move(l))) break;
 
             l = std::unique_lock<mutex_type>(*mtx);
         }
@@ -101,7 +101,7 @@ namespace pika::detail {
         PIKA_ASSERT_OWNS_LOCK(l);
 
         std::ptrdiff_t count = static_cast<std::ptrdiff_t>(cond_.size(l));
-        signal(PIKA_MOVE(l), count);
+        signal(std::move(l), count);
         return count;
     }
 }    // namespace pika::detail

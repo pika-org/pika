@@ -31,7 +31,7 @@ int main()
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
-        tag_invoke(ex::start, os);
+        ex::start(os);
         PIKA_TEST(set_value_called);
     }
 
@@ -41,7 +41,7 @@ int main()
         auto f = [](std::vector<int> v) { PIKA_TEST_EQ(v.size(), std::size_t(0)); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
-        tag_invoke(ex::start, os);
+        ex::start(os);
         PIKA_TEST(set_value_called);
     }
 
@@ -54,7 +54,7 @@ int main()
         };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
-        tag_invoke(ex::start, os);
+        ex::start(os);
         PIKA_TEST(set_value_called);
     }
 
@@ -68,7 +68,7 @@ int main()
         };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
-        tag_invoke(ex::start, os);
+        ex::start(os);
         PIKA_TEST(set_value_called);
     }
 
@@ -131,7 +131,7 @@ int main()
         auto f = []() {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
-        tag_invoke(ex::start, os);
+        ex::start(os);
         PIKA_TEST(set_value_called);
     }
 
@@ -373,8 +373,6 @@ int main()
         ex::start(os);
         PIKA_TEST(set_error_called);
     }
-
-    test_adl_isolation(ex::when_all_vector(std::vector{my_namespace::my_sender{}}));
 
     return 0;
 }

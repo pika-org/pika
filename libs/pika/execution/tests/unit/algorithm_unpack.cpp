@@ -207,7 +207,5 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    test_adl_isolation(ex::unpack(my_namespace::my_sender<std::tuple<my_namespace::my_type>>{}));
-
     return 0;
 }

@@ -10,12 +10,11 @@ include:
 
 .variables_gcc13_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-zen2
+    SPACK_ARCH: linux-ubuntu24.04-zen2
     COMPILER: gcc@13.1.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} malloc=system cxxstd=$CXXSTD +stdexec \
-                 ^boost@1.82.0 ^hwloc@2.9.1 \
-                 ^stdexec@git.8bc7c7f06fe39831dea6852407ebe7f6be8fa9fd=main \
+                 ^boost@1.82.0 ^hwloc@2.9.1 ^stdexec@24.09 \
                  ^spdlog cxxflags=-D_GLIBCXX_DEBUG cxxflags=-D_GLIBCXX_DEBUG_PEDANTIC \
                  cxxflags=-D_GLIBCXX_DEBUG_BACKTRACE cxxflags=-D_GLIBCXX_ASSERTIONS' \
                  ^fmt@11.0.1"
@@ -26,19 +25,19 @@ include:
 gcc13_spack_compiler_image:
   extends:
     - .variables_gcc13_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 gcc13_spack_image:
   needs: [gcc13_spack_compiler_image]
   extends:
     - .variables_gcc13_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 gcc13_build:
   needs: [gcc13_spack_image]
   extends:
     - .variables_gcc13_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .gcc13_test_common:
   needs: [gcc13_build]

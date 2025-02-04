@@ -241,7 +241,5 @@ int main()
         PIKA_TEST(!scheduler_execute_called);
     }
 
-    test_adl_isolation(ex::transfer_just(my_namespace::my_scheduler{}));
-
     return 0;
 }

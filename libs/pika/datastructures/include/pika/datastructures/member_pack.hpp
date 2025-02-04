@@ -25,7 +25,7 @@ namespace pika::util::detail {
 
         template <typename U>
         explicit constexpr member_leaf(std::piecewise_construct_t, U&& v)
-          : member(PIKA_FORWARD(U, v))
+          : member(std::forward<U>(v))
         {
         }
     };
@@ -54,7 +54,7 @@ namespace pika::util::detail {
 
         template <typename U>
         explicit constexpr member_leaf(std::piecewise_construct_t, U&& v)
-          : member(PIKA_FORWARD(U, v))
+          : member(std::forward<U>(v))
         {
         }
     };
@@ -66,7 +66,7 @@ namespace pika::util::detail {
 
         template <typename U>
         explicit constexpr member_leaf(std::piecewise_construct_t, U&& v)
-          : T(PIKA_FORWARD(U, v))
+          : T(std::forward<U>(v))
         {
         }
     };
@@ -108,7 +108,7 @@ namespace pika::util::detail {
 
         template <typename... Us>
         explicit constexpr member_pack(std::piecewise_construct_t, Us&&... us)
-          : member_leaf<Is, Ts>(std::piecewise_construct, PIKA_FORWARD(Us, us))...
+          : member_leaf<Is, Ts>(std::piecewise_construct, std::forward<Us>(us))...
         {
         }
 

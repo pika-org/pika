@@ -80,19 +80,18 @@ struct non_copyable_sender
         std::decay_t<R> r;
         std::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, std::move(os.r)),
-                std::move(os.ts));
+                           pika::execution::experimental::set_value, std::move(r)),
+                std::move(ts));
         };
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, non_copyable_sender&& s, R&& r) noexcept
+    operation_state<R> connect(R&& r) && noexcept
     {
-        return {std::forward<R>(r), std::move(s.ts)};
+        return {std::forward<R>(r), std::move(ts)};
     }
 };
 
@@ -137,26 +136,24 @@ struct sender
         std::decay_t<R> r;
         std::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, std::move(os.r)),
-                std::move(os.ts));
+                           pika::execution::experimental::set_value, std::move(r)),
+                std::move(ts));
         };
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
+    operation_state<R> connect(R&& r) &&
     {
-        return {std::forward<R>(r), std::move(s.ts)};
+        return {std::forward<R>(r), std::move(ts)};
     }
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
+    operation_state<R> connect(R&& r) const&
     {
-        return {std::forward<R>(r), s.ts};
+        return {std::forward<R>(r), ts};
     }
 };
 
@@ -241,17 +238,12 @@ struct error_receiver
     };
 
     template <typename... Ts>
-    friend void
-    tag_invoke(pika::execution::experimental::set_value_t, error_receiver&&, Ts&&...) noexcept
+    void set_value(Ts&&...) && noexcept
     {
         PIKA_TEST(false);
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, error_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <template <typename...> typename Sender, typename... Ts, typename F>
@@ -720,6 +712,41 @@ void test_const_reference()
     PIKA_TEST(true);
 }
 
+void test_let_value()
+{
+    {
+        ex::unique_any_sender<> as = ex::just();
+        auto s = ex::let_value(std::move(as), []() { return ex::just(); });
+        tt::sync_wait(std::move(s));
+    }
+
+    {
+        auto s = ex::let_value(ex::just(), []() -> ex::unique_any_sender<> { return ex::just(); });
+        tt::sync_wait(std::move(s));
+    }
+
+    {
+        ex::unique_any_sender<> s = ex::let_value(ex::just(), []() { return ex::just(); });
+        tt::sync_wait(std::move(s));
+    }
+
+    {
+        ex::unique_any_sender<> as = ex::just();
+        ex::unique_any_sender<> s =
+            ex::let_value(std::move(as), []() -> ex::unique_any_sender<> { return ex::just(); });
+        tt::sync_wait(std::move(s));
+    }
+
+    {
+        ex::unique_any_sender<> s = ex::let_value(ex::make_unique_any_sender(ex::just()),
+            [s = ex::make_unique_any_sender(ex::just())]() mutable {
+                return ex::make_unique_any_sender(ex::let_value(
+                    std::move(s), []() { return ex::make_unique_any_sender(ex::just()); }));
+            });
+        tt::sync_wait(std::move(s));
+    }
+}
+
 template <template <typename...> typename Sender, typename... Ts, typename F>
 void test_any_sender_to_unique_any_sender(F&& f, Ts&&... ts)
 {
@@ -896,6 +923,9 @@ int main()
 
     // Test using {unique_,}any_sender with a just sender of a const reference
     test_const_reference();
+
+    // Test interaction with let_value
+    test_let_value();
 
     // Test construction of unique_any_sender from any_sender
     test_any_sender_to_unique_any_sender<sender>([] {});

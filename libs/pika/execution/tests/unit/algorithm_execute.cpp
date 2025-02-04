@@ -37,15 +37,11 @@ struct sender
     {
         std::decay_t<R> receiver;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            pika::execution::experimental::set_value(std::move(os.receiver));
-        };
+        void start() & noexcept { pika::execution::experimental::set_value(std::move(receiver)); };
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& receiver) noexcept
+    operation_state<R> connect(R&& receiver) && noexcept
     {
         return {std::forward<R>(receiver)};
     }
@@ -60,10 +56,7 @@ struct sender
         }
     };
 
-    friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
-    {
-        return {};
-    }
+    env get_env() const& noexcept { return {}; }
 };
 
 struct scheduler_1
@@ -105,7 +98,7 @@ struct f_struct_1
 
 struct f_struct_2
 {
-    void operator()(int = 42){};
+    void operator()(int = 42) {};
 };
 
 void f_fun_1() {}

@@ -43,40 +43,27 @@ namespace pika::drop_value_detail {
             drop_value_receiver_type&& r, Error&& error) noexcept
         {
             pika::execution::experimental::set_error(
-                PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
+                std::move(r.receiver), std::forward<Error>(error));
         }
 
         friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, drop_value_receiver_type&& r) noexcept
         {
-            pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
+            pika::execution::experimental::set_stopped(std::move(r.receiver));
         }
 
         template <typename... Ts>
-        friend void tag_invoke(pika::execution::experimental::set_value_t,
-            drop_value_receiver_type&& r, Ts&&...) noexcept
+        void set_value(Ts&&...) && noexcept
         {
-            pika::execution::experimental::set_value(PIKA_MOVE(r.receiver));
+            auto r = std::move(*this);
+            pika::execution::experimental::set_value(std::move(r.receiver));
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, drop_value_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender>
-    struct drop_value_sender_impl
-    {
-        struct drop_value_sender_type;
-    };
-
-    template <typename Sender>
-    using drop_value_sender = typename drop_value_sender_impl<Sender>::drop_value_sender_type;
-
-    template <typename Sender>
-    struct drop_value_sender_impl<Sender>::drop_value_sender_type
+    struct drop_value_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -105,25 +92,22 @@ namespace pika::drop_value_detail {
 #endif
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, drop_value_sender_type&& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
-                drop_value_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+            return pika::execution::experimental::connect(
+                std::move(sender), drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            drop_value_sender_type const& r, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, drop_value_receiver<Receiver>{PIKA_FORWARD(Receiver, receiver)});
+                sender, drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, drop_value_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::drop_value_detail
@@ -134,7 +118,7 @@ namespace pika::execution::experimental {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(drop_value_t, Sender&& sender)
         {
-            return drop_value_detail::drop_value_sender<Sender>{PIKA_FORWARD(Sender, sender)};
+            return drop_value_detail::drop_value_sender<Sender>{std::forward<Sender>(sender)};
         }
 
         using pika::functional::detail::tag_fallback<drop_value_t>::operator();
@@ -144,7 +128,5 @@ namespace pika::execution::experimental {
     /// \brief Ignores all values sent by the predecessor sender, sending none itself.
     ///
     /// Sender adaptor that takes any sender and returns a new sender that sends no values.
-    ///
-    /// Added in 0.6.0.
     inline constexpr drop_value_t drop_value{};
 }    // namespace pika::execution::experimental

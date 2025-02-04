@@ -94,7 +94,7 @@ int pika_main()
     // attach continuations to them that run on different
     // random pools
 #if defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_HAVE_VALGRIND)
-    constexpr int loops = 20;
+    constexpr int loops = 5;
 #else
     constexpr int loops = 500;
 #endif
@@ -114,9 +114,7 @@ int pika_main()
                 --counter;
             }));
     }
-    do {
-        pika::this_thread::yield();
-    } while (counter > 0);
+    pika::util::yield_while([&]() { return counter > 0; });
 
     std::cout << "2: Starting NP " << loops << std::endl;
     counter = loops;
@@ -133,9 +131,7 @@ int pika_main()
                 --counter;
             }));
     }
-    do {
-        pika::this_thread::yield();
-    } while (counter > 0);
+    pika::util::yield_while([&]() { return counter > 0; });
 
     std::cout << "3: Starting HP->NP " << loops << std::endl;
     counter = loops;
@@ -152,9 +148,7 @@ int pika_main()
                 --counter;
             }));
     }
-    do {
-        pika::this_thread::yield();
-    } while (counter > 0);
+    pika::util::yield_while([&]() { return counter > 0; });
 
     std::cout << "4: Starting NP->HP " << loops << std::endl;
     counter = loops;
@@ -171,9 +165,7 @@ int pika_main()
                 --counter;
             }));
     }
-    do {
-        pika::this_thread::yield();
-    } while (counter > 0);
+    pika::util::yield_while([&]() { return counter > 0; });
 
     std::cout << "5: Starting suspending " << loops << std::endl;
     counter = loops;
@@ -195,9 +187,7 @@ int pika_main()
             --counter;
         }));
     }
-    do {
-        pika::this_thread::yield();
-    } while (counter > 0);
+    pika::util::yield_while([&]() { return counter > 0; });
 
     pika::finalize();
     return EXIT_SUCCESS;

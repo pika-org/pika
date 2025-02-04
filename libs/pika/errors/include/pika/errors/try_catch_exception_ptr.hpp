@@ -38,6 +38,6 @@ namespace pika::detail {
         {
             ep = std::current_exception();
         }
-        return c(PIKA_MOVE(ep));
+        return c(std::move(ep));
     }
 }    // namespace pika::detail

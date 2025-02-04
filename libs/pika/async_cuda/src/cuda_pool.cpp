@@ -7,29 +7,23 @@
 #include <pika/assert.hpp>
 #include <pika/async_cuda/cuda_pool.hpp>
 #include <pika/async_cuda_base/cuda_stream.hpp>
-#include <pika/concurrency/cache_line_data.hpp>
 #include <pika/coroutines/thread_enums.hpp>
-#include <pika/runtime/runtime_fwd.hpp>
-#include <pika/threading_base/thread_num_tss.hpp>
 #include <pika/topology/topology.hpp>
 
+#include <atomic>
 #include <cstddef>
 #include <memory>
 #include <utility>
 #include <vector>
 
 namespace pika::cuda::experimental {
-    cuda_pool::streams_holder::streams_holder(int device, std::size_t num_streams_per_thread,
+    cuda_pool::streams_holder::streams_holder(int device, std::size_t num_streams,
         pika::execution::thread_priority priority, unsigned int flags)
-      : num_streams_per_thread(num_streams_per_thread)
-      , concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                                      pika::threads::detail::hardware_concurrency())
+      : stream_index{0}
       , streams()
-      , active_stream_indices(concurrency, {0})
     {
-        PIKA_ASSERT(num_streams_per_thread > 0);
+        PIKA_ASSERT(num_streams > 0);
 
-        std::size_t const num_streams = num_streams_per_thread * concurrency;
         streams.reserve(num_streams);
         for (std::size_t i = 0; i < num_streams; ++i)
         {
@@ -39,19 +33,11 @@ namespace pika::cuda::experimental {
 
     cuda_stream const& cuda_pool::streams_holder::get_next_stream()
     {
-        // We do not care if there is oversubscription and t is bigger than
-        // hardware_concurrency; we simply wrap it around
-        auto const t = pika::threads::detail::get_global_thread_num_tss() % concurrency;
-        auto const local_stream_index = ++(active_stream_indices[t].data_) % num_streams_per_thread;
-        auto const global_stream_index = t * num_streams_per_thread + local_stream_index;
-
-        return streams[global_stream_index];
+        return streams[stream_index.fetch_add(1, std::memory_order_relaxed) % streams.size()];
     }
 
     cuda_pool::cublas_handles_holder::cublas_handles_holder(std::size_t num_handles)
-      : concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                                      pika::threads::detail::hardware_concurrency())
-      , handle_index{0}
+      : handle_index{0}
       , handles()
       , handle_mutexes(num_handles)
     {
@@ -83,9 +69,7 @@ namespace pika::cuda::experimental {
     }
 
     cuda_pool::cusolver_handles_holder::cusolver_handles_holder(std::size_t num_handles)
-      : concurrency(pika::detail::get_runtime_ptr() ? pika::get_num_worker_threads() :
-                                                      pika::threads::detail::hardware_concurrency())
-      , handle_index{0}
+      : handle_index{0}
       , handles()
       , handle_mutexes(num_handles)
     {
@@ -115,24 +99,24 @@ namespace pika::cuda::experimental {
         return {handle, std::move(lock)};
     }
 
-    cuda_pool::pool_data::pool_data(int device, std::size_t num_normal_priority_streams_per_thread,
-        std::size_t num_high_priority_streams_per_thread, unsigned int flags,
-        std::size_t num_cublas_handles, std::size_t num_cusolver_handles)
+    cuda_pool::pool_data::pool_data(int device, std::size_t num_normal_priority_streams,
+        std::size_t num_high_priority_streams, unsigned int flags, std::size_t num_cublas_handles,
+        std::size_t num_cusolver_handles)
       : device(device)
-      , normal_priority_streams(device, num_normal_priority_streams_per_thread,
-            pika::execution::thread_priority::normal, flags)
-      , high_priority_streams(device, num_high_priority_streams_per_thread,
-            pika::execution::thread_priority::high, flags)
+      , normal_priority_streams(
+            device, num_normal_priority_streams, pika::execution::thread_priority::normal, flags)
+      , high_priority_streams(
+            device, num_high_priority_streams, pika::execution::thread_priority::high, flags)
       , cublas_handles(num_cublas_handles)
       , cusolver_handles(num_cusolver_handles)
     {
     }
 
-    cuda_pool::cuda_pool(int device, std::size_t num_normal_priority_streams_per_thread,
-        std::size_t num_high_priority_streams_per_thread, unsigned int flags,
-        std::size_t num_cublas_handles, std::size_t num_cusolver_handles)
-      : data(std::make_shared<pool_data>(device, num_normal_priority_streams_per_thread,
-            num_high_priority_streams_per_thread, flags, num_cublas_handles, num_cusolver_handles))
+    cuda_pool::cuda_pool(int device, std::size_t num_normal_priority_streams,
+        std::size_t num_high_priority_streams, unsigned int flags, std::size_t num_cublas_handles,
+        std::size_t num_cusolver_handles)
+      : data(std::make_shared<pool_data>(device, num_normal_priority_streams,
+            num_high_priority_streams, flags, num_cublas_handles, num_cusolver_handles))
     {
     }
 

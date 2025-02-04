@@ -86,8 +86,7 @@ namespace pika::debug::detail {
 #ifdef PIKA_DEBUGGING_PRINT_LINUX
                << " cpu " << debug::detail::dec<3, int>(sched_getcpu()) << " ";
 #else
-               << " cpu "
-               << "--- ";
+               << " cpu " << "--- ";
 #endif
         }
 

@@ -21,9 +21,13 @@ jobs:
     name: github/linux/sanitizers/thread
     runs-on: ubuntu-24.04
     container:
-      image: pikaorg/pika-ci-base:27
+      image: pikaorg/pika-ci-base:29
       # --privileged is enabled for sysctl further down.
       options: --privileged
+
+    strategy:
+      matrix:
+        build_type: ["Debug", "RelWithDebInfo"]
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +36,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-linux-sanitizers-thread
+          key: ccache-linux-sanitizers-thread-${{ matrix.build_type }}
       - name: Switch OpenMPI to MPICH
         shell: bash
         run: |
@@ -43,14 +47,15 @@ jobs:
       - name: Configure
         shell: bash
         run: |
+            # MPI is disabled because of https://github.com/pika-org/pika/issues/1348
             cmake \
                 . \
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
-                -DPIKA_WITH_MPI=ON \
+                -DPIKA_WITH_MPI=OFF \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \

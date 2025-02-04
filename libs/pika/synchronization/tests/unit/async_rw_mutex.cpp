@@ -65,10 +65,10 @@ public:
 struct checker
 {
     bool const expect_readonly;
-    const std::size_t expected_predecessor_value;
+    std::size_t const expected_predecessor_value;
     std::atomic<std::size_t>& count;
-    const std::size_t count_min;
-    const std::size_t count_max = count_min;
+    std::size_t const count_min;
+    std::size_t const count_max = count_min;
 
     // Access types are differently tagged for read-only and read-write access.
     using void_read_access_type = typename async_rw_mutex<void>::read_access_type;

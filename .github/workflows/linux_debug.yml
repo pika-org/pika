@@ -19,7 +19,7 @@ jobs:
   build:
     name: github/linux/debug/fast
     runs-on: ubuntu-24.04
-    container: pikaorg/pika-ci-base:27
+    container: pikaorg/pika-ci-base:29
 
     steps:
       - uses: actions/checkout@v4

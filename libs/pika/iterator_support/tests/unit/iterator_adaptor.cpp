@@ -41,7 +41,7 @@ struct mult_functor
 template <typename Pair>
 struct select1st_
 {
-    const typename Pair::first_type& operator()(Pair const& x) const { return x.first; }
+    typename Pair::first_type const& operator()(Pair const& x) const { return x.first; }
 
     typename Pair::first_type& operator()(Pair& x) const { return x.first; }
 };
@@ -144,7 +144,7 @@ struct constant_iterator
         typename std::iterator_traits<Iter>::value_type const>
 {
     using base_adaptor_type = pika::util::iterator_adaptor<constant_iterator<Iter>, Iter,
-        const typename std::iterator_traits<Iter>::value_type>;
+        typename std::iterator_traits<Iter>::value_type const>;
 
     constant_iterator() {}
     constant_iterator(Iter it)
@@ -167,7 +167,7 @@ int main()
         ptr_iterator<tests::dummy_type> i(array);
         tests::random_access_iterator_test(i, N, array);
 
-        ptr_iterator<const tests::dummy_type> j(array);
+        ptr_iterator<tests::dummy_type const> j(array);
         tests::random_access_iterator_test(j, N, array);
         tests::const_nonconst_iterator_test(i, ++j);
     }
@@ -226,7 +226,7 @@ int main()
         ptr_iterator<tests::dummy_type> i(array);
         tests::random_access_iterator_test(i, N, array);
 
-        ptr_iterator<const tests::dummy_type> j(array);
+        ptr_iterator<tests::dummy_type const> j(array);
         tests::random_access_iterator_test(j, N, array);
         tests::const_nonconst_iterator_test(i, ++j);
     }

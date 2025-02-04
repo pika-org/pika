@@ -8,7 +8,7 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_COMMIT: develop-2024-10-06
+  SPACK_COMMIT: develop-2025-01-19
 
 .base_spack_image:
   timeout: 1 hours
@@ -21,17 +21,16 @@ variables:
     - echo -e "ARCH=$ARCH" >> base.env
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> base.env
   variables:
-    BASE_IMAGE: docker.io/ubuntu:22.04
+    BASE_IMAGE: docker.io/ubuntu:24.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
     DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT","SPACK_REPO"]'
   artifacts:
     reports:
       dotenv: base.env
 
-# We allow failure since santis is unstable
 base_spack_image_aarch64:
   extends: [.container-builder-cscs-gh200, .base_spack_image]
-  allow_failure: true
+
 base_spack_image_x86_64:
   extends: [.container-builder-cscs-zen2, .base_spack_image]
 
@@ -39,7 +38,7 @@ base_spack_image_x86_64:
   timeout: 4 hours
   before_script:
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
-    - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}
+    - compiler=${COMPILER}${NVHPC_COMPILER:+-}${NVHPC_COMPILER}${BASE_COMPILER:+-}${BASE_COMPILER}
     - compiler=${compiler//@/-}
     - CONFIG_TAG=`echo $DOCKERFILE_SHA-$SPACK_ARCH-$BASE_IMAGE-$compiler | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/base/pika-$compiler:$CONFIG_TAG
@@ -47,16 +46,16 @@ base_spack_image_x86_64:
     - echo -e "BASE_IMAGE=$PERSIST_IMAGE_NAME" >> compiler.env
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_compiler
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_ARCH","COMPILER","NVHPC_COMPILER"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_ARCH","COMPILER","BASE_COMPILER","NVHPC_COMPILER"]'
   artifacts:
     reports:
       dotenv: compiler.env
 
-.compiler_image_template_santis:
+.compiler_image_template_gh200:
   needs: [base_spack_image_aarch64]
   extends: [.container-builder-cscs-gh200, .compiler_image_template]
 
-.compiler_image_template_rosa:
+.compiler_image_template_zen2:
   needs: [base_spack_image_x86_64]
   extends: [.container-builder-cscs-zen2, .compiler_image_template]
 
@@ -75,10 +74,10 @@ base_spack_image_x86_64:
     reports:
       dotenv: dependencies.env
 
-.dependencies_image_template_santis:
+.dependencies_image_template_gh200:
   extends: [.container-builder-cscs-gh200, .dependencies_image_template]
 
-.dependencies_image_template_rosa:
+.dependencies_image_template_zen2:
   extends: [.container-builder-cscs-zen2, .dependencies_image_template]
 
 .parallel_build_types:
@@ -110,20 +109,22 @@ base_spack_image_x86_64:
     reports:
       dotenv: "$DOTENV_FILE"
 
-.build_template_santis:
+.build_template_gh200:
   extends: [.container-builder-cscs-gh200, .build_template]
 
-.build_template_rosa:
+.build_template_zen2:
   extends: [.container-builder-cscs-zen2, .build_template]
 
 .test_template:
   extends:
     - .cmake_variables_common
+  variables:
+    TEST_TIMEOUT: 300
   script:
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
-    - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout 300 --output-on-failure --no-compress-output --no-tests=error"
+    - spack -e pika_ci build-env $spack_spec -- bash -c "ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout ${TEST_TIMEOUT} --output-on-failure --no-compress-output --no-tests=error"
     - export MIMALLOC_EAGER_COMMIT_DELAY=0
     - export MIMALLOC_ALLOW_LARGE_OS_PAGES=1
     - "${SOURCE_DIR}/.gitlab/scripts/run_performance_benchmarks.sh"

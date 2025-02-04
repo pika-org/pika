@@ -21,7 +21,7 @@ namespace pika::util::detail {
             std::is_base_of<C, typename std::remove_reference<T>::type>::value>::type>
     static constexpr T&& mem_ptr_target(T&& v) noexcept
     {
-        return PIKA_FORWARD(T, v);
+        return std::forward<T>(v);
     }
 
     // when `pm` is a pointer to member of a class `C` and
@@ -39,13 +39,13 @@ namespace pika::util::detail {
 #if defined(PIKA_CUDA_VERSION)
         noexcept(*std::forward<T>(v))) -> decltype(*std::forward<T>(v))
 #else
-        noexcept(*PIKA_FORWARD(T, v))) -> decltype(*PIKA_FORWARD(T, v))
+        noexcept(*std::forward<T>(v))) -> decltype(*std::forward<T>(v))
 #endif
     {
 #if defined(PIKA_CUDA_VERSION)
         return *std::forward<T>(v);
 #else
-        return *PIKA_FORWARD(T, v);
+        return *std::forward<T>(v);
 #endif
     }
 
@@ -63,8 +63,8 @@ namespace pika::util::detail {
 
         template <typename T1>
         constexpr auto operator()(T1&& t1) const
-            noexcept(noexcept(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm))
-                -> decltype(detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)
+            noexcept(noexcept(detail::mem_ptr_target<C>(std::forward<T1>(t1)).*
+                pm)) -> decltype(detail::mem_ptr_target<C>(std::forward<T1>(t1)).*pm)
         {
             // This seems to trigger a bogus warning in GCC 11 with
             // optimizations enabled (possibly the same as this:
@@ -74,7 +74,7 @@ namespace pika::util::detail {
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
-            return detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm;
+            return detail::mem_ptr_target<C>(std::forward<T1>(t1)).*pm;
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
 # pragma GCC diagnostic pop
 #endif
@@ -93,10 +93,10 @@ namespace pika::util::detail {
         }
 
         template <typename T1, typename... Tn>
-        constexpr auto operator()(T1&& t1, Tn&&... tn) const noexcept(noexcept(
-            (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(Tn, tn)...)))
-            -> decltype((detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(
-                PIKA_FORWARD(Tn, tn)...))
+        constexpr auto operator()(T1&& t1, Tn&&... tn) const noexcept(
+            noexcept((detail::mem_ptr_target<C>(std::forward<T1>(t1)).*pm)(std::forward<Tn>(
+                tn)...))) -> decltype((detail::mem_ptr_target<C>(std::forward<T1>(t1)).*
+                              pm)(std::forward<Tn>(tn)...))
         {
             // This seems to trigger a bogus warning in GCC 11 with
             // optimizations enabled (possibly the same as this:
@@ -106,7 +106,7 @@ namespace pika::util::detail {
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
-            return (detail::mem_ptr_target<C>(PIKA_FORWARD(T1, t1)).*pm)(PIKA_FORWARD(Tn, tn)...);
+            return (detail::mem_ptr_target<C>(std::forward<T1>(t1)).*pm)(std::forward<Tn>(tn)...);
 #if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 110000
 # pragma GCC diagnostic pop
 #endif

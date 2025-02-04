@@ -158,7 +158,7 @@ namespace pika {
 
         threads::detail::thread_init_data data(
             util::detail::one_shot(
-                util::detail::bind(&thread::thread_function_nullary, PIKA_MOVE(func))),
+                util::detail::bind(&thread::thread_function_nullary, std::move(func))),
             "thread::thread_function_nullary", execution::thread_priority::default_,
             execution::thread_schedule_hint(), execution::thread_stacksize::default_,
             threads::detail::thread_schedule_state::pending, true);

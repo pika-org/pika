@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     for (auto const& scheduler : schedulers)
     {
         pika::init_params iparams;
-        iparams.cfg = {"--pika:queuing=" + std::string(scheduler)};
+        iparams.cfg = {"--pika:scheduler=" + std::string(scheduler)};
         std::cout << iparams.cfg[0] << std::endl;
         pika::init(pika_main, argc, argv, iparams);
     }

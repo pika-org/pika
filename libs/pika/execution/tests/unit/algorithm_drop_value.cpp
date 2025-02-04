@@ -130,7 +130,5 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    test_adl_isolation(ex::drop_value(my_namespace::my_sender{}));
-
     return 0;
 }

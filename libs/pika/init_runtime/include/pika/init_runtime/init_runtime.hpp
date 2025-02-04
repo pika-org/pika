@@ -56,7 +56,7 @@ namespace pika {
         [[maybe_unused]] static char** dummy_argv = default_argv;
         // PIKA_APPLICATION_STRING is specific to an application and therefore
         // cannot be in the source file
-        [[maybe_unused]] static const pika::program_options::options_description default_desc =
+        [[maybe_unused]] static pika::program_options::options_description const default_desc =
             pika::program_options::options_description(
                 "Usage: " PIKA_APPLICATION_STRING " [options]");
 

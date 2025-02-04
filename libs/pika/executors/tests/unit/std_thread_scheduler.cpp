@@ -68,20 +68,16 @@ struct check_context_receiver
     }
 
     template <typename... Ts>
-    friend void tag_invoke(ex::set_value_t, check_context_receiver&& r, Ts&&...) noexcept
+    void set_value(Ts&&...) && noexcept
     {
-        PIKA_TEST_NEQ(r.parent_id, std::this_thread::get_id());
+        PIKA_TEST_NEQ(parent_id, std::this_thread::get_id());
         PIKA_TEST_NEQ(std::thread::id(), std::this_thread::get_id());
-        std::lock_guard l{r.mtx};
-        r.executed = true;
-        r.cond.notify_one();
+        std::lock_guard l{mtx};
+        executed = true;
+        cond.notify_one();
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, check_context_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 void test_sender_receiver_basic()
@@ -226,19 +222,16 @@ struct callback_receiver
     friend void tag_invoke(ex::set_stopped_t, callback_receiver&&) noexcept { PIKA_TEST(false); }
 
     template <typename... Ts>
-    friend void tag_invoke(ex::set_value_t, callback_receiver&& r, Ts&&...) noexcept
+    void set_value(Ts&&...) && noexcept
     {
+        auto r = std::move(*this);
         r.f();
         std::lock_guard l{r.mtx};
         r.executed = true;
         r.cond.notify_one();
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 void test_transfer_basic()

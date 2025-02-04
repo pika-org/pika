@@ -24,8 +24,10 @@ int main(int argc, char* argv[])
     pika::start(argc, argv);
     ex::thread_pool_scheduler sched{};
 
-    auto s = ex::just(42, custom_type{}, std::tuple("hello")) | ex::drop_value() |
-        // No matter what is sent to drop_value, it won't be sent from drop_value
+    auto s = ex::just(42, custom_type{}, std::tuple("hello")) |
+        ex::drop_value() |
+        // No matter what is sent to drop_value, it won't be sent from
+        // drop_value
         ex::then([] { fmt::print("I got nothing...\n"); });
     tt::sync_wait(std::move(s));
 

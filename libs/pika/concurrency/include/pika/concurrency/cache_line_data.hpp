@@ -65,7 +65,7 @@ namespace pika::concurrency::detail {
         }
 
         cache_aligned_data(Data&& data) noexcept
-          : data_{PIKA_MOVE(data)}
+          : data_{std::move(data)}
         {
         }
 
@@ -89,7 +89,7 @@ namespace pika::concurrency::detail {
         cache_aligned_data() = default;
 
         cache_aligned_data(Data&& data) noexcept
-          : data_{PIKA_MOVE(data)}
+          : data_{std::move(data)}
         {
         }
 
@@ -115,7 +115,7 @@ namespace pika::concurrency::detail {
         }
 
         cache_aligned_data_derived(Data&& data) noexcept
-          : Data{PIKA_MOVE(data)}
+          : Data{std::move(data)}
         {
         }
 
@@ -136,7 +136,7 @@ namespace pika::concurrency::detail {
         cache_aligned_data_derived() = default;
 
         cache_aligned_data_derived(Data&& data) noexcept
-          : Data{PIKA_MOVE(data)}
+          : Data{std::move(data)}
         {
         }
 

@@ -25,8 +25,8 @@
 /// note that it is expected that this test will print warnings when a pool is created
 /// but not actually needed by the completion mode
 
-static const std::string random_name1 = "abcd12345qwerty";
-static const std::string random_name2 = "ta-daa-500";
+static std::string const random_name1 = "abcd12345qwerty";
+static std::string const random_name2 = "ta-daa-500";
 
 namespace ex = pika::execution::experimental;
 namespace mpi = pika::mpi::experimental;
@@ -51,7 +51,7 @@ int pika_main(std::string const& pool_name)
             int data = 0, count = 1;
             if (rank == 0) { data = 42; }
             auto s = mpi::transform_mpi(ex::just(&data, count, datatype, 0, comm), MPI_Ibcast);
-            tt::sync_wait(PIKA_MOVE(s));
+            tt::sync_wait(std::move(s));
             PIKA_TEST_EQ(data, 42);
         }
     }    // let the polling go out of scope

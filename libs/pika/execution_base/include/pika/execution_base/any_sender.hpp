@@ -12,12 +12,14 @@
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+#include <pika/type_support/detail/with_result_of.hpp>
 #include <pika/type_support/pack.hpp>
 
 #include <cstddef>
 #include <cstring>
 #include <exception>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -220,7 +222,7 @@ namespace pika::detail {
             if (!empty()) { release(); }
         }
 
-        movable_sbo_storage(movable_sbo_storage&& other) { move_assign(PIKA_MOVE(other)); }
+        movable_sbo_storage(movable_sbo_storage&& other) { move_assign(std::move(other)); }
 
         template <typename T>
         explicit movable_sbo_storage(
@@ -228,7 +230,7 @@ namespace pika::detail {
         {
             static_assert(std::is_base_of_v<base_type, T>);
 
-            move_assign(PIKA_MOVE(other));
+            move_assign(std::move(other));
         }
 
         movable_sbo_storage& operator=(movable_sbo_storage&& other)
@@ -237,7 +239,7 @@ namespace pika::detail {
             {
                 if (!empty()) { release(); }
 
-                move_assign(PIKA_MOVE(other));
+                move_assign(std::move(other));
             }
             return *this;
         }
@@ -252,7 +254,7 @@ namespace pika::detail {
             {
                 if (!empty()) { release(); }
 
-                move_assign(PIKA_MOVE(other));
+                move_assign(std::move(other));
             }
             return *this;
         }
@@ -275,13 +277,13 @@ namespace pika::detail {
             if constexpr (can_use_embedded_storage<Impl>())
             {
                 Impl* p = reinterpret_cast<Impl*>(&embedded_storage);
-                new (p) Impl(PIKA_FORWARD(Ts, ts)...);
+                new (p) Impl(std::forward<Ts>(ts)...);
                 object = p;
             }
             else
 #endif
             {
-                heap_storage = new Impl(PIKA_FORWARD(Ts, ts)...);
+                heap_storage = new Impl(std::forward<Ts>(ts)...);
                 object = heap_storage;
             }
         }
@@ -364,14 +366,15 @@ namespace pika::detail {
 }    // namespace pika::detail
 
 namespace pika::execution::experimental::detail {
-    struct any_operation_state_base
+    struct PIKA_EXPORT any_operation_state_holder_base
     {
-        virtual ~any_operation_state_base() noexcept = default;
-        virtual bool empty() const noexcept { return false; }
+        virtual ~any_operation_state_holder_base() noexcept = default;
+        virtual bool empty() const noexcept;
         virtual void start() & noexcept = 0;
     };
 
-    struct PIKA_EXPORT empty_any_operation_state final : any_operation_state_base
+    struct PIKA_EXPORT empty_any_operation_state_holder_state final
+      : any_operation_state_holder_base
     {
         bool empty() const noexcept override;
         void start() & noexcept override;
@@ -380,44 +383,176 @@ namespace pika::execution::experimental::detail {
 
 namespace pika::detail {
     template <>
-    struct empty_vtable_type<pika::execution::experimental::detail::any_operation_state_base>
+    struct empty_vtable_type<pika::execution::experimental::detail::any_operation_state_holder_base>
     {
-        using type = pika::execution::experimental::detail::empty_any_operation_state;
+        using type = pika::execution::experimental::detail::empty_any_operation_state_holder_state;
     };
 }    // namespace pika::detail
 
 namespace pika::execution::experimental::detail {
-    template <typename Sender, typename Receiver>
-    struct any_operation_state_impl final : any_operation_state_base
+    template <typename... Ts>
+    struct any_receiver_ref_base
     {
-        std::decay_t<connect_result_t<Sender, Receiver>> operation_state;
+        void* receiver = nullptr;
 
-        template <typename Sender_, typename Receiver_>
-        any_operation_state_impl(Sender_&& sender, Receiver_&& receiver)
-          : operation_state(pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender_, sender), PIKA_FORWARD(Receiver_, receiver)))
+        template <typename Receiver>
+        explicit any_receiver_ref_base(Receiver* receiver)
+          : receiver(static_cast<void*>(receiver))
         {
         }
-        ~any_operation_state_impl() noexcept = default;
+        any_receiver_ref_base(any_receiver_ref_base&&) noexcept = default;
+        any_receiver_ref_base& operator=(any_receiver_ref_base&&) noexcept = default;
+        any_receiver_ref_base(any_receiver_ref_base const&) = delete;
+        any_receiver_ref_base& operator=(any_receiver_ref_base const&) = delete;
 
-        void start() & noexcept override { pika::execution::experimental::start(operation_state); }
+        virtual void set_value(Ts...) noexcept = 0;
+        virtual void set_error(std::exception_ptr) noexcept = 0;
+        virtual void set_stopped() noexcept = 0;
     };
 
-    class PIKA_EXPORT any_operation_state
+    template <typename Receiver, typename... Ts>
+    struct any_receiver_ref : any_receiver_ref_base<Ts...>
     {
-        using base_type = detail::any_operation_state_base;
-        template <typename Sender, typename Receiver>
-        using impl_type = detail::any_operation_state_impl<Sender, Receiver>;
+        using any_receiver_ref_base<Ts...>::receiver;
+
+        template <typename Receiver_>
+        explicit any_receiver_ref(Receiver_* receiver)
+          : any_receiver_ref_base<Ts...>(receiver)
+        {
+        }
+        any_receiver_ref(any_receiver_ref&&) noexcept = default;
+        any_receiver_ref& operator=(any_receiver_ref&&) noexcept = default;
+        any_receiver_ref(any_receiver_ref const&) = delete;
+        any_receiver_ref& operator=(any_receiver_ref const&) = delete;
+
+        void set_value(Ts... ts) noexcept override
+        {
+            pika::execution::experimental::set_value(
+                std::move(*static_cast<std::decay_t<Receiver>*>(receiver)), std::move(ts)...);
+        }
+
+        void set_error(std::exception_ptr ep) noexcept override
+        {
+            pika::execution::experimental::set_error(
+                std::move(*static_cast<std::decay_t<Receiver>*>(receiver)), std::move(ep));
+        }
+
+        void set_stopped() noexcept override
+        {
+            pika::execution::experimental::set_stopped(
+                std::move(*static_cast<std::decay_t<Receiver>*>(receiver)));
+        }
+    };
+
+    template <typename... Ts>
+    struct any_receiver
+    {
+        PIKA_STDEXEC_RECEIVER_CONCEPT
+
+        any_receiver_ref_base<Ts...>* receiver;
+
+        explicit any_receiver(any_receiver_ref_base<Ts...>* receiver)
+          : receiver(receiver)
+        {
+        }
+        any_receiver(any_receiver&&) noexcept = default;
+        any_receiver& operator=(any_receiver&&) noexcept = default;
+        any_receiver(any_receiver const&) = delete;
+        any_receiver& operator=(any_receiver const&) = delete;
+
+        template <typename... Ts_>
+        auto set_value(
+            Ts_&&... ts) && noexcept -> decltype(receiver->set_value(std::forward<Ts_>(ts)...))
+        {
+            try
+            {
+                receiver->set_value(std::forward<Ts_>(ts)...);
+            }
+            catch (...)
+            {
+                receiver->set_error(std::current_exception());
+            }
+        }
+
+        friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver r,
+            std::exception_ptr ep) noexcept
+        {
+            r.receiver->set_error(std::move(ep));
+        }
+
+        friend void tag_invoke(
+            pika::execution::experimental::set_stopped_t, any_receiver r) noexcept
+        {
+            r.receiver->set_stopped();
+        }
+
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+    };
+
+    template <typename Sender, typename... Ts>
+    struct any_operation_state_holder_impl final : any_operation_state_holder_base
+    {
+        [[no_unique_address]] std::optional<
+            std::decay_t<connect_result_t<Sender, any_receiver<Ts...>>>> operation_state;
+
+        template <typename Sender_>
+        any_operation_state_holder_impl(Sender_&& sender, any_receiver<Ts...>&& receiver)
+          : operation_state(pika::detail::with_result_of([&sender, &receiver]() mutable {
+              return pika::execution::experimental::connect(
+                  std::forward<Sender_>(sender), std::move(receiver));
+          }))
+        {
+        }
+        ~any_operation_state_holder_impl() noexcept override = default;
+
+        void start() & noexcept override
+        {
+            PIKA_ASSERT(operation_state.has_value());
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+            pika::execution::experimental::start(*operation_state);
+        }
+    };
+
+    class PIKA_EXPORT any_operation_state_holder
+    {
+        using base_type = detail::any_operation_state_holder_base;
+        template <typename Sender, typename... Ts>
+        using impl_type = detail::any_operation_state_holder_impl<Sender, Ts...>;
         using storage_type = pika::detail::movable_sbo_storage<base_type, 8 * sizeof(void*)>;
 
         storage_type storage{};
 
     public:
-        template <typename Sender, typename Receiver>
-        any_operation_state(Sender&& sender, Receiver&& receiver)
+        template <typename Sender, typename... Ts>
+        any_operation_state_holder(Sender&& sender, any_receiver<Ts...>&& receiver)
         {
-            storage.template store<impl_type<Sender, Receiver>>(
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Receiver, receiver));
+            storage.template store<impl_type<Sender, Ts...>>(
+                std::forward<Sender>(sender), std::move(receiver));
+        }
+
+        ~any_operation_state_holder() noexcept = default;
+        any_operation_state_holder(any_operation_state_holder&&) = delete;
+        any_operation_state_holder(any_operation_state_holder const&) = delete;
+        any_operation_state_holder& operator=(any_operation_state_holder&&) = delete;
+        any_operation_state_holder& operator=(any_operation_state_holder const&) = delete;
+
+        void start() & noexcept;
+    };
+
+    template <typename Receiver, typename... Ts>
+    class any_operation_state
+    {
+        std::decay_t<std::decay_t<Receiver>> receiver;
+        any_receiver_ref<std::decay_t<Receiver>, Ts...> receiver_ref;
+        any_operation_state_holder op_state;
+
+    public:
+        template <typename Sender, typename Receiver_>
+        any_operation_state(Sender&& sender, Receiver_&& receiver)
+          : receiver(std::forward<Receiver_>(receiver))
+          , receiver_ref{&this->receiver}
+          , op_state{std::forward<Sender>(sender).connect(any_receiver<Ts...>(&receiver_ref))}
+        {
         }
 
         ~any_operation_state() noexcept = default;
@@ -426,173 +561,20 @@ namespace pika::execution::experimental::detail {
         any_operation_state& operator=(any_operation_state&&) = delete;
         any_operation_state& operator=(any_operation_state const&) = delete;
 
-        PIKA_EXPORT friend void tag_invoke(
-            pika::execution::experimental::start_t, any_operation_state& os) noexcept;
-    };
-
-    template <typename... Ts>
-    struct any_receiver_base
-    {
-        virtual ~any_receiver_base() = default;
-        virtual void move_into(void* p) = 0;
-        virtual void set_value(Ts... ts) && = 0;
-        virtual void set_error(std::exception_ptr ep) && noexcept = 0;
-        virtual void set_stopped() && noexcept = 0;
-        virtual bool empty() const noexcept { return false; }
+        void start() & noexcept { op_state.start(); }
     };
 
     [[noreturn]] PIKA_EXPORT void throw_bad_any_call(
         char const* class_name, char const* function_name);
-
-    template <typename... Ts>
-    struct empty_any_receiver final : any_receiver_base<Ts...>
-    {
-        void move_into(void*) override { PIKA_UNREACHABLE; }
-
-        bool empty() const noexcept override { return true; }
-
-        void set_value(Ts...) && override { throw_bad_any_call("any_receiver", "set_value"); }
-
-        [[noreturn]] void set_error(std::exception_ptr) && noexcept override
-        {
-            throw_bad_any_call("any_receiver", "set_error");
-        }
-
-        [[noreturn]] void set_stopped() && noexcept override
-        {
-            throw_bad_any_call("any_receiver", "set_stopped");
-        }
-    };
 }    // namespace pika::execution::experimental::detail
 
-namespace pika::detail {
-    template <typename... Ts>
-    struct empty_vtable_type<pika::execution::experimental::detail::any_receiver_base<Ts...>>
-    {
-        using type = pika::execution::experimental::detail::empty_any_receiver<Ts...>;
-    };
-}    // namespace pika::detail
-
 namespace pika::execution::experimental::detail {
-    template <typename Receiver, typename... Ts>
-    struct any_receiver_impl final : any_receiver_base<Ts...>
-    {
-        std::decay_t<Receiver> receiver;
-
-        template <typename Receiver_,
-            typename =
-                std::enable_if_t<!std::is_same_v<std::decay_t<Receiver_>, any_receiver_impl>>>
-        explicit any_receiver_impl(Receiver_&& receiver)
-          : receiver(PIKA_FORWARD(Receiver_, receiver))
-        {
-        }
-
-        void move_into(void* p) override { new (p) any_receiver_impl(PIKA_MOVE(receiver)); }
-
-        void set_value(Ts... ts) && override
-        {
-            pika::execution::experimental::set_value(PIKA_MOVE(receiver), PIKA_MOVE(ts)...);
-        }
-
-        void set_error(std::exception_ptr ep) && noexcept override
-        {
-            pika::execution::experimental::set_error(PIKA_MOVE(receiver), PIKA_MOVE(ep));
-        }
-
-        void set_stopped() && noexcept override
-        {
-            pika::execution::experimental::set_stopped(PIKA_MOVE(receiver));
-        }
-    };
-
-    template <typename... Ts>
-    class any_receiver
-    {
-        using base_type = detail::any_receiver_base<Ts...>;
-        template <typename Receiver>
-        using impl_type = detail::any_receiver_impl<Receiver, Ts...>;
-        using storage_type = pika::detail::movable_sbo_storage<base_type, 4 * sizeof(void*)>;
-
-        storage_type storage{};
-
-    public:
-        PIKA_STDEXEC_RECEIVER_CONCEPT
-        template <typename Receiver,
-            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
-        explicit any_receiver(Receiver&& receiver)
-        {
-            storage.template store<impl_type<Receiver>>(PIKA_FORWARD(Receiver, receiver));
-        }
-
-        template <typename Receiver,
-            typename = std::enable_if_t<!std::is_same_v<std::decay_t<Receiver>, any_receiver>>>
-        any_receiver& operator=(Receiver&& receiver)
-        {
-            storage.template store<impl_type<Receiver>>(PIKA_FORWARD(Receiver, receiver));
-            return *this;
-        }
-
-        ~any_receiver() = default;
-        any_receiver(any_receiver&&) = default;
-        any_receiver(any_receiver const&) = delete;
-        any_receiver& operator=(any_receiver&&) = default;
-        any_receiver& operator=(any_receiver const&) = delete;
-
-        template <typename... Ts_>
-        friend auto tag_invoke(
-            pika::execution::experimental::set_value_t, any_receiver&& r, Ts_&&... ts) noexcept
-            -> decltype(std::declval<base_type>().set_value(PIKA_FORWARD(Ts_, ts)...))
-        {
-            // We first move the storage to a temporary variable so that
-            // this any_receiver is empty after this set_value. Doing
-            // PIKA_MOVE(storage.get()).set_value(...) would leave us with a
-            // non-empty any_receiver holding a moved-from receiver.
-            auto moved_storage = PIKA_MOVE(r.storage);
-            try
-            {
-                PIKA_MOVE(moved_storage.get()).set_value(PIKA_FORWARD(Ts_, ts)...);
-            }
-            catch (...)
-            {
-                PIKA_MOVE(moved_storage.get()).set_error(std::current_exception());
-            }
-        }
-
-        friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver&& r,
-            std::exception_ptr ep) noexcept
-        {
-            // We first move the storage to a temporary variable so that
-            // this any_receiver is empty after this set_error. Doing
-            // PIKA_MOVE(storage.get()).set_error(...) would leave us with a
-            // non-empty any_receiver holding a moved-from receiver.
-            auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_error(PIKA_MOVE(ep));
-        }
-
-        friend void tag_invoke(
-            pika::execution::experimental::set_stopped_t, any_receiver&& r) noexcept
-        {
-            // We first move the storage to a temporary variable so that
-            // this any_receiver is empty after this set_stopped. Doing
-            // PIKA_MOVE(storage.get()).set_stopped(...) would leave us with a
-            // non-empty any_receiver holding a moved-from receiver.
-            auto moved_storage = PIKA_MOVE(r.storage);
-            PIKA_MOVE(moved_storage.get()).set_stopped();
-        }
-
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, any_receiver const&) noexcept
-        {
-            return {};
-        }
-    };
-
     template <typename... Ts>
     struct unique_any_sender_base
     {
         virtual ~unique_any_sender_base() noexcept = default;
         virtual void move_into(void* p) = 0;
-        virtual any_operation_state connect(any_receiver<Ts...>&& receiver) && = 0;
+        virtual any_operation_state_holder connect(any_receiver<Ts...>&& receiver) && = 0;
         virtual bool empty() const noexcept { return false; }
     };
 
@@ -602,7 +584,7 @@ namespace pika::execution::experimental::detail {
         virtual any_sender_base* clone() const = 0;
         virtual void clone_into(void* p) const = 0;
         using unique_any_sender_base<Ts...>::connect;
-        virtual any_operation_state connect(any_receiver<Ts...>&& receiver) const& = 0;
+        virtual any_operation_state_holder connect(any_receiver<Ts...>&& receiver) const& = 0;
     };
 
     template <typename... Ts>
@@ -612,7 +594,7 @@ namespace pika::execution::experimental::detail {
 
         bool empty() const noexcept override { return true; }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) && override
+        [[noreturn]] any_operation_state_holder connect(any_receiver<Ts...>&&) && override
         {
             throw_bad_any_call("unique_any_sender", "connect");
         }
@@ -629,12 +611,12 @@ namespace pika::execution::experimental::detail {
 
         bool empty() const noexcept override { return true; }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) const& override
+        [[noreturn]] any_operation_state_holder connect(any_receiver<Ts...>&&) const& override
         {
             throw_bad_any_call("any_sender", "connect");
         }
 
-        [[noreturn]] any_operation_state connect(any_receiver<Ts...>&&) && override
+        [[noreturn]] any_operation_state_holder connect(any_receiver<Ts...>&&) && override
         {
             throw_bad_any_call("any_sender", "connect");
         }
@@ -649,17 +631,17 @@ namespace pika::execution::experimental::detail {
             typename =
                 std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, unique_any_sender_impl>>>
         explicit unique_any_sender_impl(Sender_&& sender)
-          : sender(PIKA_FORWARD(Sender_, sender))
+          : sender(std::forward<Sender_>(sender))
         {
         }
 
         ~unique_any_sender_impl() noexcept = default;
 
-        void move_into(void* p) override { new (p) unique_any_sender_impl(PIKA_MOVE(sender)); }
+        void move_into(void* p) override { new (p) unique_any_sender_impl(std::move(sender)); }
 
-        any_operation_state connect(any_receiver<Ts...>&& receiver) && override
+        any_operation_state_holder connect(any_receiver<Ts...>&& receiver) && override
         {
-            return any_operation_state{PIKA_MOVE(sender), PIKA_MOVE(receiver)};
+            return any_operation_state_holder{std::move(sender), std::move(receiver)};
         }
     };
 
@@ -671,26 +653,26 @@ namespace pika::execution::experimental::detail {
         template <typename Sender_,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, any_sender_impl>>>
         explicit any_sender_impl(Sender_&& sender)
-          : sender(PIKA_FORWARD(Sender_, sender))
+          : sender(std::forward<Sender_>(sender))
         {
         }
 
         ~any_sender_impl() noexcept = default;
 
-        void move_into(void* p) override { new (p) any_sender_impl(PIKA_MOVE(sender)); }
+        void move_into(void* p) override { new (p) any_sender_impl(std::move(sender)); }
 
         any_sender_base<Ts...>* clone() const override { return new any_sender_impl(sender); }
 
         void clone_into(void* p) const override { new (p) any_sender_impl(sender); }
 
-        any_operation_state connect(any_receiver<Ts...>&& receiver) const& override
+        any_operation_state_holder connect(any_receiver<Ts...>&& receiver) const& override
         {
-            return any_operation_state{sender, PIKA_MOVE(receiver)};
+            return any_operation_state_holder{sender, std::move(receiver)};
         }
 
-        any_operation_state connect(any_receiver<Ts...>&& receiver) && override
+        any_operation_state_holder connect(any_receiver<Ts...>&& receiver) && override
         {
-            return any_operation_state{PIKA_MOVE(sender), PIKA_MOVE(receiver)};
+            return any_operation_state_holder{std::move(sender), std::move(receiver)};
         }
     };
 }    // namespace pika::execution::experimental::detail
@@ -698,24 +680,20 @@ namespace pika::execution::experimental::detail {
 namespace pika::execution::experimental {
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
     namespace detail {
-        // This helper only exists to make it possible to use
-        // any_(unique_)sender in global variables or in general static
-        // that may be created before main. When used as a base for
-        // any_(unique_)_sender, this ensures that the empty vtables for
-        // any_receiver and any_operation_state are created as the first thing
-        // when creating an any_(unique_)sender. The empty vtables for
-        // any_receiver and any_operation_state may otherwise be created much
-        // later (when the sender is connected and started), and thus destroyed
-        // before the any_(unique_)sender is destroyed. This would be
-        // problematic since the any_(unique_)sender can hold previously created
-        // any_receivers and any_operation_states indirectly.
+        // This helper only exists to make it possible to use (unique_)any_sender in global
+        // variables or in general static that may be created before main. When used as a base for
+        // (unique_)any_sender, this ensures that the empty vtables for any_operation_state are
+        // created as the first thing when creating an (unique_)any_sender. The empty vtables for
+        // any_operation_state may otherwise be created much later (when the sender is connected and
+        // started), and thus destroyed before the (unique_)any_sender is destroyed. This would be
+        // problematic since the (unique_)any_sender can hold previously created
+        // any_operation_states indirectly.
         template <typename... Ts>
         struct any_sender_static_empty_vtable_helper
         {
             any_sender_static_empty_vtable_helper()
             {
-                pika::detail::get_empty_vtable<any_operation_state_base>();
-                pika::detail::get_empty_vtable<any_receiver_base<Ts...>>();
+                pika::detail::get_empty_vtable<any_operation_state_holder_base>();
             }
         };
     }    // namespace detail
@@ -724,6 +702,23 @@ namespace pika::execution::experimental {
     template <typename... Ts>
     class any_sender;
 
+    /// \brief Type-erased move-only sender.
+    ///
+    /// This class wraps senders that send types \p Ts in the value channel. This wrapper class does
+    /// not support arbitrary completion signatures, but requires a single value and error
+    /// completion signature. The value completion signature must send types \p Ts. The error
+    /// completion must send a \p std::exception_ptr. The wrapped sender may have a stopped
+    /// completion signature.
+    ///
+    /// The \ref unique_any_sender requires senders that are move-constructible and connectable with
+    /// r-value references to the sender. The \ref unique_any_sender itself must also be connected
+    /// with an r-value reference (i.e. moved when passing into sender adaptors or consumers).
+    ///
+    /// Sending references in the completion signature is not supported.
+    ///
+    /// An empty \ref unique_any_sender throws when connected to a receiver.
+    ///
+    /// \tparam Ts types sent in the value channel.
     template <typename... Ts>
     class unique_any_sender
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
@@ -741,20 +736,24 @@ namespace pika::execution::experimental {
 
     public:
         PIKA_STDEXEC_SENDER_CONCEPT
+
+        /// \brief Default-construct an empty \ref unique_any_sender.
         unique_any_sender() = default;
 
+        /// \brief Construct a \ref unique_any_sender containing \p sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender(Sender&& sender)
         {
-            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
         }
 
+        /// \brief Assign \p sender to the \ref unique_any_sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, unique_any_sender>>>
         unique_any_sender& operator=(Sender&& sender)
         {
-            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
             return *this;
         }
 
@@ -764,16 +763,18 @@ namespace pika::execution::experimental {
         unique_any_sender& operator=(unique_any_sender&&) = default;
         unique_any_sender& operator=(unique_any_sender const&) = delete;
 
+        /// \brief Construct a \ref unique_any_sender from an \ref any_sender.
         // cppcheck-suppress noExplicitConstructor
         unique_any_sender(any_sender<Ts...>&& other)
-          : storage(PIKA_MOVE(other.storage))
+          : storage(std::move(other.storage))
         {
             other.reset();
         }
 
+        /// \brief Assign a \ref any_sender to a \ref unique_any_sender.
         unique_any_sender& operator=(any_sender<Ts...>&& other)
         {
-            storage = PIKA_MOVE(other.storage);
+            storage = std::move(other.storage);
             other.reset();
             return *this;
         };
@@ -791,30 +792,28 @@ namespace pika::execution::experimental {
             pika::execution::experimental::set_error_t(std::exception_ptr),
             pika::execution::experimental::set_stopped_t()>;
 
-        template <typename R>
-        friend detail::any_operation_state
-        tag_invoke(pika::execution::experimental::connect_t, unique_any_sender&& s, R&& r)
+        template <typename Receiver>
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&& receiver) &&
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
-            // PIKA_MOVE(storage.get()).connect(...) would leave us with a
+            // std::move(storage.get()).connect(...) would leave us with a
             // non-empty any_sender holding a moved-from sender.
-            auto moved_storage = PIKA_MOVE(s.storage);
-            return PIKA_MOVE(moved_storage.get())
-                .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+            auto moved_storage = std::move(storage);
+            return {std::move(moved_storage.get()), std::forward<Receiver>(receiver)};
         }
 
-        template <typename R>
-        friend detail::any_operation_state
-        tag_invoke(pika::execution::experimental::connect_t, unique_any_sender const&, R&&)
+        template <typename Receiver>
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&&) const&
         {
-            static_assert(sizeof(R) == 0,
+            static_assert(sizeof(Receiver) == 0,
                 "Are you missing a std::move? unique_any_sender is not copyable and thus not "
                 "l-value connectable. Make sure you are passing a non-const r-value reference of "
                 "the sender.");
             PIKA_UNREACHABLE;
         }
 
+        /// \brief Assign \p sender to the \ref unique_any_sender.
         template <typename Sender>
         void reset(Sender&& sender)
         {
@@ -822,16 +821,34 @@ namespace pika::execution::experimental {
             {
                 *this = std::forward<Sender>(sender);
             }
-            else { storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender)); }
+            else { storage.template store<impl_type<Sender>>(std::forward<Sender>(sender)); }
         }
 
+        /// \brief Empty the \ref unique_any_sender.
         void reset() { storage.reset(); }
 
+        /// \brief Check if the \ref unique_any_sender is empty.
+        ///
+        /// \return True if the \ref unique_any_sender is empty, i.e. default-constructed or
+        /// moved-from.
         bool empty() const noexcept { return storage.empty(); }
 
+        /// \brief Check if the \ref unique_any_sender is non-empty.
+        ///
+        /// See \ref empty().
         explicit operator bool() const noexcept { return !empty(); }
     };
 
+    /// \brief Type-erased copyable sender.
+    ///
+    /// See \ref unique_any_sender for an overview. Compared to \ref unique_any_sender, the \ref
+    /// any_sender requires the wrapped senders to be l-value reference connectable and copyable.
+    /// The \ref any_sender itself is also l-value reference connectable and copyable. Otherwise it
+    /// behaves the same as \ref unique_any_sender.
+    ///
+    /// A \ref unique_any_sender can be constructed from a \ref any_sender, but not vice-versa.
+    ///
+    /// \tparam Ts types sent in the value channel.
     template <typename... Ts>
     class any_sender
 #if !defined(PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR)
@@ -851,8 +868,11 @@ namespace pika::execution::experimental {
 
     public:
         PIKA_STDEXEC_SENDER_CONCEPT
+
+        /// \brief Default-construct an empty \ref any_sender.
         any_sender() = default;
 
+        /// \brief Construct a \ref any_sender containing \p sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender(Sender&& sender)
@@ -861,9 +881,10 @@ namespace pika::execution::experimental {
                 "any_sender requires the given sender to be copy constructible. Ensure the used "
                 "sender type is copy constructible or use unique_any_sender if you do not require "
                 "copyability.");
-            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
         }
 
+        /// \brief Assign \p sender to the \ref any_sender.
         template <typename Sender,
             typename = std::enable_if_t<!std::is_same_v<std::decay_t<Sender>, any_sender>>>
         any_sender& operator=(Sender&& sender)
@@ -872,7 +893,7 @@ namespace pika::execution::experimental {
                 "any_sender requires the given sender to be copy constructible. Ensure the used "
                 "sender type is copy constructible or use unique_any_sender if you do not require "
                 "copyability.");
-            storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+            storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
             return *this;
         }
 
@@ -895,26 +916,24 @@ namespace pika::execution::experimental {
             pika::execution::experimental::set_error_t(std::exception_ptr),
             pika::execution::experimental::set_stopped_t()>;
 
-        template <typename R>
-        friend detail::any_operation_state
-        tag_invoke(pika::execution::experimental::connect_t, any_sender const& s, R&& r)
+        template <typename Receiver>
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&& receiver) const&
         {
-            return s.storage.get().connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+            return {storage.get(), std::forward<Receiver>(receiver)};
         }
 
-        template <typename R>
-        friend detail::any_operation_state
-        tag_invoke(pika::execution::experimental::connect_t, any_sender&& s, R&& r)
+        template <typename Receiver>
+        detail::any_operation_state<Receiver, Ts...> connect(Receiver&& receiver) &&
         {
             // We first move the storage to a temporary variable so that this
             // any_sender is empty after this connect. Doing
-            // PIKA_MOVE(storage.get()).connect(...) would leave us with a
+            // std::move(storage.get()).connect(...) would leave us with a
             // non-empty any_sender holding a moved-from sender.
-            auto moved_storage = PIKA_MOVE(s.storage);
-            return PIKA_MOVE(moved_storage.get())
-                .connect(detail::any_receiver<Ts...>{PIKA_FORWARD(R, r)});
+            auto moved_storage = std::move(storage);
+            return {std::move(moved_storage.get()), std::forward<Receiver>(receiver)};
         }
 
+        /// \brief Assign \p sender to the \ref any_sender.
         template <typename Sender>
         void reset(Sender&& sender)
         {
@@ -928,14 +947,22 @@ namespace pika::execution::experimental {
                     "any_sender requires the given sender to be copy constructible. Ensure the "
                     "used sender type is copy constructible or use unique_any_sender if you do not "
                     "require copyability.");
-                storage.template store<impl_type<Sender>>(PIKA_FORWARD(Sender, sender));
+                storage.template store<impl_type<Sender>>(std::forward<Sender>(sender));
             }
         }
 
+        /// \brief Empty the \ref any_sender.
         void reset() { storage.reset(); }
 
+        /// \brief Check if the \ref any_sender is empty.
+        ///
+        /// \return True if the \ref any_sender is empty, i.e. default-constructed or
+        /// moved-from.
         bool empty() const noexcept { return storage.empty(); }
 
+        /// \brief Check if the \ref any_sender is non-empty.
+        ///
+        /// See \ref empty().
         explicit operator bool() const noexcept { return !empty(); }
     };
 
@@ -964,12 +991,20 @@ namespace pika::execution::experimental {
         }
     }    // namespace detail
 
+    /// \brief Helper function to construct a \ref unique_any_sender.
+    ///
+    /// The template parameters for \ref unique_any_sender are inferred from the value types sent by
+    /// the given sender \p sender.
     template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
     auto make_unique_any_sender(Sender&& sender)
     {
         return detail::make_any_sender_impl<unique_any_sender>(std::forward<Sender>(sender));
     }
 
+    /// \brief Helper function to construct a \ref any_sender.
+    ///
+    /// The template parameters for \ref any_sender are inferred from the value types
+    /// sent by the given sender \p sender.
     template <typename Sender, typename = std::enable_if_t<is_sender_v<Sender>>>
     auto make_any_sender(Sender&& sender)
     {

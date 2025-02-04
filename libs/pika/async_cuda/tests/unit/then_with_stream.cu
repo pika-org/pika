@@ -53,17 +53,16 @@ struct const_reference_cuda_sender
         std::reference_wrapper<std::decay_t<T>> const x;
         std::decay_t<R> r;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
+            pika::execution::experimental::set_value(std::move(r), x.get());
         };
     };
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_cuda_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+        return operation_state<R>{std::move(x), std::forward<R>(r)};
     }
 
     struct env
@@ -79,11 +78,7 @@ struct const_reference_cuda_sender
         }
     };
 
-    friend env tag_invoke(
-        pika::execution::experimental::get_env_t, const_reference_cuda_sender const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 struct const_reference_error_cuda_sender
@@ -111,16 +106,15 @@ struct const_reference_error_cuda_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             auto const e = std::make_exception_ptr(std::runtime_error("error"));
-            pika::execution::experimental::set_error(std::move(os.r), e);
+            pika::execution::experimental::set_error(std::move(r), e);
         }
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_error_cuda_sender, R&& r)
+    operation_state<R> connect(R&& r)
     {
         return {std::forward<R>(r)};
     }
@@ -138,11 +132,7 @@ struct const_reference_error_cuda_sender
         }
     };
 
-    friend env tag_invoke(pika::execution::experimental::get_env_t,
-        const_reference_error_cuda_sender const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 struct dummy
@@ -539,10 +529,10 @@ int pika_main()
         dummy::reset_counts();
         auto s = ex::just(1) | ex::continues_on(ex::thread_pool_scheduler{}) | ex::then(dummy{}) |
             ex::continues_on(cu::cuda_scheduler{pool}) | cu::then_with_stream(dummy{}) |
-            cu::then_on_host(dummy{}) | cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
+            cu::then_with_cublas(dummy{}, CUBLAS_POINTER_MODE_HOST) |
             cu::then_with_cusolver(dummy{}) | ex::continues_on(ex::thread_pool_scheduler{}) |
             ex::then(dummy{});
-        PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 7.0);
+        PIKA_TEST_EQ(tt::sync_wait(std::move(s)), 6.0);
         PIKA_TEST_EQ(dummy::host_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_void_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::cublas_void_calls.load(), std::size_t(0));
@@ -556,14 +546,14 @@ int pika_main()
         // then_with_cusolver results in a increment of the cublas overload.
         PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
 #else
-        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(0));
-        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_int_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cusolver_int_calls.load(), std::size_t(0));
 #endif
-        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::host_double_calls.load(), std::size_t(0));
         PIKA_TEST_EQ(dummy::stream_double_calls.load(), std::size_t(1));
-        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(1));
+        PIKA_TEST_EQ(dummy::cublas_double_calls.load(), std::size_t(0));
 #if !defined(PIKA_HAVE_HIP)
-        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(0));
+        PIKA_TEST_EQ(dummy::cusolver_double_calls.load(), std::size_t(1));
 #endif
     }
 

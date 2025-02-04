@@ -231,15 +231,6 @@ function(pika_check_for_unistd_h)
 endfunction()
 
 # ##################################################################################################
-function(pika_check_for_libfun_std_experimental_optional)
-  pika_add_config_test(
-    PIKA_WITH_LIBFUN_EXPERIMENTAL_OPTIONAL
-    SOURCE cmake/tests/libfun_std_experimental_optional.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##################################################################################################
 function(pika_check_for_cxx11_std_atomic)
   # Make sure PIKA_HAVE_LIBATOMIC is removed from the cache if necessary
   if(NOT PIKA_WITH_CXX11_ATOMIC)
@@ -441,11 +432,6 @@ function(pika_check_for_cxx20_trivial_virtual_destructor_gpu)
       set(trivial_virtual_destructor_test_extension "hip")
     endif()
 
-    set(extra_cxxflags)
-    if(PIKA_WITH_CUDA AND CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
-      set(extra_cxxflags "-x cu")
-    endif()
-
     pika_add_config_test(
       PIKA_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR_GPU
       SOURCE
@@ -515,6 +501,15 @@ function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS
     SOURCE cmake/tests/check_openmpi_continuations.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
+function(pika_check_for_pthread_setname_np)
+  pika_add_config_test(
+    PIKA_WITH_PTHREAD_SETNAME_NP
+    SOURCE cmake/tests/pthread_setname_np.cpp
     FILE ${ARGN}
   )
 endfunction()

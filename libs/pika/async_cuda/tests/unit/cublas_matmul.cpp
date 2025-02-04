@@ -157,8 +157,8 @@ void matrixMultiply(pika::cuda::experimental::cuda_scheduler& cuda_sched, sMatri
     tt::sync_wait(std::move(copy_AB));
 
     std::cout << "Computing result using CUBLAS...\n";
-    const T alpha = 1.0f;
-    const T beta = 0.0f;
+    T const alpha = 1.0f;
+    T const beta = 0.0f;
 
     // Perform warmup operation with cublas
     // note cublas is column major ordering : transpose the order
@@ -287,7 +287,7 @@ int pika_main(pika::program_options::variables_map& vm)
     sizeMult = (std::min)(sizeMult, std::size_t(100));
     sizeMult = (std::max)(sizeMult, std::size_t(1));
     //
-    int block_size = 32;
+    std::size_t block_size = 32;
 
     sMatrixSize matrix_size;
     matrix_size.uiWA = 2 * block_size * sizeMult;

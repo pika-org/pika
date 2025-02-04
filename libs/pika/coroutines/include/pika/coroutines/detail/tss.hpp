@@ -60,7 +60,7 @@ namespace pika::threads::coroutines::detail {
         tss_data_node& operator=(tss_data_node const&) = delete;
 
         tss_data_node(tss_data_node&& other)
-          : func_(PIKA_MOVE(other.func_))
+          : func_(std::move(other.func_))
           , value_(other.value_)
         {
             other.value_ = nullptr;
@@ -69,7 +69,7 @@ namespace pika::threads::coroutines::detail {
         tss_data_node& operator=(tss_data_node&& other)
         {
             cleanup();
-            func_ = PIKA_MOVE(other.func_);
+            func_ = std::move(other.func_);
             value_ = other.value_;
             other.value_ = nullptr;
             return *this;

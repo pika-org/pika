@@ -42,7 +42,7 @@ namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
 // global vars we stick here to make printouts easy for plotting
-static std::string queuing = "default";
+static std::string scheduler = "default";
 static std::size_t numa_sensitive = 0;
 static std::uint64_t num_threads = 1;
 static std::string info_string = "";
@@ -56,14 +56,14 @@ void print_stats(char const* title, char const* wait, char const* sched, std::in
     if (csv)
     {
         fmt::print(temp, "{}, {:27}, {:15}, {:45}, {:8}, {:8}, {:20}, {:4}, {:4}, {:20}", count,
-            title, wait, sched, duration, us, queuing, numa_sensitive, num_threads, info_string);
+            title, wait, sched, duration, us, scheduler, numa_sensitive, num_threads, info_string);
     }
     else
     {
         fmt::print(temp,
             "invoked {:1}, tasks {:27} {:15} {:18} in {:8} seconds : {:8} us/task, queue "
             "{:20}, numa {:4}, threads {:4}, info {:20}",
-            count, title, wait, sched, duration, us, queuing, numa_sensitive, num_threads,
+            count, title, wait, sched, duration, us, scheduler, numa_sensitive, num_threads,
             info_string);
     }
     std::cout << temp.str() << std::endl;
@@ -340,7 +340,7 @@ void function_apply_hierarchical_placement(std::uint64_t count, bool csv)
 int pika_main(variables_map& vm)
 {
     {
-        if (vm.count("pika:queuing")) queuing = vm["pika:queuing"].as<std::string>();
+        if (vm.count("pika:scheduler")) scheduler = vm["pika:scheduler"].as<std::string>();
 
         if (vm.count("pika:numa-sensitive"))
             numa_sensitive = 1;
@@ -356,7 +356,7 @@ int pika_main(variables_map& vm)
 
         num_iterations = vm["delay-iterations"].as<std::uint64_t>();
 
-        const std::uint64_t count = vm["tasks"].as<std::uint64_t>();
+        std::uint64_t const count = vm["tasks"].as<std::uint64_t>();
         bool csv = vm.count("csv") != 0;
         if (PIKA_UNLIKELY(0 == count))
             throw std::logic_error("error: count of 0 tasks specified\n");
@@ -392,7 +392,11 @@ int main(int argc, char* argv[])
 
     // clang-format off
     cmdline.add_options()("tasks",
+#if defined(PIKA_HAVE_VALGRIND)
+        value<std::uint64_t>()->default_value(5000),
+#else
         value<std::uint64_t>()->default_value(500000),
+#endif
         "number of tasks to invoke")
 
         ("delay-iterations", value<std::uint64_t>()->default_value(0),

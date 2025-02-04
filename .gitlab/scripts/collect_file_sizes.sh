@@ -20,6 +20,7 @@ function submit_filesizes {
     directory="${1}"
     IFS='
 '
+    result_file_all=$(mktemp --tmpdir "filesizes.XXXXXXXXXX.json")
     for line in $(ls --time-style long-iso -l $(find "${directory}" -maxdepth 1 -type f)); do
         filename=$(echo "${line}" | awk '{ print $8 }')
         filesize=$(echo "${line}" | awk '{ print $5 }')
@@ -31,8 +32,9 @@ function submit_filesizes {
         json_add_value_number "${result_file}" "files.size" "${filesize}"
 
         json_merge "${metadata_file}" "${result_file}" "${result_file}"
-        submit_logstash "${result_file}"
-done
+        cat "${result_file}" >>"${result_file_all}"
+    done
+    submit_logstash "${result_file_all}"
 }
 
 # Submit file name and size for files under lib and bin in the build directory

@@ -123,7 +123,7 @@ namespace pika::threads::detail {
 
     inline void reset(mask_type& mask) { mask = 0ull; }
 
-// clang-format off
+    // clang-format off
 #else
 #  if defined(PIKA_HAVE_MAX_CPU_COUNT)
     using mask_type = std::bitset<PIKA_HAVE_MAX_CPU_COUNT>;

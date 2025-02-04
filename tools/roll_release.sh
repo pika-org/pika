@@ -17,9 +17,12 @@ VERSION_MINOR=$(sed -n 's/set(PIKA_VERSION_MINOR \(.*\))/\1/p' CMakeLists.txt)
 VERSION_PATCH=$(sed -n 's/set(PIKA_VERSION_PATCH \(.*\))/\1/p' CMakeLists.txt)
 VERSION_TAG=$(sed -n 's/set(PIKA_VERSION_TAG "\(.*\)")/\1/p' CMakeLists.txt)
 VERSION_FULL_NOTAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
+REGEX_VERSION_FULL_NOTAG="$(echo ${VERSION_FULL_NOTAG} | sed s/\\./\\\\./g)"
 VERSION_FULL_TAG=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}${VERSION_TAG}
 VERSION_TITLE="pika ${VERSION_FULL_NOTAG}"
+REGEX_VERSION_TITLE="$(echo ${VERSION_TITLE} | sed s/\\./\\\\./g)"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+RELEASE_DATE=$(date '+%Y-%m-%d')
 
 if ! which hub >/dev/null 2>&1; then
     echo "Hub not installed on this system (see https://hub.github.com/). Exiting."
@@ -31,7 +34,23 @@ if ! [[ "$CURRENT_BRANCH" =~ ^release-[0-9]+\.[0-9]+\.X$ ]]; then
     exit 1
 fi
 
+printf "Checking that the git repository is in a clean state... "
+if [[ $(git status --porcelain | wc -l) -eq 0 ]]; then
+    echo "OK"
+else
+    echo "ERROR"
+    git status -s
+    echo "Do you want to continue anyway?"
+    select yn in "Yes" "No"; do
+        case $yn in
+        Yes) break ;;
+        No) exit ;;
+        esac
+    done
+fi
+
 changelog_path="docs/changelog.md"
+cff_path="CITATION.cff"
 
 if [ -z "${VERSION_TAG}" ]; then
     echo "You are about to tag and create a final release on GitHub."
@@ -42,15 +61,39 @@ if [ -z "${VERSION_TAG}" ]; then
     sanity_errors=0
 
     printf "Checking that %s has an entry for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
-    if grep "## ${VERSION_FULL_NOTAG}" "${changelog_path}"; then
+    if grep "## ${REGEX_VERSION_FULL_NOTAG}" "${changelog_path}"; then
         echo "OK"
     else
         echo "Missing"
         sanity_errors=$((sanity_errors + 1))
     fi
 
-    printf "Checking that %s also has a date set for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
-    if grep "## ${VERSION_FULL_NOTAG} ([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\})" "${changelog_path}"; then
+    printf "Checking that %s also has today's date set for %s... " "${changelog_path}" "${VERSION_FULL_NOTAG}"
+    if grep "## ${REGEX_VERSION_FULL_NOTAG} (${RELEASE_DATE})" "${changelog_path}"; then
+        echo "OK"
+    else
+        echo "Missing"
+        sanity_errors=$((sanity_errors + 1))
+    fi
+
+    printf "Checking that %s has correct version for %s... " "${cff_path}" "${VERSION_FULL_NOTAG}"
+    if grep "^version: ${REGEX_VERSION_FULL_NOTAG}" "${cff_path}"; then
+        echo "OK"
+    else
+        echo "Missing"
+        sanity_errors=$((sanity_errors + 1))
+    fi
+
+    printf "Checking that %s has correct title for %s... " "${cff_path}" "${VERSION_FULL_NOTAG}"
+    if grep "^title: ${REGEX_VERSION_TITLE}" "${cff_path}"; then
+        echo "OK"
+    else
+        echo "Missing"
+        sanity_errors=$((sanity_errors + 1))
+    fi
+
+    printf "Checking that %s has today's date... " "${cff_path}"
+    if grep "^date-released: '${RELEASE_DATE}'" "${cff_path}"; then
         echo "OK"
     else
         echo "Missing"
