@@ -38,6 +38,8 @@ pika_targets=(
     "task_yield_test"
     "condition_variable_overhead_test"
     "async_rw_mutex_scheduling_test"
+    "start_stop_test"
+    "resume_suspend_test"
 )
 pika_test_options=(
     "--pika:ini=pika.thread_queue.init_threads_count=100 \
@@ -112,6 +114,14 @@ pika_test_options=(
 --num-rw-accesses=5
 --num-ro-accesses=5
 --repetitions=100
+--pika:threads=4
+--perftest-json"
+
+    "--repetitions=100
+--pika:threads=4
+--perftest-json"
+
+    "--repetitions=100
 --pika:threads=4
 --perftest-json"
 )
