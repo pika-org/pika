@@ -333,8 +333,6 @@ namespace pika::detail {
             pika::util::detail::function<runtime::pika_main_function_type> const& func, int& result,
             bool call_startup_functions);
 
-        void wait_helper(std::mutex& mtx, std::condition_variable& cond, bool& running);
-
         // list of functions to call on exit
         using on_exit_type = std::vector<pika::util::detail::function<void()>>;
         on_exit_type on_exit_functions_;
