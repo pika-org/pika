@@ -44,7 +44,7 @@ Manual installation
 If you'd like to build pika manually you will need CMake 3.22.0 or greater and a recent C++ compiler
 supporting C++17:
 
-- `GCC <https://gcc.gnu.org>`__ 9 or greater
+- `GCC <https://gcc.gnu.org>`__ 11 or greater
 - `clang <https://clang.llvm.org>`__ 13 or greater
 
 Additionally, pika depends on:
@@ -61,7 +61,7 @@ pika optionally depends on:
   allocators. You can set the allocator through the CMake variable ``PIKA_WITH_MALLOC``. If you want
   to use the system allocator (e.g. for debugging) you can do so by setting
   ``PIKA_WITH_MALLOC=system``.
-* `CUDA <https://docs.nvidia.com/cuda/>`__ 11.0 or greater. CUDA support can be enabled with
+* `CUDA <https://docs.nvidia.com/cuda/>`__ 12.0 or greater. CUDA support can be enabled with
   ``PIKA_WITH_CUDA=ON``. pika can also be built with nvc++ from the `NVIDIA HPC SDK
   <https://developer.nvidia.com/hpc-sdk>`__. In the latter case, set ``CMAKE_CXX_COMPILER`` to
   ``nvc++``.
