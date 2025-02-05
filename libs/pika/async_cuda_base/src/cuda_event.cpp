@@ -7,6 +7,8 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/async_cuda_base/cuda_event.hpp>
+#include <pika/errors/error.hpp>
+#include <pika/errors/throw_exception.hpp>
 
 #include <whip.hpp>
 

@@ -17,7 +17,7 @@ include:
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system \
                  cxxstd=$CXXSTD ^boost@1.82.0 ^hwloc@2.9.1 ^cuda@12.0.0 ^fmt@10.0.0 ^cmake@3.28"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
-                  -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET"
+                  -DPIKA_WITH_UNITY_BUILD=OFF -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET"
 
 gcc12_cuda12_spack_compiler_image:
   extends:
