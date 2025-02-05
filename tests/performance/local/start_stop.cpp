@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     std::uint64_t threads = pika::resource::get_num_threads("default");
     pika::stop();
 
-    if (!perftest_json) { std::cout << "threads, resume [s], suspend [s]" << std::endl; }
+    if (!perftest_json) { std::cout << "threads, start [s], stop [s]" << std::endl; }
 
     double stop_time = 0;
     pika::chrono::detail::high_resolution_timer timer;
