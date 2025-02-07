@@ -39,6 +39,8 @@
 
 // SBO is currently disabled as it seems to be buggy in certain use cases. It can still be
 // explicitly forced to on by defining PIKA_DETAIL_ENABLE_ANY_SENDER_SBO.
+// TODO: Remove definition or enable unconditionally.
+#define PIKA_DETAIL_ENABLE_ANY_SENDER_SBO
 
 namespace pika::detail {
     template <typename T>
@@ -134,7 +136,7 @@ namespace pika::detail {
         bool using_embedded_storage() const noexcept
         {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
-            return object == reinterpret_cast<base_type const*>(&embedded_storage);
+            return object == static_cast<void const*>(embedded_storage);
 #else
             return false;
 #endif
@@ -169,15 +171,12 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
-                    auto p = reinterpret_cast<base_type*>(&embedded_storage);
-                    other.get().move_into(p);
-                    object = p;
+                    object = other.get().move_into(embedded_storage);
                 }
                 else
 #endif
                 {
-                    heap_storage = other.heap_storage;
-                    other.heap_storage = nullptr;
+                    heap_storage = std::exchange(other.heap_storage, nullptr);
                     object = heap_storage;
                 }
 
@@ -198,15 +197,12 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
-                    auto p = reinterpret_cast<base_type*>(&embedded_storage);
-                    other.get().move_into(p);
-                    object = p;
+                    object = other.get().move_into(embedded_storage);
                 }
                 else
 #endif
                 {
-                    heap_storage = other.heap_storage;
-                    other.heap_storage = nullptr;
+                    heap_storage = std::exchange(other.heap_storage, nullptr);
                     object = heap_storage;
                 }
 
@@ -276,9 +272,7 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
             if constexpr (can_use_embedded_storage<Impl>())
             {
-                Impl* p = reinterpret_cast<Impl*>(&embedded_storage);
-                new (p) Impl(std::forward<Ts>(ts)...);
-                object = p;
+                object = new (embedded_storage) Impl(std::forward<Ts>(ts)...);
             }
             else
 #endif
@@ -323,9 +317,7 @@ namespace pika::detail {
 #if defined(PIKA_DETAIL_ENABLE_ANY_SENDER_SBO)
                 if (other.using_embedded_storage())
                 {
-                    base_type* p = reinterpret_cast<base_type*>(&embedded_storage);
-                    other.get().clone_into(p);
-                    object = p;
+                    object = other.get().clone_into(embedded_storage);
                 }
                 else
 #endif
@@ -573,7 +565,7 @@ namespace pika::execution::experimental::detail {
     struct unique_any_sender_base
     {
         virtual ~unique_any_sender_base() noexcept = default;
-        virtual void move_into(void* p) = 0;
+        virtual unique_any_sender_base<Ts...>* move_into(unsigned char* p) = 0;
         virtual any_operation_state_holder connect(any_receiver<Ts...>&& receiver) && = 0;
         virtual bool empty() const noexcept { return false; }
     };
@@ -581,8 +573,9 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct any_sender_base : public unique_any_sender_base<Ts...>
     {
+        virtual any_sender_base<Ts...>* move_into(unsigned char* p) = 0;
         virtual any_sender_base* clone() const = 0;
-        virtual void clone_into(void* p) const = 0;
+        virtual any_sender_base<Ts...>* clone_into(unsigned char* p) const = 0;
         using unique_any_sender_base<Ts...>::connect;
         virtual any_operation_state_holder connect(any_receiver<Ts...>&& receiver) const& = 0;
     };
@@ -590,7 +583,7 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct empty_unique_any_sender final : unique_any_sender_base<Ts...>
     {
-        void move_into(void*) override { PIKA_UNREACHABLE; }
+        unique_any_sender_base<Ts...>* move_into(unsigned char*) override { PIKA_UNREACHABLE; }
 
         bool empty() const noexcept override { return true; }
 
@@ -603,11 +596,11 @@ namespace pika::execution::experimental::detail {
     template <typename... Ts>
     struct empty_any_sender final : any_sender_base<Ts...>
     {
-        void move_into(void*) override { PIKA_UNREACHABLE; }
+        any_sender_base<Ts...>* move_into(unsigned char*) override { PIKA_UNREACHABLE; }
 
         any_sender_base<Ts...>* clone() const override { PIKA_UNREACHABLE; }
 
-        void clone_into(void*) const override { PIKA_UNREACHABLE; }
+        any_sender_base<Ts...>* clone_into(unsigned char*) const override { PIKA_UNREACHABLE; }
 
         bool empty() const noexcept override { return true; }
 
@@ -637,7 +630,10 @@ namespace pika::execution::experimental::detail {
 
         ~unique_any_sender_impl() noexcept = default;
 
-        void move_into(void* p) override { new (p) unique_any_sender_impl(std::move(sender)); }
+        unique_any_sender_base<Ts...>* move_into(unsigned char* p) override
+        {
+            return new (p) unique_any_sender_impl(std::move(sender));
+        }
 
         any_operation_state_holder connect(any_receiver<Ts...>&& receiver) && override
         {
@@ -659,11 +655,17 @@ namespace pika::execution::experimental::detail {
 
         ~any_sender_impl() noexcept = default;
 
-        void move_into(void* p) override { new (p) any_sender_impl(std::move(sender)); }
+        any_sender_base<Ts...>* move_into(unsigned char* p) override
+        {
+            return new (p) any_sender_impl(std::move(sender));
+        }
 
         any_sender_base<Ts...>* clone() const override { return new any_sender_impl(sender); }
 
-        void clone_into(void* p) const override { new (p) any_sender_impl(sender); }
+        any_sender_base<Ts...>* clone_into(unsigned char* p) const override
+        {
+            return new (p) any_sender_impl(sender);
+        }
 
         any_operation_state_holder connect(any_receiver<Ts...>&& receiver) const& override
         {
