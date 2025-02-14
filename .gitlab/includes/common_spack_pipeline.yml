@@ -120,6 +120,12 @@ base_spack_image_x86_64:
     - .cmake_variables_common
   variables:
     TEST_TIMEOUT: 300
+  artifacts:
+    when: always
+    paths:
+      - ctest.xml
+    reports:
+      junit: ctest.xml
   script:
     - spack arch
     - export CTEST_XML=$PWD/ctest.xml
