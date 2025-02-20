@@ -114,7 +114,7 @@ int pika_main()
                 --counter;
             }));
     }
-    pika::util::yield_while([&]() { return counter > 0; });
+    pika::util::yield_while([&]() { return counter > 0; }, "wait counter 1");
 
     std::cout << "2: Starting NP " << loops << std::endl;
     counter = loops;
@@ -131,7 +131,7 @@ int pika_main()
                 --counter;
             }));
     }
-    pika::util::yield_while([&]() { return counter > 0; });
+    pika::util::yield_while([&]() { return counter > 0; }, "wait counter 2");
 
     std::cout << "3: Starting HP->NP " << loops << std::endl;
     counter = loops;
@@ -148,7 +148,7 @@ int pika_main()
                 --counter;
             }));
     }
-    pika::util::yield_while([&]() { return counter > 0; });
+    pika::util::yield_while([&]() { return counter > 0; }, "wait counter 3");
 
     std::cout << "4: Starting NP->HP " << loops << std::endl;
     counter = loops;
@@ -165,7 +165,7 @@ int pika_main()
                 --counter;
             }));
     }
-    pika::util::yield_while([&]() { return counter > 0; });
+    pika::util::yield_while([&]() { return counter > 0; }, "wait counter 4");
 
     std::cout << "5: Starting suspending " << loops << std::endl;
     counter = loops;
@@ -187,7 +187,7 @@ int pika_main()
             --counter;
         }));
     }
-    pika::util::yield_while([&]() { return counter > 0; });
+    pika::util::yield_while([&]() { return counter > 0; }, "wait counter 5");
 
     pika::finalize();
     return EXIT_SUCCESS;

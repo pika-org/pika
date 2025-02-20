@@ -112,7 +112,8 @@ namespace pika::trigger_mpi_detail {
                             // yield/while is invalid on a non pika thread
                             PIKA_ASSERT(pika::threads::detail::get_self_id());
                             pika::util::yield_while(
-                                [&r]() { return !mpi::detail::poll_request(r.op_state.request); });
+                                [&r]() { return !mpi::detail::poll_request(r.op_state.request); },
+                                "trigger_mpi wait for request");
 #ifdef PIKA_HAVE_APEX
                             apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif

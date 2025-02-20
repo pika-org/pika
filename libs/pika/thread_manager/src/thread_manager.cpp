@@ -870,10 +870,12 @@ namespace pika::threads::detail {
 
     void thread_manager::wait()
     {
-        pika::util::yield_while([]() {
-            return pika::threads::detail::get_global_activity_count() >
-                (threads::detail::get_self_ptr() != nullptr ? 1 : 0);
-        });
+        pika::util::yield_while(
+            []() {
+                return pika::threads::detail::get_global_activity_count() >
+                    (threads::detail::get_self_ptr() != nullptr ? 1 : 0);
+            },
+            "thread_manager::wait");
     }
 
     void thread_manager::suspend()
