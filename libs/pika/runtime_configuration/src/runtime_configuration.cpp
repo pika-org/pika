@@ -414,12 +414,9 @@ namespace pika::util {
         pre_initialize_ini();
 
         // set global config options
-        PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
-
         small_stacksize = init_small_stack_size();
         medium_stacksize = init_medium_stack_size();
         large_stacksize = init_large_stack_size();
-        PIKA_ASSERT(init_huge_stack_size() <= PIKA_HUGE_STACK_SIZE);
         huge_stacksize = init_huge_stack_size();
     }
 
@@ -443,8 +440,6 @@ namespace pika::util {
         post_initialize_ini(pika_ini_file, cmdline_ini_defs);
 
         // set global config options
-        PIKA_ASSERT(init_small_stack_size() >= PIKA_SMALL_STACK_SIZE);
-
         small_stacksize = init_small_stack_size();
         medium_stacksize = init_medium_stack_size();
         large_stacksize = init_large_stack_size();
