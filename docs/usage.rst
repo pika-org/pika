@@ -302,6 +302,116 @@ following:
 - ``%q``: The parent task id and description.
 - ``%k``: The current task id and description.
 
+.. _debugging:
+
+Debugging
+=========
+
+Writing task based applications can be tricky, and debugging them even more so. This section
+describes a few options and tools that can be helpful when debugging applications using pika.
+
+.. _segfaults_and_stack_overflows:
+
+Segmentation faults and stack overflows
+---------------------------------------
+
+Due to the small default stack sizes of user level threads a common problem is stack overflows. When
+using the ``mmap``-based stack allocation (default on platforms that support it) pika provides a
+configuration option to enable guard pages at the end of a stack. When enabled, a protected page
+will be allocated such that if one attempts to read or write within a page of the end of the stack,
+a segmentation fault will be triggered. The option can be enabled by exporting
+``PIKA_USE_GUARD_PAGES=1``. The option is disabled by default.
+
+.. info::
+
+   Many MPI implementations also install signal handlers or have options for enabling them.
+   ``libSegFault.so`` (part of ``glibc-tools``, more info in `this blog post
+   <https://www.marcusfolkesson.se/blog/libsegfault/>`_) also provides a way to install a signal
+   handler. These can be useful alternatives to the signal handlers provided by pika. Depending on
+   the type of issue you are debugging, different signal handlers can be more or less helpful as
+   they print slightly different information.
+
+   pika does not install any signal handlers by default. They have to be enabled explicitly using
+   the options described below.
+
+Additionally, pika provides two options for installing signal handlers. The first, enabled with the
+environment variable ``PIKA_INSTALL_SIGNAL_HANDLERS=1``, installs signal handlers that will handle
+most common events, such as interrupts, segmentation faults, illegal instructions etc. and print a
+backtrace and optionally some information about how pika was built. The verbosity can be controlled
+with ``PIKA_EXCEPTION_VERBOSITY`` (this also controls how much information pika exceptions capture
+and print). The default value of ``1`` will print a backtrace. ``2`` or higher will print additional
+information about the pika build. ``0`` will print the minimum information.
+
+The second signal handler, installed with ``PIKA_INSTALL_ALTERNATE_SIGSEGV_HANDLER=1``, only catches
+segmentation faults and is more helpful when a segmentation fault due to a stack overflow happens.
+The regular handler for segmentation faults does not use an alternate stack, which means that when a
+segmentation fault happens due to a stack overflow, the signal handler will try to run on the
+regular stack, but since it's a stack overflow it will fail to actually report anything useful. This
+is why, if you only have ``PIKA_INSTALL_SIGNAL_HANDLERS=1`` set or another signal handler that
+doesn't use an alternate stack, you will simply get a message saying e.g.:
+
+.. code-block:: console
+
+   Segmentation fault (core dumped)
+
+No backtrace is printed because the signal handler itself triggered another segmentation fault.
+
+With the alternate signal handler, which uses `sigaltstack
+<https://man7.org/linux/man-pages/man2/sigaltstack.2.html>`_, a message like the following will be
+printed:
+
+.. code-block:: console
+
+   Segmentation fault caught by pika's SIGSEGV handler (enabled with
+   PIKA_STACKOVERFLOW_DETECTION=1).
+
+   If this is caused by a stack overflow, you can increase the stack sizes by
+   modifying the configuration options PIKA_SMALL_STACK_SIZE,
+   PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or PIKA_HUGE_STACK_SIZE.
+
+   segv pointer:  0x00007f79fb1ffaa8
+   stack pointer: 0x00007f79f4001000
+   diff:          0x00000000071feaa8
+
+``PIKA_INSTALL_SIGNAL_HANDLERS`` and ``PIKA_INSTALL_ALTERNATE_SIGSEGV_HANDLER`` can be used at the
+same time, with the latter overriding the signal handler for segmentation faults on pika's worker
+threads. The signal handlers are especially useful in conjuction with ``PIKA_USE_GUARD_PAGES``, as
+without the latter option a stack overflow may simply end up writing e.g. into another task's stack,
+which can be very hard to detect as a stack overflow.
+
+If you've identified a stack overflow in your program you can do one or more of the following to
+avoid the stack overflow:
+
+- Less stack space
+- Avoid deep recursion, e.g. by creating new tasks at some point in the computation which will get a
+  new stack
+- Use a bigger stack size for the task triggering a stack overflow (this can be changed by using a
+  different ``pika::execution::thread_stacksize`` for the task; this is currently undocumented
+  though pika's examples or unit tests may help you)
+- Set bigger stack sizes with ``PIKA_SMALL_STACK_SIZE``, ``PIKA_MEDIUM_STACK_SIZE``,
+  ``PIKA_LARGE_STACK_SIZE``, or ``PIKA_HUGE_STACK_SIZE``. Tasks use the small stack size by default,
+  which is 64 KiB, or ``0x10000`` bytes.
+
+.. _debugging_sanitizers:
+
+Sanitizers
+----------
+
+`Address <https://clang.llvm.org/docs/AddressSanitizer.html>`_, `thread
+<https://clang.llvm.org/docs/ThreadSanitizer.html>`_, and other sanitizers can be invaluable when
+debugging concurrent programs. pika can be instrumented with sanitizers as most programs. To reduce
+the chances of false positives make sure to build pika with the CMake option
+``PIKA_WITH_SANITIZERS=ON``. This does not enable any sanitizers directly, but disables certain
+functionalities internally to work better with sanitizers. To actually enable sanitizers, enable
+them explicitly by setting ``-fsanitize=`` flags as for any other CMake project. It's highly
+recommended to use ``-fno-omit-frame-pointer`` with sanitizers.
+
+There are known issues that may prevent you from using sanitizers with pika. Under the ``tools``
+subdirectory of the pika repository you can find the most recent suppression files that are used for
+CI runs with sanitizers. Similarly, under ``.github/workflows`` you can find the most recent build
+configurations (including sanitizer options) that with sanitizers, along with blacklists of tests
+that are currently known to not pass with sanitizers.
+
 .. _malloc:
 
 Using custom allocators with pika
