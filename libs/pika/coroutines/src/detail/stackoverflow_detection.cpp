@@ -35,7 +35,7 @@ namespace pika::threads::coroutines::detail {
 # if defined(PIKA_HAVE_UNISTD_H)
             write(STDERR_FILENO, msg, size);
 # else
-            dprintf(STDERR_FILENO, msg);
+            dprintf(STDERR_FILENO, "%s", msg);
 # endif
         };
 
