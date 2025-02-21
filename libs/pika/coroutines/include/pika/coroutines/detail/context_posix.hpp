@@ -112,17 +112,10 @@ namespace pika::threads::coroutines::detail::posix::pth {
 #  include <cstddef>    // ptrdiff_t
 #  include <ucontext.h>
 
-#  if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+#  if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+#   include <pika/coroutines/detail/stackoverflow_detection.hpp>
 
-#   include <cstring>
 #   include <signal.h>
-#   include <stdlib.h>
-#   include <strings.h>
-
-#   if !defined(SEGV_STACK_SIZE)
-#    define SEGV_STACK_SIZE MINSIGSTKSZ + 4096
-#   endif
-
 #  endif
 
 #  include <iomanip>
@@ -267,65 +260,9 @@ namespace pika::threads::coroutines {
                 asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                // concept inspired by the following links:
-                //
-                // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
-                // http://www.evanjones.ca/software/threading.html
-                //
-                segv_stack.ss_sp = valloc(SEGV_STACK_SIZE);
-                segv_stack.ss_flags = 0;
-                segv_stack.ss_size = SEGV_STACK_SIZE;
-
-                std::memset(&action, '\0', sizeof(action));
-                action.sa_flags = SA_SIGINFO | SA_ONSTACK;
-                action.sa_sigaction = &ucontext_context_impl::sigsegv_handler;
-
-                sigaltstack(&segv_stack, nullptr);
-                sigemptyset(&action.sa_mask);
-                sigaddset(&action.sa_mask, SIGSEGV);
-                sigaction(SIGSEGV, &action, nullptr);
+                pika::threads::coroutines::detail::set_sigsegv_handler(action, segv_stack);
 # endif
             }
-
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-
-            static void sigsegv_handler(int, siginfo_t* infoptr, void* ctxptr)
-            {
-                ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
-                char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
-
-                // https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html
-                //
-                char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
-
-                std::ptrdiff_t addr_delta =
-                    (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
-
-                // heuristic value 1 kilobyte
-                constexpr std::size_t coroutine_stackoverflow_addr_epsilon = 1024;
-
-                // check the stack addresses, if they're < 10 apart, terminate
-                // program should filter segmentation faults caused by
-                // coroutine stack overflows from 'genuine' stack overflows
-                //
-                if (static_cast<size_t>(addr_delta) < coroutine_stackoverflow_addr_epsilon)
-                {
-                    std::cerr << "Stack overflow in coroutine at address " << std::internal
-                              << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
-                              << std::setfill('0') << sigsegv_ptr << ".\n\n";
-
-                    std::cerr << "Configure the pika runtime to allocate a larger coroutine stack "
-                                 "size.\n Use the pika.stacks.small_size, "
-                                 "pika.stacks.medium_size,\n "
-                                 "pika.stacks.large_size, or pika.stacks.huge_size "
-                                 "configuration\nflags "
-                                 "to configure coroutine stack sizes.\n"
-                              << std::endl;
-
-                    std::terminate();
-                }
-            }
-# endif
 
             ~ucontext_context_impl()
             {
