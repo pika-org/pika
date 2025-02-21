@@ -29,10 +29,15 @@ int pika_main()
 int main(int argc, char** argv)
 {
     pika::init_params p;
-    p.cfg = {"pika.stacks.small_size=" + std::to_string(PIKA_SMALL_STACK_SIZE + 0x1000),
-        "pika.stacks.medium_size=" + std::to_string(PIKA_MEDIUM_STACK_SIZE + 0x1000),
-        "pika.stacks.large_size=" + std::to_string(PIKA_LARGE_STACK_SIZE + 0x1000),
-        "pika.stacks.huge_size=" + std::to_string(PIKA_HUGE_STACK_SIZE + 0x1000)};
+    p.cfg = {
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__) ||            \
+    defined(__APPLE__)
+        "pika.stacks.small_size=" + std::to_string(PIKA_SMALL_STACK_SIZE + PIKA_EXEC_PAGESIZE),
+        "pika.stacks.medium_size=" + std::to_string(PIKA_MEDIUM_STACK_SIZE + PIKA_EXEC_PAGESIZE),
+        "pika.stacks.large_size=" + std::to_string(PIKA_LARGE_STACK_SIZE + PIKA_EXEC_PAGESIZE),
+        "pika.stacks.huge_size=" + std::to_string(PIKA_HUGE_STACK_SIZE + PIKA_EXEC_PAGESIZE)
+#endif
+    };
 
     // This test should just run without crashing
     PIKA_TEST(true);
