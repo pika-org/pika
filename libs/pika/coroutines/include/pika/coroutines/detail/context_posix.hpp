@@ -289,11 +289,6 @@ namespace pika::threads::coroutines {
 
 # if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
-            // heuristic value 1 kilobyte
-            //
-
-#  define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
-
             static void sigsegv_handler(int, siginfo_t* infoptr, void* ctxptr)
             {
                 ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
@@ -306,11 +301,14 @@ namespace pika::threads::coroutines {
                 std::ptrdiff_t addr_delta =
                     (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
 
+                // heuristic value 1 kilobyte
+                constexpr std::size_t coroutine_stackoverflow_addr_epsilon = 1024;
+
                 // check the stack addresses, if they're < 10 apart, terminate
                 // program should filter segmentation faults caused by
                 // coroutine stack overflows from 'genuine' stack overflows
                 //
-                if (static_cast<size_t>(addr_delta) < COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
+                if (static_cast<size_t>(addr_delta) < coroutine_stackoverflow_addr_epsilon)
                 {
                     std::cerr << "Stack overflow in coroutine at address " << std::internal
                               << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
