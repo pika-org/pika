@@ -31,7 +31,8 @@ namespace pika::threads::coroutines::detail {
     // Note that it uses write directly instead of printf as it's safe to call from a signal handler
     // (see https://man7.org/linux/man-pages/man7/signal-safety.7.html). We format pointers manually
     // into fixed size stack-allocated char buffers, and avoid all dynamic memory allocation.
-    static void sigsegv_handler([[maybe_unused]] int signum, siginfo_t* infoptr, void* ctxptr)
+    [[noreturn]] static void sigsegv_handler(
+        [[maybe_unused]] int signum, siginfo_t* infoptr, void* ctxptr) noexcept
     {
         // printf is in theory not signal safe, but we can attempt to use it if write isn't
         // available, and the messages may be printed correctly anyway.
