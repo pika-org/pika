@@ -48,7 +48,7 @@ namespace tt = pika::this_thread::experimental;
 void task(double task_size_s) noexcept
 {
     high_resolution_timer t;
-    pika::util::yield_while([&]() { return t.elapsed() < task_size_s; }, nullptr, false);
+    pika::util::yield_while([&]() { return t.elapsed() < task_size_s; }, "task", false);
 }
 
 // The "task" method simply spawns total_tasks independent tasks without any special consideration

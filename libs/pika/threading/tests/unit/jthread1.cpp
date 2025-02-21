@@ -211,10 +211,12 @@ void test_detach()
     PIKA_TEST(ssource.stop_requested());
 
     auto t0 = std::chrono::high_resolution_clock::now();
-    pika::util::yield_while([&]() {
-        return !finally_interrupted.load() &&
-            (std::chrono::high_resolution_clock::now() - t0 < std::chrono::seconds(1));
-    });
+    pika::util::yield_while(
+        [&]() {
+            return !finally_interrupted.load() &&
+                (std::chrono::high_resolution_clock::now() - t0 < std::chrono::seconds(1));
+        },
+        "wait finally_interrupted");
 
     PIKA_TEST(finally_interrupted.load());
 }

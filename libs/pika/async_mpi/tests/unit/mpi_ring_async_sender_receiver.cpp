@@ -441,7 +441,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         // don't exit until all messages are drained
-        pika::util::yield_while([&] { return counter > 0; });
+        pika::util::yield_while([&] { return counter > 0; }, "wait counter");
         if (output)
         {
             // clang-format off
