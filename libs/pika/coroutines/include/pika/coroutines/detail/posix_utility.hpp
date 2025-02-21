@@ -44,6 +44,8 @@
  * Most of these utilities are really pure C++, but they are useful
  * only on posix systems.
  */
+# include <fmt/format.h>
+
 # include <cerrno>
 # include <cstddef>
 # include <cstdlib>
@@ -74,6 +76,20 @@
  */
 namespace pika::threads::coroutines::detail::posix {
     PIKA_EXPORT extern bool use_guard_pages;
+
+    inline void check_stack_size(std::size_t size)
+    {
+        if (0 != (size % EXEC_PAGESIZE))
+        {
+            throw std::runtime_error(fmt::format(
+                "stack size of {} is not page aligned, page size is {}", size, EXEC_PAGESIZE));
+        }
+
+        if (0 >= size)
+        {
+            throw std::runtime_error(fmt::format("stack size of {} is invalid", size));
+        }
+    }
 
 # if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 
@@ -122,6 +138,8 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void* alloc_stack(std::size_t size)
     {
+        check_stack_size(size);
+
         void* real_stack = ::mmap(nullptr, stack_size_with_guard_page(size), PROT_READ | PROT_WRITE,
 #  if defined(__APPLE__)
             MAP_PRIVATE | MAP_ANON | MAP_NORESERVE,
@@ -217,6 +235,8 @@ namespace pika::threads::coroutines::detail::posix {
      */
     inline void* alloc_stack(std::size_t size)
     {
+        check_stack_size(size);
+
         return new stack_aligner[size / sizeof(stack_aligner)];
     }
 

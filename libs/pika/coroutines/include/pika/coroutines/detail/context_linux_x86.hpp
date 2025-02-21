@@ -213,19 +213,6 @@ namespace pika::threads::coroutines {
             {
                 if (m_stack != nullptr) return;
 
-                if (0 != (m_stack_size % EXEC_PAGESIZE))
-                {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is not page aligned, page size is {}",
-                            m_stack_size, EXEC_PAGESIZE));
-                }
-
-                if (0 >= m_stack_size)
-                {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is invalid", m_stack_size));
-                }
-
                 m_stack = posix::alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
                 {
