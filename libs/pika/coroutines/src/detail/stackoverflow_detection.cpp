@@ -45,11 +45,11 @@ namespace pika::threads::coroutines::detail {
         };
 
         constexpr std::string_view sigsegv_msg =
-            "[pika] pika's SIGSEGV handler has been called; trying to print as much "
-            "information as possible, but output may be incomplete. This may be a stack overflow. "
-            "You can increase the stack sizes by modifying the configuration options "
+            "Segmentation fault caught by pika's SIGSEGV handler (enabled with "
+            "PIKA_STACKOVERFLOW_DETECTION=1).\n\nIf this is caused by a stack overflow, you can "
+            "increase the stack sizes by modifying the configuration options "
             "PIKA_SMALL_STACK_SIZE, PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or "
-            "PIKA_HUGE_STACK_SIZE.\n";
+            "PIKA_HUGE_STACK_SIZE.\n\n";
         write_helper(sigsegv_msg.data(), sigsegv_msg.size());
 
         ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
@@ -61,7 +61,7 @@ namespace pika::threads::coroutines::detail {
         std::ptrdiff_t addr_delta =
             (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
 
-        constexpr std::string_view segv_address_msg = "segv address:  0x";
+        constexpr std::string_view segv_pointer_msg = "segv pointer:  0x";
         constexpr std::string_view stack_pointer_msg = "stack pointer: 0x";
         constexpr std::string_view diff_msg = "diff:          0x";
 
@@ -92,12 +92,12 @@ namespace pika::threads::coroutines::detail {
             write_helper("\n", 1);
         };
 
-        write_msg_ptr(segv_address_msg, ptr_buffer, sigsegv_ptr);
+        write_msg_ptr(segv_pointer_msg, ptr_buffer, sigsegv_ptr);
         write_msg_ptr(stack_pointer_msg, ptr_buffer, stk_ptr);
         write_msg_ptr(diff_msg, ptr_buffer, reinterpret_cast<void*>(addr_delta));
 
         // heuristic value 1 kilobyte
-        constexpr std::size_t coroutine_stackoverflow_addr_epsilon = 1024;
+        constexpr std::size_t coroutine_stackoverflow_addr_epsilon = 1024000;
 
         // check the stack addresses, if they're < coroutine_stackoverflow_addr_epsilon apart,
         // terminate program should filter segmentation faults caused by coroutine stack overflows
@@ -105,7 +105,8 @@ namespace pika::threads::coroutines::detail {
         if (static_cast<size_t>(addr_delta) < coroutine_stackoverflow_addr_epsilon)
         {
             constexpr std::string_view maybe_stackoverflow_msg =
-                "The diff is small; this is likely a stack overflow.\n";
+                "\nThe between the stack pointer and pointer that triggered the segmentation fault "
+                "is small; this is likely a stack overflow.\n";
             write_helper(maybe_stackoverflow_msg.data(), maybe_stackoverflow_msg.size());
         }
 
