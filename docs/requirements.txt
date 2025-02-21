@@ -1,5 +1,5 @@
 # noinshpect
-sphinx
+sphinx <8.2.0
 breathe
 recommonmark
 # https://github.com/jbms/sphinx-immaterial/pull/338
