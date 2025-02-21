@@ -112,7 +112,7 @@ namespace pika::threads::coroutines::detail::posix::pth {
 #  include <cstddef>    // ptrdiff_t
 #  include <ucontext.h>
 
-#  if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+#  if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 #   include <pika/coroutines/detail/stackoverflow_detection.hpp>
 
 #   include <signal.h>
@@ -259,8 +259,11 @@ namespace pika::threads::coroutines {
                 asan_stack_size = m_stack_size;
                 asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                pika::threads::coroutines::detail::set_sigsegv_handler(action, segv_stack);
+# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+                if (pika::threads::coroutines::detail::get_stackoverflow_detection())
+                {
+                    pika::threads::coroutines::detail::set_sigsegv_handler(action, segv_stack);
+                }
 # endif
             }
 
@@ -268,7 +271,7 @@ namespace pika::threads::coroutines {
             {
                 if (m_stack) free_stack(m_stack, m_stack_size);
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
                 free(segv_stack.ss_sp);
 # endif
             }
@@ -362,7 +365,7 @@ namespace pika::threads::coroutines {
             void* m_stack;
             void (*funp_)(void*);
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
+# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
             struct sigaction action;
             stack_t segv_stack;
 # endif

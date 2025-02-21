@@ -264,6 +264,10 @@ namespace pika {
                 set_signal_handlers();
             }
 
+            pika::threads::coroutines::detail::set_stackoverflow_detection(
+                pika::detail::get_entry_as<bool>(
+                    cmdline.rtcfg_, "pika.stackoverflow_detection", false));
+
             pika::threads::detail::set_get_default_pool(&pika::detail::get_default_pool);
 
 #if defined(__bgq__) || defined(__bgqion__)

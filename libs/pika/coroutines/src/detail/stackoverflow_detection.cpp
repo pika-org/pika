@@ -6,8 +6,7 @@
 
 #include <pika/config.hpp>
 
-#if (defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)) &&          \
-    defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
+#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
 
 # include <pika/coroutines/detail/stackoverflow_detection.hpp>
 
@@ -23,6 +22,10 @@
 # endif
 
 namespace pika::threads::coroutines::detail {
+    static bool stackoverflow_detection_enabled = false;
+    bool get_stackoverflow_detection() { return stackoverflow_detection_enabled; }
+    void set_stackoverflow_detection(bool enable) { stackoverflow_detection_enabled = enable; }
+
     // This is as bare-bones as possible because it might be called as a result of a stack overflow.
     // Note that it uses write directly instead of printf as it's safe to call from a signal handler
     // (see https://man7.org/linux/man-pages/man7/signal-safety.7.html). We format pointers manually

@@ -147,22 +147,6 @@ if(PIKA_WITH_DEPRECATION_WARNINGS)
 endif()
 
 # Generic build options
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-  set(PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT OFF)
-  string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UC)
-  if("${CMAKE_BUILD_TYPE_UC}" STREQUAL "DEBUG")
-    set(PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT ON)
-  endif()
-  pika_option(
-    PIKA_WITH_STACKOVERFLOW_DETECTION BOOL
-    "Enable stackoverflow detection for pika threads/coroutines. (default: OFF, debug: ON)"
-    ${PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT} ADVANCED
-  )
-  if(PIKA_WITH_STACKOVERFLOW_DETECTION)
-    pika_add_config_define(PIKA_HAVE_STACKOVERFLOW_DETECTION)
-  endif()
-endif()
-
 set(DEFAULT_MALLOC "mimalloc")
 pika_option(
   PIKA_WITH_MALLOC

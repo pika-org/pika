@@ -65,7 +65,6 @@ jobs:
                 -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
                 -DPIKA_WITH_SANITIZERS=On \
                 -DCMAKE_CXX_FLAGS="-fsanitize=thread -fno-omit-frame-pointer -Wno-error=ignored-optimization-argument" \
-                -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         if: always()
