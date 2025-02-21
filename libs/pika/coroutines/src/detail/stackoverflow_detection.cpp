@@ -7,7 +7,8 @@
 #include <pika/config.hpp>
 #include <pika/coroutines/detail/stackoverflow_detection.hpp>
 
-#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
+#if (defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)) &&          \
+    !defined(PIKA_HAVE_ADDRESS_SANITIZER)
 
 # include <cstddef>
 # include <cstdlib>
