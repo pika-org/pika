@@ -193,7 +193,7 @@ namespace pika::threads::coroutines {
         public:
             enum
             {
-                default_stack_size = 4 * EXEC_PAGESIZE
+                default_stack_size = 4 * PIKA_EXEC_PAGESIZE
             };
 
             using context_impl_base = x86_linux_context_impl_base;
