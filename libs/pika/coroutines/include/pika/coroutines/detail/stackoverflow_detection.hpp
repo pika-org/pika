@@ -20,13 +20,6 @@
 
 #include <pika/config.hpp>
 
-#if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
-
-# include <signal.h>
-
 namespace pika::threads::coroutines::detail {
-    PIKA_EXPORT void set_stackoverflow_detection(bool);
-    PIKA_EXPORT bool get_stackoverflow_detection();
-    PIKA_EXPORT void set_sigsegv_handler(struct sigaction& action, stack_t& segv_stack);
+    PIKA_EXPORT void set_sigsegv_handler();
 }    // namespace pika::threads::coroutines::detail
-#endif

@@ -10,6 +10,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/coroutines/detail/stackoverflow_detection.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
@@ -59,6 +60,13 @@ namespace pika::threads::detail {
       , notifier_(notifier)
     {
         // Add callbacks local to thread_manager.
+        if (pika::detail::get_entry_as<bool>(rtcfg_, "pika.stackoverflow_detection", false))
+        {
+            notifier.add_on_start_thread_callback(
+                [](std::size_t, std::size_t, char const*, char const*) {
+                    pika::threads::coroutines::detail::set_sigsegv_handler();
+                });
+        }
         notifier.add_on_start_thread_callback(
             [this]([[maybe_unused]] std::size_t local_thread_num, std::size_t global_thread_num,
                 [[maybe_unused]] char const* pool_name,

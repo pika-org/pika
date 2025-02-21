@@ -30,12 +30,6 @@
 # include <stdexcept>
 # include <sys/param.h>
 
-# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-#  include <pika/coroutines/detail/stackoverflow_detection.hpp>
-
-#  include <signal.h>
-# endif
-
 # if defined(PIKA_HAVE_VALGRIND)
 #  if defined(__GNUG__) && !defined(__INTEL_COMPILER)
 #   if defined(PIKA_GCC_DIAGNOSTIC_PRAGMA_CONTEXTS)
@@ -232,13 +226,6 @@ namespace pika::threads::coroutines {
                 asan_stack_size = m_stack_size;
                 asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
-
-# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                if (pika::threads::coroutines::detail::get_stackoverflow_detection())
-                {
-                    pika::threads::coroutines::detail::set_sigsegv_handler(action, segv_stack);
-                }
-# endif
             }
 
             ~x86_linux_context_impl()
@@ -250,10 +237,6 @@ namespace pika::threads::coroutines {
 # endif
                     posix::free_stack(m_stack, static_cast<std::size_t>(m_stack_size));
                 }
-
-# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                free(segv_stack.ss_sp);
-# endif
             }
 
             // Return the size of the reserved stack address space.
@@ -388,11 +371,6 @@ namespace pika::threads::coroutines {
 
             std::ptrdiff_t m_stack_size;
             void* m_stack;
-
-# if !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-            struct sigaction action;
-            stack_t segv_stack;
-# endif
         };
 
         /**

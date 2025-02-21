@@ -5,10 +5,14 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
+#include <pika/coroutines/detail/stackoverflow_detection.hpp>
 
 #if defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)
 
-# include <pika/coroutines/detail/stackoverflow_detection.hpp>
+# include <cstddef>
+# include <cstdlib>
+# include <cstring>
+# include <string_view>
 
 # if defined(PIKA_HAVE_UNISTD_H)
 #  include <unistd.h>
@@ -22,10 +26,6 @@
 # endif
 
 namespace pika::threads::coroutines::detail {
-    static bool stackoverflow_detection_enabled = false;
-    bool get_stackoverflow_detection() { return stackoverflow_detection_enabled; }
-    void set_stackoverflow_detection(bool enable) { stackoverflow_detection_enabled = enable; }
-
     // This is as bare-bones as possible because it might be called as a result of a stack overflow.
     // Note that it uses write directly instead of printf as it's safe to call from a signal handler
     // (see https://man7.org/linux/man-pages/man7/signal-safety.7.html). We format pointers manually
@@ -110,20 +110,44 @@ namespace pika::threads::coroutines::detail {
         std::abort();
     }
 
-    void set_sigsegv_handler(struct sigaction& action, stack_t& segv_stack)
+    struct stackoverflow_helper
     {
-        segv_stack.ss_sp = valloc(PIKA_SEGV_STACK_SIZE);
-        segv_stack.ss_flags = 0;
-        segv_stack.ss_size = PIKA_SEGV_STACK_SIZE;
+        stackoverflow_helper() noexcept
+        {
+            segv_stack.ss_sp = valloc(PIKA_SEGV_STACK_SIZE);
+            segv_stack.ss_flags = 0;
+            segv_stack.ss_size = PIKA_SEGV_STACK_SIZE;
 
-        std::memset(&action, '\0', sizeof(action));
-        action.sa_flags = SA_SIGINFO | SA_ONSTACK;
-        action.sa_sigaction = &sigsegv_handler;
+            std::memset(&action, '\0', sizeof(action));
+            action.sa_flags = SA_SIGINFO | SA_ONSTACK;
+            action.sa_sigaction = &sigsegv_handler;
 
-        sigaltstack(&segv_stack, nullptr);
-        sigemptyset(&action.sa_mask);
-        sigaddset(&action.sa_mask, SIGSEGV);
-        sigaction(SIGSEGV, &action, nullptr);
+            sigaltstack(&segv_stack, nullptr);
+            sigemptyset(&action.sa_mask);
+            sigaddset(&action.sa_mask, SIGSEGV);
+            sigaction(SIGSEGV, &action, nullptr);
+        }
+
+        stackoverflow_helper(stackoverflow_helper&&) = delete;
+        stackoverflow_helper& operator=(stackoverflow_helper&&) = delete;
+
+        stackoverflow_helper(stackoverflow_helper const&) = delete;
+        stackoverflow_helper& operator=(stackoverflow_helper const&) = delete;
+
+        ~stackoverflow_helper() noexcept { free(segv_stack.ss_sp); }
+
+        stack_t segv_stack;
+        struct sigaction action;
+    };
+
+    void set_sigsegv_handler()
+    {
+        // Set handler at most once per thread
+        static thread_local stackoverflow_helper helper{};
     }
+}    // namespace pika::threads::coroutines::detail
+#else
+namespace pika::threads::coroutines::detail {
+    void set_sigsegv_handler() {}
 }    // namespace pika::threads::coroutines::detail
 #endif
