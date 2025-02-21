@@ -173,7 +173,7 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void watermark_stack(void* stack, std::size_t size)
     {
-        PIKA_ASSERT(size > EXEC_PAGESIZE);
+        PIKA_ASSERT(size >= EXEC_PAGESIZE);
 
         // Fill the bottom 8 bytes of the first page with 1s.
         void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
