@@ -37,6 +37,7 @@ set(coroutines_sources
     detail/coroutine_impl.cpp
     detail/coroutine_self.cpp
     detail/posix_utility.cpp
+    detail/stackoverflow_detection.cpp
     detail/tss.cpp
     swapcontext.cpp
     thread_enums.cpp
