@@ -60,7 +60,7 @@ namespace pika::threads::detail {
       , notifier_(notifier)
     {
         // Add callbacks local to thread_manager.
-        if (pika::detail::get_entry_as<bool>(rtcfg_, "pika.stackoverflow_detection", false))
+        if (pika::detail::get_entry_as<bool>(rtcfg_, "pika.install_signal_handlers", false))
         {
             notifier.add_on_start_thread_callback(
                 [](std::size_t, std::size_t, char const*, char const*) {

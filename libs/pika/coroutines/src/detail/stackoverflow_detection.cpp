@@ -46,15 +46,15 @@ namespace pika::threads::coroutines::detail {
 
         constexpr std::string_view sigsegv_msg =
             "Segmentation fault caught by pika's SIGSEGV handler (enabled with "
-            "PIKA_STACKOVERFLOW_DETECTION=1).\n\nIf this is caused by a stack overflow, you can "
-            "increase the stack sizes by modifying the configuration options "
+            "PIKA_INSTALL_SIGNAL_HANDLERS=1).\n\nThis may be caused by a stack overflow, in which "
+            "case you can increase the stack sizes by modifying the configuration options "
             "PIKA_SMALL_STACK_SIZE, PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or "
             "PIKA_HUGE_STACK_SIZE.\n\n";
         write_helper(sigsegv_msg.data(), sigsegv_msg.size());
 
         char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
 
-        constexpr std::string_view segv_pointer_msg = "segv pointer:  0x";
+        constexpr std::string_view segv_pointer_msg = "Segmentation fault at address: 0x";
 
         // Format a pointer as a hex string. This is a local function since it assumes that buffer is
         // big enough.

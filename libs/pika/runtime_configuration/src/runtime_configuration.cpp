@@ -295,8 +295,6 @@ namespace pika::util {
             "trace_depth = ${PIKA_TRACE_DEPTH:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_HAVE_THREAD_BACKTRACE_DEPTH)) "}",
 
-            "stackoverflow_detection = ${PIKA_STACKOVERFLOW_DETECTION:0}",
-
             "[pika.stacks]",
             "small_size = ${PIKA_SMALL_STACK_SIZE:" PIKA_PP_STRINGIZE(
                 PIKA_PP_EXPAND(PIKA_SMALL_STACK_SIZE)) "}",
