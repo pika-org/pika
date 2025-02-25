@@ -57,8 +57,7 @@ namespace pika::threads::coroutines::detail {
         constexpr std::string_view segv_pointer_msg = "segv pointer:  0x";
 
         // Format a pointer as a hex string. This is a local function since it assumes that buffer is
-        // big enough. The buffer is not null-terminated, since we know how many bytes to write from
-        // the buffer.
+        // big enough.
         constexpr std::size_t ptr_size = sizeof(void*);
         constexpr std::size_t ptr_msg_size = ptr_size * 2;
         constexpr auto format_ptr = [](char* buffer, void* p) {
