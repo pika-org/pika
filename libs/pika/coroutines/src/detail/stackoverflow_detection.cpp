@@ -32,7 +32,7 @@ namespace pika::threads::coroutines::detail {
     // (see https://man7.org/linux/man-pages/man7/signal-safety.7.html). We format pointers manually
     // into fixed size stack-allocated char buffers, and avoid all dynamic memory allocation.
     [[noreturn]] static void sigsegv_handler(
-        [[maybe_unused]] int signum, siginfo_t* infoptr, void* ctxptr) noexcept
+        [[maybe_unused]] int signum, siginfo_t* infoptr, [[maybe_unused]] void* ctxptr) noexcept
     {
         // printf is in theory not signal safe, but we can attempt to use it if write isn't
         // available, and the messages may be printed correctly anyway.
@@ -52,18 +52,9 @@ namespace pika::threads::coroutines::detail {
             "PIKA_HUGE_STACK_SIZE.\n\n";
         write_helper(sigsegv_msg.data(), sigsegv_msg.size());
 
-        ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
         char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
 
-        // https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html
-        char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
-
-        std::ptrdiff_t addr_delta =
-            (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
-
         constexpr std::string_view segv_pointer_msg = "segv pointer:  0x";
-        constexpr std::string_view stack_pointer_msg = "stack pointer: 0x";
-        constexpr std::string_view diff_msg = "diff:          0x";
 
         // Format a pointer as a hex string. This is a local function since it assumes that buffer is
         // big enough. The buffer is not null-terminated, since we know how many bytes to write from
@@ -93,22 +84,7 @@ namespace pika::threads::coroutines::detail {
         };
 
         write_msg_ptr(segv_pointer_msg, ptr_buffer, sigsegv_ptr);
-        write_msg_ptr(stack_pointer_msg, ptr_buffer, stk_ptr);
-        write_msg_ptr(diff_msg, ptr_buffer, reinterpret_cast<void*>(addr_delta));
 
-        // heuristic value 1 kilobyte
-        constexpr std::size_t coroutine_stackoverflow_addr_epsilon = 1024000;
-
-        // check the stack addresses, if they're < coroutine_stackoverflow_addr_epsilon apart,
-        // terminate program should filter segmentation faults caused by coroutine stack overflows
-        // from 'genuine' stack overflows
-        if (static_cast<size_t>(addr_delta) < coroutine_stackoverflow_addr_epsilon)
-        {
-            constexpr std::string_view maybe_stackoverflow_msg =
-                "\nThe between the stack pointer and pointer that triggered the segmentation fault "
-                "is small; this is likely a stack overflow.\n";
-            write_helper(maybe_stackoverflow_msg.data(), maybe_stackoverflow_msg.size());
-        }
 
         std::abort();
     }
