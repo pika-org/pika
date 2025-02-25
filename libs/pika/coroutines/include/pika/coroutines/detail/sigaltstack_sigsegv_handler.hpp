@@ -21,5 +21,5 @@
 #include <pika/config.hpp>
 
 namespace pika::threads::coroutines::detail {
-    PIKA_EXPORT void set_sigsegv_handler();
+    PIKA_EXPORT void set_sigaltstack_sigsegv_handler();
 }    // namespace pika::threads::coroutines::detail

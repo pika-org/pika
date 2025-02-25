@@ -5,7 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <pika/config.hpp>
-#include <pika/coroutines/detail/stackoverflow_detection.hpp>
+#include <pika/coroutines/detail/sigaltstack_sigsegv_handler.hpp>
 
 #if (defined(__linux) || defined(linux) || defined(__linux__) || defined(__FreeBSD__)) &&          \
     !defined(PIKA_HAVE_ADDRESS_SANITIZER)
@@ -95,9 +95,9 @@ namespace pika::threads::coroutines::detail {
         std::abort();
     }
 
-    struct stackoverflow_helper
+    struct sigaltstack_sigsegv_helper
     {
-        stackoverflow_helper() noexcept
+        sigaltstack_sigsegv_helper() noexcept
         {
             segv_stack.ss_sp = valloc(PIKA_SEGV_STACK_SIZE);
             segv_stack.ss_flags = 0;
@@ -113,26 +113,26 @@ namespace pika::threads::coroutines::detail {
             sigaction(SIGSEGV, &action, nullptr);
         }
 
-        stackoverflow_helper(stackoverflow_helper&&) = delete;
-        stackoverflow_helper& operator=(stackoverflow_helper&&) = delete;
+        sigaltstack_sigsegv_helper(sigaltstack_sigsegv_helper&&) = delete;
+        sigaltstack_sigsegv_helper& operator=(sigaltstack_sigsegv_helper&&) = delete;
 
-        stackoverflow_helper(stackoverflow_helper const&) = delete;
-        stackoverflow_helper& operator=(stackoverflow_helper const&) = delete;
+        sigaltstack_sigsegv_helper(sigaltstack_sigsegv_helper const&) = delete;
+        sigaltstack_sigsegv_helper& operator=(sigaltstack_sigsegv_helper const&) = delete;
 
-        ~stackoverflow_helper() noexcept { free(segv_stack.ss_sp); }
+        ~sigaltstack_sigsegv_helper() noexcept { free(segv_stack.ss_sp); }
 
         stack_t segv_stack;
         struct sigaction action;
     };
 
-    void set_sigsegv_handler()
+    void set_sigaltstack_sigsegv_handler()
     {
         // Set handler at most once per thread
-        static thread_local stackoverflow_helper helper{};
+        static thread_local sigaltstack_sigsegv_helper helper{};
     }
 }    // namespace pika::threads::coroutines::detail
 #else
 namespace pika::threads::coroutines::detail {
-    void set_sigsegv_handler() {}
+    void set_sigaltstack_sigsegv_handler() {}
 }    // namespace pika::threads::coroutines::detail
 #endif

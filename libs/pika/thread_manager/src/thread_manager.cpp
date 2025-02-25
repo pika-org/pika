@@ -10,7 +10,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
-#include <pika/coroutines/detail/stackoverflow_detection.hpp>
+#include <pika/coroutines/detail/sigaltstack_sigsegv_handler.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
@@ -64,7 +64,7 @@ namespace pika::threads::detail {
         {
             notifier.add_on_start_thread_callback(
                 [](std::size_t, std::size_t, char const*, char const*) {
-                    pika::threads::coroutines::detail::set_sigsegv_handler();
+                    pika::threads::coroutines::detail::set_sigaltstack_sigsegv_handler();
                 });
         }
         notifier.add_on_start_thread_callback(
