@@ -85,6 +85,13 @@ namespace pika::threads::coroutines::detail {
 
         write_msg_ptr(segv_pointer_msg, ptr_buffer, sigsegv_ptr);
 
+        // Reset SIGABRT signal handler to make sure that the default is used (and thus core dumps
+        // are produced, if enabled)
+        struct sigaction sa;
+        sa.sa_handler = SIG_DFL;
+        sa.sa_flags = 0;
+        sigemptyset(&sa.sa_mask);
+        sigaction(SIGABRT, &sa, nullptr);
 
         std::abort();
     }
