@@ -24,6 +24,7 @@ set(coroutines_headers
     pika/coroutines/detail/coroutine_stackless_self.hpp
     pika/coroutines/detail/get_stack_pointer.hpp
     pika/coroutines/detail/posix_utility.hpp
+    pika/coroutines/detail/sigaltstack_sigsegv_handler.hpp
     pika/coroutines/detail/swap_context.hpp
     pika/coroutines/detail/tss.hpp
     pika/coroutines/thread_enums.hpp
@@ -36,6 +37,7 @@ set(coroutines_sources
     detail/coroutine_impl.cpp
     detail/coroutine_self.cpp
     detail/posix_utility.cpp
+    detail/sigaltstack_sigsegv_handler.cpp
     detail/tss.cpp
     swapcontext.cpp
     thread_enums.cpp
