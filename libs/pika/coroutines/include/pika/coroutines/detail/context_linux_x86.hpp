@@ -193,7 +193,7 @@ namespace pika::threads::coroutines {
         public:
             enum
             {
-                default_stack_size = 4 * EXEC_PAGESIZE
+                default_stack_size = 4 * PIKA_EXEC_PAGESIZE
             };
 
             using context_impl_base = x86_linux_context_impl_base;
@@ -212,19 +212,6 @@ namespace pika::threads::coroutines {
             void init()
             {
                 if (m_stack != nullptr) return;
-
-                if (0 != (m_stack_size % EXEC_PAGESIZE))
-                {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is not page aligned, page size is {}",
-                            m_stack_size, EXEC_PAGESIZE));
-                }
-
-                if (0 >= m_stack_size)
-                {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is invalid", m_stack_size));
-                }
 
                 m_stack = posix::alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
