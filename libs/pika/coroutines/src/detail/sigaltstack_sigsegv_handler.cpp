@@ -4,6 +4,11 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+// The concept is inspired by the following links:
+//
+// https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
+// http://www.evanjones.ca/software/threading.html
+
 #include <pika/config.hpp>
 #include <pika/coroutines/detail/sigaltstack_sigsegv_handler.hpp>
 
