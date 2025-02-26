@@ -377,7 +377,7 @@ the current task is using (if in a task).
 If you've identified a stack overflow in your program you can do one or more of the following to
 avoid the stack overflow:
 
-- Less stack space
+- Use less stack space
 - Avoid deep recursion, e.g. by creating new tasks at some point in the computation which will get a
   new stack
 - Use a bigger stack size for the task triggering a stack overflow (this can be changed by using a
@@ -404,8 +404,8 @@ recommended to use ``-fno-omit-frame-pointer`` with sanitizers.
 There are known issues that may prevent you from using sanitizers with pika. Under the ``tools``
 subdirectory of the pika repository you can find the most recent suppression files that are used for
 CI runs with sanitizers. Similarly, under ``.github/workflows`` you can find the most recent build
-configurations (including sanitizer options) that with sanitizers, along with blacklists of tests
-that are currently known to not pass with sanitizers.
+configurations (including sanitizer options) that work with sanitizers, along with blacklists of
+tests that are currently known to fail with sanitizers.
 
 .. _malloc:
 
