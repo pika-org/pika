@@ -322,6 +322,14 @@ will be allocated such that if one attempts to read or write within a page of th
 a segmentation fault will be triggered. The option can be enabled by exporting
 ``PIKA_USE_GUARD_PAGES=1``. The option is disabled by default.
 
+Additionally, pika can install signal handlers that print information about failures, such as
+backtraces. These handlers will handle the most common events, such as interrupts, segmentation
+faults, illegal instructions etc. and they can be enabled with the environment variable
+``PIKA_INSTALL_SIGNAL_HANDLERS=1``. The verbosity can be controlled with
+``PIKA_EXCEPTION_VERBOSITY`` (this also controls how much information pika exceptions capture and
+print). The default value of ``1`` will print a backtrace. ``2`` or higher will print additional
+information about the pika build. ``0`` will print the minimum information.
+
 .. info::
 
    Many MPI implementations also install signal handlers or have options for enabling them.
@@ -332,52 +340,39 @@ a segmentation fault will be triggered. The option can be enabled by exporting
    they print slightly different information.
 
    pika does not install any signal handlers by default. They have to be enabled explicitly using
-   the options described below.
+   the option described above. Keep in mind that if multiple libraries try to set signal handlers,
+   they will likely overwrite each other such that only one is active at a time. Which signal
+   handler is actually used may depend on when a failure happens, order of linking, order of
+   initialization, etc. and may even be non-deterministic.
 
-Additionally, pika provides two options for installing signal handlers. The first, enabled with the
-environment variable ``PIKA_INSTALL_SIGNAL_HANDLERS=1``, installs signal handlers that will handle
-most common events, such as interrupts, segmentation faults, illegal instructions etc. and print a
-backtrace and optionally some information about how pika was built. The verbosity can be controlled
-with ``PIKA_EXCEPTION_VERBOSITY`` (this also controls how much information pika exceptions capture
-and print). The default value of ``1`` will print a backtrace. ``2`` or higher will print additional
-information about the pika build. ``0`` will print the minimum information.
-
-The second signal handler, installed with ``PIKA_INSTALL_ALTERNATE_SIGSEGV_HANDLER=1``, only catches
-segmentation faults and is more helpful when a segmentation fault due to a stack overflow happens.
-The regular handler for segmentation faults does not use an alternate stack, which means that when a
-segmentation fault happens due to a stack overflow, the signal handler will try to run on the
-regular stack, but since it's a stack overflow it will fail to actually report anything useful. This
-is why, if you only have ``PIKA_INSTALL_SIGNAL_HANDLERS=1`` set or another signal handler that
-doesn't use an alternate stack, you will simply get a message saying e.g.:
-
-.. code-block:: console
-
-   Segmentation fault (core dumped)
-
-No backtrace is printed because the signal handler itself triggered another segmentation fault.
-
-With the alternate signal handler, which uses `sigaltstack
-<https://man7.org/linux/man-pages/man2/sigaltstack.2.html>`_, a message like the following will be
-printed:
+The signal handler in pika for segmentation faults is a simplified version of the regular signal
+handler and always prints a limited amount of information. The reason for this is that it needs to
+be able to handle segmentation faults caused by stack overflows. When stack overflows happen,
+regular signal handlers will be run on the stack of the failing thread. However, since the stack
+already overflowed, the signal handler will trigger another segmentation fault, and not be able to
+print anything before the program is terminated. The handler in pika for segmentation faults uses
+which uses `sigaltstack <https://man7.org/linux/man-pages/man2/sigaltstack.2.html>`_ which  allows
+the signal handler to run on a new stack, guaranteeing that it can print some information on
+failure. The handler will print a message similar to:
 
 .. code-block:: console
 
    Segmentation fault caught by pika's SIGSEGV handler (enabled with
-   PIKA_STACKOVERFLOW_DETECTION=1).
+   PIKA_INSTALL_SIGNAL_HANDLERS=1).
 
-   If this is caused by a stack overflow, you can increase the stack sizes by
-   modifying the configuration options PIKA_SMALL_STACK_SIZE,
-   PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or PIKA_HUGE_STACK_SIZE.
+   This may be caused by a stack overflow, in which case you can increase the stack sizes by
+   modifying the configuration options PIKA_SMALL_STACK_SIZE, PIKA_MEDIUM_STACK_SIZE,
+   PIKA_LARGE_STACK_SIZE, or PIKA_HUGE_STACK_SIZE.
 
-   segv pointer:  0x00007f79fb1ffaa8
-   stack pointer: 0x00007f79f4001000
-   diff:          0x00000000071feaa8
+   Segmentation fault at address: 0x00007fdb152935f8
 
-``PIKA_INSTALL_SIGNAL_HANDLERS`` and ``PIKA_INSTALL_ALTERNATE_SIGSEGV_HANDLER`` can be used at the
-same time, with the latter overriding the signal handler for segmentation faults on pika's worker
-threads. The signal handlers are especially useful in conjuction with ``PIKA_USE_GUARD_PAGES``, as
-without the latter option a stack overflow may simply end up writing e.g. into another task's stack,
-which can be very hard to detect as a stack overflow.
+The signal handlers are especially useful in conjuction with ``PIKA_USE_GUARD_PAGES``, as without
+the latter option a stack overflow may simply end up writing e.g. into another task's stack, which
+can be very hard to detect as a stack overflow. Inspecting the core dump of a segmentation fault can
+be helpful in identifying whether a segmentation fault was likely caused by a stack overflow.
+Comparing stack pointers (see e.g. the `GDB documentation
+<https://sourceware.org/gdb/current/onlinedocs/gdb#Registers>`_) can tell you how much stack space
+the current task is using (if in a task).
 
 If you've identified a stack overflow in your program you can do one or more of the following to
 avoid the stack overflow:
