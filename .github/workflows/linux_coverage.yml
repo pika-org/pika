@@ -63,6 +63,9 @@ jobs:
             export OMPI_ALLOW_RUN_AS_ROOT=1
             export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
+            export PIKA_INSTALL_SIGNAL_HANDLERS=1
+            export PIKA_USE_GUARD_PAGES=1
+
             ctest -j2 --timeout 120 --output-on-failure
       - name: Generate coverage report
         shell: bash
