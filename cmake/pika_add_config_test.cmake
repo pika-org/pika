@@ -501,6 +501,7 @@ function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS
     SOURCE cmake/tests/check_openmpi_continuations.cpp
+    INCLUDE_DIRECTORIES ${MPI_CXX_INCLUDE_DIRS}
     FILE ${ARGN}
   )
 endfunction()
