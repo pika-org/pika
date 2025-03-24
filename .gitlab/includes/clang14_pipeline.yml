@@ -18,8 +18,7 @@ include:
       cxxstd=$CXXSTD ^boost@1.79.0 ^hwloc@2.7.0"
     CMAKE_FLAGS: "-DCMAKE_CXX_CLANG_TIDY=clang-tidy -DPIKA_WITH_CXX_STANDARD=20 -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
-                  -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF \
-                  -DPIKA_WITH_STACKOVERFLOW_DETECTION=OFF"
+                  -DPIKA_WITH_CXX_LAMBDA_CAPTURE_DECLTYPE=OFF"
 
 clang14_spack_compiler_image:
   extends:
