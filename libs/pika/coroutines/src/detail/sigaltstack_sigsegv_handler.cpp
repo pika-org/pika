@@ -53,7 +53,7 @@ namespace pika::threads::coroutines::detail {
             "Segmentation fault caught by pika's SIGSEGV handler (enabled with "
             "PIKA_INSTALL_SIGNAL_HANDLERS=1).\n\nThis may be caused by a stack overflow, in which "
             "case you can increase the stack sizes by modifying the configuration options "
-            "PIKA_SMALL_STACK_SIZE, PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or "
+            "PIKA_SMALL_STACK_SIZE (default), PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or "
             "PIKA_HUGE_STACK_SIZE.\n\n";
         write_helper(sigsegv_msg.data(), sigsegv_msg.size());
 
