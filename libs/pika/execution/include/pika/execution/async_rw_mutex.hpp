@@ -206,13 +206,6 @@ namespace pika::execution::experimental {
                 return true;
             }
 
-            void done_recurse(async_rw_mutex_operation_state_base* current) noexcept
-            {
-                if (current == nullptr) { return; }
-                done_recurse(static_cast<async_rw_mutex_operation_state_base*>(current->next));
-                current->continuation();
-            }
-
             void done() noexcept
             {
                 // `this` is not an async_rw_mutex_operation_state_base*, but is a known value to
@@ -223,15 +216,12 @@ namespace pika::execution::experimental {
                 // We have now successfully acquired the head of the queue, and signaled to other
                 // threads that they can't add any more items to the queue. We can now process the
                 // queue without further synchronization.
-
-                // Because of the way operation states are linked together, they will be accessed in
-                // LIFO order (op_state_head points to the last operation state to be added, or
-                // nullptr). This can be surprising, so we recurse through the list and call the
-                // continuation on the way back up from the recursion, resulting in FIFO order for
-                // the continuations.
-                //
-                // We will not guarantee this behaviour, but it is a nice property to have.
-                done_recurse(current);
+                while (current != nullptr)
+                {
+                    void* next = current->next;
+                    current->continuation();
+                    current = static_cast<async_rw_mutex_operation_state_base*>(next);
+                }
             }
         };
 
