@@ -8,6 +8,7 @@
 
 #include <pika/allocator_support/internal_allocator.hpp>
 #include <pika/assert.hpp>
+#include <pika/execution/algorithms/start_detached.hpp>
 #include <pika/execution_base/operation_state.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
@@ -495,6 +496,20 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_value_t(access_type),
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
+            sender(shared_state_ptr_type state) noexcept
+              : state(std::move(state))
+            {
+            }
+            sender(sender&&) noexcept = default;
+            sender& operator=(sender&&) noexcept = default;
+            sender(sender const&) = default;
+            sender& operator=(sender const&) = default;
+            ~sender() noexcept
+            {
+                if (state) { pika::execution::experimental::start_detached(std::move(*this)); }
+                PIKA_ASSERT(!state);
+            }
+
             template <typename R>
             struct operation_state : detail::async_rw_mutex_operation_state_base
             {
@@ -676,6 +691,20 @@ namespace pika::execution::experimental {
             using completion_signatures = pika::execution::experimental::completion_signatures<
                 pika::execution::experimental::set_value_t(access_type),
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
+
+            sender(shared_state_ptr_type state) noexcept
+              : state(std::move(state))
+            {
+            }
+            sender(sender&&) noexcept = default;
+            sender& operator=(sender&&) noexcept = default;
+            sender(sender const&) = default;
+            sender& operator=(sender const&) = default;
+            ~sender() noexcept
+            {
+                if (state) { pika::execution::experimental::start_detached(std::move(*this)); }
+                PIKA_ASSERT(!state);
+            }
 
             template <typename R>
             struct operation_state : detail::async_rw_mutex_operation_state_base
