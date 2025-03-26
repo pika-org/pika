@@ -25,6 +25,8 @@ set(tests
     algorithm_unpack
     algorithm_when_all
     algorithm_when_all_vector
+    async_rw_mutex
+    async_rw_mutex_yielding
     scheduler_queries
 )
 
@@ -33,6 +35,9 @@ set(tests
 # PIKA_HAVE_DEPRECATION_WARNINGS=1 set.
 set(algorithm_transfer_just_FLAGS COMPILE_FLAGS "-DPIKA_HAVE_DEPRECATION_WARNINGS=0" NOPCH)
 set(algorithm_transfer_FLAGS COMPILE_FLAGS "-DPIKA_HAVE_DEPRECATION_WARNINGS=0" NOPCH)
+
+set(async_rw_mutex_PARAMETERS THREADS 4)
+set(async_rw_mutex_yielding_PARAMETERS THREADS 4)
 
 foreach(test ${tests})
   set(sources ${test}.cpp)
