@@ -118,6 +118,29 @@ namespace pika::execution::experimental {
     };
 
     namespace detail {
+        template <async_rw_mutex_access_type AccessType>
+        struct async_rw_mutex_copyability;
+
+        template <>
+        struct async_rw_mutex_copyability<async_rw_mutex_access_type::read>
+        {
+            async_rw_mutex_copyability() = default;
+            async_rw_mutex_copyability(async_rw_mutex_copyability&&) = default;
+            async_rw_mutex_copyability& operator=(async_rw_mutex_copyability&&) = default;
+            async_rw_mutex_copyability(async_rw_mutex_copyability const&) = default;
+            async_rw_mutex_copyability& operator=(async_rw_mutex_copyability const&) = default;
+        };
+
+        template <>
+        struct async_rw_mutex_copyability<async_rw_mutex_access_type::readwrite>
+        {
+            async_rw_mutex_copyability() = default;
+            async_rw_mutex_copyability(async_rw_mutex_copyability&&) = default;
+            async_rw_mutex_copyability& operator=(async_rw_mutex_copyability&&) = default;
+            async_rw_mutex_copyability(async_rw_mutex_copyability const&) = delete;
+            async_rw_mutex_copyability& operator=(async_rw_mutex_copyability const&) = delete;
+        };
+
         struct async_rw_mutex_operation_state_base
         {
             // This is most of the time an async_rw_mutex_operation_state_base*, but can also
@@ -455,7 +478,7 @@ namespace pika::execution::experimental {
                 else { state->done(); }
             }
 
-            return {state};
+            return sender<async_rw_mutex_access_type::read>{state};
         }
 
         sender<async_rw_mutex_access_type::readwrite> readwrite()
@@ -470,12 +493,12 @@ namespace pika::execution::experimental {
             if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
             else { state->done(); }
 
-            return {state};
+            return sender<async_rw_mutex_access_type::readwrite>{state};
         }
 
     private:
         template <async_rw_mutex_access_type AccessType>
-        struct sender
+        struct sender : detail::async_rw_mutex_copyability<AccessType>
         {
             PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -495,7 +518,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_value_t(access_type),
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
-            sender(shared_state_ptr_type state) noexcept
+            explicit sender(shared_state_ptr_type state) noexcept
               : state(std::move(state))
             {
             }
@@ -640,7 +663,7 @@ namespace pika::execution::experimental {
                 else { state->done(); }
             }
 
-            return {state};
+            return sender<async_rw_mutex_access_type::read>{state};
         }
 
         /// \brief Access the wrapped value in read-write mode through a sender.
@@ -655,7 +678,7 @@ namespace pika::execution::experimental {
             if (PIKA_LIKELY(prev_state)) { prev_state->set_next_state(state); }
             else { state->done(); }
 
-            return {state};
+            return sender<async_rw_mutex_access_type::readwrite>{state};
         }
 
     private:
@@ -671,7 +694,7 @@ namespace pika::execution::experimental {
 
     private:
         template <async_rw_mutex_access_type AccessType>
-        struct sender
+        struct sender : detail::async_rw_mutex_copyability<AccessType>
         {
             PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -691,7 +714,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_value_t(access_type),
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
-            sender(shared_state_ptr_type state) noexcept
+            explicit sender(shared_state_ptr_type state) noexcept
               : state(std::move(state))
             {
             }
