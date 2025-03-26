@@ -174,12 +174,11 @@ namespace pika::execution::experimental {
             bool add_op_state(async_rw_mutex_operation_state_base* op_state) noexcept
             {
                 op_state->next = static_cast<async_rw_mutex_operation_state_base*>(
-                    op_state_head.load(std::memory_order_relaxed));
+                    op_state_head.load(std::memory_order_acquire));
                 do {
                     if (op_state->next == static_cast<void*>(this)) { return false; }
-                } while (!op_state_head.compare_exchange_weak(op_state->next,
-                    static_cast<void*>(op_state), std::memory_order_release,
-                    std::memory_order_relaxed));
+                } while (!op_state_head.compare_exchange_weak(
+                    op_state->next, static_cast<void*>(op_state), std::memory_order_acq_rel));
 
                 return true;
             }
@@ -196,7 +195,7 @@ namespace pika::execution::experimental {
                 // `this` is not an async_rw_mutex_operation_state_base*, but is a known value to
                 // signal that the queue has been processed
                 auto* current = static_cast<async_rw_mutex_operation_state_base*>(
-                    op_state_head.exchange(static_cast<void*>(this), std::memory_order_acquire));
+                    op_state_head.exchange(static_cast<void*>(this), std::memory_order_acq_rel));
 
                 // We have now successfully acquired the head of the queue, and signaled to other
                 // threads that they can't add any more items to the queue. We can now process the
