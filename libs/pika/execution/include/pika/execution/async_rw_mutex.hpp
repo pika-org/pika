@@ -29,10 +29,10 @@
 //
 // Because the order of completion of senders depends on the order in which the senders are
 // accessed, shared states must be allocated eagerly on creation of a sender, instead of e.g.
-// relying on the operation state for storage. Until a the senders are connected and started to
-// create the operation state we don't yet have a stable storage to use for linking together the
-// different accesses in the correct order, so we allocate the shared state eagerly to keep track of
-// the order of accesses.
+// relying on the operation state for storage. Until the senders are connected and started to create
+// the operation state we don't yet have a stable storage to use for linking together the different
+// accesses in the correct order, so we allocate the shared state eagerly to keep track of the order
+// of accesses.
 //
 // The flow from accessing a sender to releasing the next access is as follows:
 // - A sender is created along with a new shared state which keeps track of the next access.
@@ -59,9 +59,9 @@
 //   - If the queue is not empty when done is called, done will traverse the queue, calling the
 //     continuation method on the operation state. The continuation method will signal the receiver
 //     associated with the operation state.
-// - When all receivers are done accessing the shared state, and the reference count goes to the
-//   zero, the shared state is destroyed. The destructor calls done on the next shared state, if one
-//   has been set, and the chain of accesses continues the same way.
+// - When all receivers are done accessing the shared state, and the reference count goes to zero,
+//   the shared state is destroyed. The destructor calls done on the next shared state, if one has
+//   been set, and the chain of accesses continues the same way.
 //
 // Additional design notes:
 // - If non-void, the value is stored in a separate shared state, rather than in each shared state
