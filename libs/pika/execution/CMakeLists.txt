@@ -30,6 +30,7 @@ set(execution_headers
     pika/execution/algorithms/unpack.hpp
     pika/execution/algorithms/when_all.hpp
     pika/execution/algorithms/when_all_vector.hpp
+    pika/execution/async_rw_mutex.hpp
     pika/execution/scheduler_queries.hpp
 )
 

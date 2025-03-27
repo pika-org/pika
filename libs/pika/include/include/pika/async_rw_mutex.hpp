@@ -6,4 +6,4 @@
 
 #pragma once
 
-#include <pika/synchronization/async_rw_mutex.hpp>
+#include <pika/execution/async_rw_mutex.hpp>
