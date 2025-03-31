@@ -21,12 +21,14 @@
 #include <pika/execution_base/any_sender.hpp>
 #include <pika/execution_base/receiver.hpp>
 #include <pika/execution_base/sender.hpp>
+#include <pika/execution_base/this_thread.hpp>
 #include <pika/executors/thread_pool_scheduler.hpp>
 #include <pika/functional/detail/tag_fallback_invoke.hpp>
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 
+#include <chrono>
 #include <exception>
 #include <tuple>
 #include <type_traits>
@@ -46,10 +48,11 @@ namespace pika::trigger_mpi_detail {
         int status;
         // these vars are needed by suspend/resume mode
         bool completed{false};
-        pika::detail::spinlock mutex;
-        pika::condition_variable cond_var;
+        pika::detail::spinlock mutex{};
+        pika::condition_variable cond_var{};
         // MPI_EXT_CONTINUE
         MPI_Request request{MPI_REQUEST_NULL};
+        std::chrono::duration<double> eager_poll_busy_wait_timeout;
 
         // -----------------------------------------------------------------
         // The mpi_receiver receives inputs from the previous sender,
@@ -77,7 +80,9 @@ namespace pika::trigger_mpi_detail {
                 auto r = std::move(*this);
 
                 // early poll just in case the request completed immediately
-                if (mpi::detail::poll_request(request))
+                if (pika::util::detail::yield_while_timeout(
+                        [&]() { return !mpi::detail::poll_request(request); },
+                        op_state.eager_poll_busy_wait_timeout, "trigger_mpi eager poll", false))
                 {
 #ifdef PIKA_HAVE_APEX
                     apex::scoped_timer apex_ invoke("pika::mpi::trigger");
@@ -190,10 +195,12 @@ namespace pika::trigger_mpi_detail {
         operation_state_type op_state;
 
         template <typename Receiver_, typename Sender_>
-        operation_state(Receiver_&& r, Sender_&& sender, int flags)
+        operation_state(Receiver_&& r, Sender_&& sender, int flags,
+            std::chrono::duration<double> eager_poll_busy_wait_timeout)
           : r(std::forward<Receiver_>(r))
           , mode_flags{flags}
           , status{MPI_SUCCESS}
+          , eager_poll_busy_wait_timeout{eager_poll_busy_wait_timeout}
           , op_state(ex::connect(std::forward<Sender_>(sender), receiver{*this}))
         {
         }
@@ -209,6 +216,7 @@ namespace pika::trigger_mpi_detail {
         PIKA_STDEXEC_SENDER_CONCEPT
         PIKA_NO_UNIQUE_ADDRESS Sender sender;
         int completion_mode_flags_;
+        std::chrono::duration<double> eager_poll_busy_wait_timeout;
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename...>
@@ -236,15 +244,15 @@ namespace pika::trigger_mpi_detail {
         template <typename Receiver>
         constexpr auto connect(Receiver&& r) const&
         {
-            return operation_state<std::decay_t<Receiver>, Sender>(
-                std::forward<Receiver>(r), sender);
+            return operation_state<std::decay_t<Receiver>, Sender>(std::forward<Receiver>(r),
+                sender, completion_mode_flags_, eager_poll_busy_wait_timeout);
         }
 
         template <typename Receiver>
         constexpr auto connect(Receiver&& r) &&
         {
-            return operation_state<std::decay_t<Receiver>, Sender>(
-                std::forward<Receiver>(r), std::move(sender), completion_mode_flags_);
+            return operation_state<std::decay_t<Receiver>, Sender>(std::forward<Receiver>(r),
+                std::move(sender), completion_mode_flags_, eager_poll_busy_wait_timeout);
         }
     };
 }    // namespace pika::trigger_mpi_detail
@@ -259,19 +267,23 @@ namespace pika::mpi::experimental {
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(trigger_mpi_t, Sender&& sender, int flags)
+        tag_fallback_invoke(trigger_mpi_t, Sender&& sender, int flags,
+            std::chrono::duration<double> eager_poll_busy_wait_timeout =
+                std::chrono::duration<double>(0.0))
         {
             return trigger_mpi_detail::sender<std::decay_t<Sender>>{
-                std::forward<Sender>(sender), flags};
+                std::forward<Sender>(sender), flags, eager_poll_busy_wait_timeout};
         }
 
         //
         // tag invoke overload for mpi_trigger
         //
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, int flags)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(trigger_mpi_t, int flags,
+            std::chrono::duration<double> eager_poll_busy_wait_timeout =
+                std::chrono::duration<double>(0.0))
         {
-            return pika::execution::experimental::detail::partial_algorithm<trigger_mpi_t, int>{
-                flags};
+            return pika::execution::experimental::detail::partial_algorithm<trigger_mpi_t, int,
+                std::chrono::duration<double>>{flags, eager_poll_busy_wait_timeout};
         }
 
     } trigger_mpi{};

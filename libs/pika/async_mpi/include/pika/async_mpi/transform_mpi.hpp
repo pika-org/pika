@@ -4,8 +4,6 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-/// \file parallel/algorithms/transform_xxx.hpp
-
 #pragma once
 
 #include <pika/config.hpp>
@@ -28,6 +26,7 @@
 #include <pika/functional/invoke.hpp>
 #include <pika/mpi_base/mpi.hpp>
 
+#include <chrono>
 #include <exception>
 #include <tuple>
 #include <type_traits>
@@ -43,7 +42,9 @@ namespace pika::mpi::experimental {
             PIKA_CONCEPT_REQUIRES_(
                 pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
         friend PIKA_FORCEINLINE pika::execution::experimental::unique_any_sender<>
-        tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f)
+        tag_fallback_invoke(transform_mpi_t, Sender&& sender, F&& f,
+            std::chrono::duration<double> eager_poll_busy_wait_timeout =
+                std::chrono::duration<double>(0.0))
         {
             using namespace pika::mpi::experimental::detail;
             PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("transform_mpi_t"), "tag_fallback_invoke"));
@@ -64,10 +65,11 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            auto f_completion = [f = std::forward<F>(f), mode, completions_inline, p](
+            auto f_completion = [f = std::forward<F>(f), mode, completions_inline, p,
+                                    eager_poll_busy_wait_timeout](
                                     auto&... args) mutable -> unique_any_sender<> {
                 unique_any_sender<> s = just(std::forward_as_tuple(args...)) | unpack() |
-                    dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                    dispatch_mpi(std::move(f)) | trigger_mpi(mode, eager_poll_busy_wait_timeout);
                 if (completions_inline) { return s; }
                 else { return std::move(s) | continues_on(default_pool_scheduler(p)); }
             };
@@ -87,10 +89,12 @@ namespace pika::mpi::experimental {
         // tag invoke overload for mpi_transform
         //
         template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, F&& f)
+        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, F&& f,
+            std::chrono::duration<double> eager_poll_busy_wait_timeout =
+                std::chrono::duration<double>(0.0))
         {
-            return pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F>{
-                std::forward<F>(f)};
+            return pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F,
+                std::chrono::duration<double>>{std::forward<F>(f), eager_poll_busy_wait_timeout};
         }
 
     } transform_mpi{};
