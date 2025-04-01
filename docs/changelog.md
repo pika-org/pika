@@ -6,6 +6,21 @@
 
 # Changelog
 
+## 0.33.0 (2025-04-02)
+
+### New features
+
+- The signal handlers were refactored and documented. There is now only one environment variable to enable pika's signal handlers (`PIKA_INSTALL_SIGNAL_HANDLERS`) and they are always available to enable at runtime. ([#1411](https://github.com/pika-org/pika/pull/1411), [#1412](https://github.com/pika-org/pika/pull/1412))
+- `async_rw_mutex` has been significantly refactored to avoid locking and unnecessary yielding. Some use cases may see better performance. Move and copy semantics of senders from `async_rw_mutex` have also been fixed. ([#1379](https://github.com/pika-org/pika/pull/1379))
+
+### Breaking changes
+
+### Bugfixes
+
+- Fix compilation of a few source files with unity builds disabled. ([#1403](https://github.com/pika-org/pika/pull/1403))
+- Fix detection of MPI Continuations support in OpenMPI. ([#1417](https://github.com/pika-org/pika/pull/1417))
+- Fix a broken `connect` overload in `transform_mpi`. ([#1421](https://github.com/pika-org/pika/pull/1421))
+
 ## 0.32.0 (2025-02-05)
 
 ### New features
