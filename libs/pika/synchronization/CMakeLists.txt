@@ -8,7 +8,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Default location is $PIKA_ROOT/libs/synchronization/include
 set(synchronization_headers
-    pika/synchronization/async_rw_mutex.hpp
     pika/synchronization/barrier.hpp
     pika/synchronization/condition_variable.hpp
     pika/synchronization/counting_semaphore.hpp
