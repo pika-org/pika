@@ -238,7 +238,7 @@ namespace pika::trigger_mpi_detail {
         constexpr auto connect(Receiver&& r) const&
         {
             return operation_state<std::decay_t<Receiver>, Sender>(
-                std::forward<Receiver>(r), sender);
+                std::forward<Receiver>(r), sender, completion_mode_flags_);
         }
 
         template <typename Receiver>
