@@ -16,7 +16,8 @@ include:
     CXXSTD: 20
     GPU_TARGET: '60'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${NVHPC_COMPILER} +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
-                 malloc=system cxxstd=$CXXSTD ^boost@1.78.0%${NVHPC_COMPILER} ^hwloc@2.7.0 \
+                 malloc=system cxxstd=$CXXSTD +apex ^boost@1.78.0%${NVHPC_COMPILER} ^hwloc@2.7.0 \
+                 ^apex@2.7.1 ~activeharmony~plugins~binutils~gperftools~kokkos~openmp~otf2~papi \
                  ^stdexec@24.09 ^cuda@12.4%${NVHPC_COMPILER} \
                  ^whip%${NVHPC_COMPILER}"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
