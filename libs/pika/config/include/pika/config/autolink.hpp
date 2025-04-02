@@ -20,8 +20,8 @@
 
 # if defined(PIKA_DEBUG)
 #  pragma comment(lib,                                                                             \
-          PIKA_AUTOLINK_LIB_NAME "d"                                                               \
-                                 ".lib")
+      PIKA_AUTOLINK_LIB_NAME "d"                                                                   \
+                             ".lib")
 # else
 #  pragma comment(lib, PIKA_AUTOLINK_LIB_NAME ".lib")
 # endif

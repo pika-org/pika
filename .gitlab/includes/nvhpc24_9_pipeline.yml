@@ -10,7 +10,7 @@ include:
 
 .variables_nvhpc24_9_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-neoverse_v2
+    SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
     COMPILER: gcc@13.3.0
     NVHPC_COMPILER: nvhpc@24.9
     CXXSTD: 20
@@ -20,34 +20,30 @@ include:
                  ^stdexec@24.09 ^cuda@12.4%${NVHPC_COMPILER} ^whip%${NVHPC_COMPILER}"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_MPI=ON -DCMAKE_CUDA_ARCHITECTURES=$GPU_TARGET -DPIKA_WITH_STDEXEC=ON"
-    PULL_ON_HOST_MACHINE: "YES"
 
 nvhpc24_9_spack_compiler_image:
   extends:
     - .variables_nvhpc24_9_config
-    - .compiler_image_template_santis
-  allow_failure: true
+    - .compiler_image_template_gh200
 
 nvhpc24_9_spack_image:
   needs: [nvhpc24_9_spack_compiler_image]
   extends:
     - .variables_nvhpc24_9_config
-    - .dependencies_image_template_santis
-  allow_failure: true
+    - .dependencies_image_template_gh200
 
 nvhpc24_9_build:
   timeout: 2 hours
   needs: [nvhpc24_9_spack_image]
   extends:
     - .variables_nvhpc24_9_config
-    - .build_template_santis
-  allow_failure: true
+    - .build_template_gh200
 
 .nvhpc24_9_test_common:
   needs: [nvhpc24_9_build]
   extends:
     - .variables_nvhpc24_9_config
-    - .test_common_todi
+    - .test_common_daint_gh200
     - .test_template
   allow_failure: true
 

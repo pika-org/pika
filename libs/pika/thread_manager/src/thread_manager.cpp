@@ -10,6 +10,7 @@
 
 #include <pika/config.hpp>
 #include <pika/assert.hpp>
+#include <pika/coroutines/detail/sigaltstack_sigsegv_handler.hpp>
 #include <pika/execution_base/this_thread.hpp>
 #include <pika/logging.hpp>
 #include <pika/modules/errors.hpp>
@@ -59,6 +60,13 @@ namespace pika::threads::detail {
       , notifier_(notifier)
     {
         // Add callbacks local to thread_manager.
+        if (pika::detail::get_entry_as<bool>(rtcfg_, "pika.install_signal_handlers", false))
+        {
+            notifier.add_on_start_thread_callback(
+                [](std::size_t, std::size_t, char const*, char const*) {
+                    pika::threads::coroutines::detail::set_sigaltstack_sigsegv_handler();
+                });
+        }
         notifier.add_on_start_thread_callback(
             [this]([[maybe_unused]] std::size_t local_thread_num, std::size_t global_thread_num,
                 [[maybe_unused]] char const* pool_name,
@@ -158,7 +166,7 @@ namespace pika::threads::detail {
                 auto pool_func = rp.get_pool_creator(i);
                 std::unique_ptr<thread_pool_base> pool(
                     pool_func(thread_pool_init, thread_queue_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                pools_.push_back(std::move(pool));
                 break;
             }
             case resource::unspecified:
@@ -186,8 +194,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
 
@@ -220,8 +228,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 
                 break;
             }
@@ -256,11 +264,11 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=local-priority-lifo is not configured in "
+                    "Command line option --pika:scheduler=local-priority-lifo is not configured in "
                     "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
@@ -285,8 +293,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
 
@@ -317,8 +325,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
 
@@ -352,11 +360,11 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=abp-priority-fifo is not configured in "
+                    "Command line option --pika:scheduler=abp-priority-fifo is not configured in "
                     "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
@@ -392,11 +400,11 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
 #else
                 throw pika::detail::command_line_error(
-                    "Command line option --pika:queuing=abp-priority-lifo is not configured in "
+                    "Command line option --pika:scheduler=abp-priority-lifo is not configured in "
                     "this build. Please make sure 128bit atomics are available.");
 #endif
                 break;
@@ -420,8 +428,8 @@ namespace pika::threads::detail {
                 // instantiate the pool
                 std::unique_ptr<thread_pool_base> pool(
                     new pika::threads::detail::scheduled_thread_pool<local_sched_type>(
-                        PIKA_MOVE(sched), thread_pool_init));
-                pools_.push_back(PIKA_MOVE(pool));
+                        std::move(sched), thread_pool_init));
+                pools_.push_back(std::move(pool));
                 break;
             }
             }
@@ -870,10 +878,12 @@ namespace pika::threads::detail {
 
     void thread_manager::wait()
     {
-        pika::util::yield_while([]() {
-            return pika::threads::detail::get_global_activity_count() >
-                (threads::detail::get_self_ptr() != nullptr ? 1 : 0);
-        });
+        pika::util::yield_while(
+            []() {
+                return pika::threads::detail::get_global_activity_count() >
+                    (threads::detail::get_self_ptr() != nullptr ? 1 : 0);
+            },
+            "thread_manager::wait");
     }
 
     void thread_manager::suspend()

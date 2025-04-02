@@ -53,7 +53,7 @@ namespace pika::experimental {
             event_.store(true, std::memory_order_release);
 
             std::unique_lock<mutex_type> l(mtx_);
-            set_locked(PIKA_MOVE(l));
+            set_locked(std::move(l));
         }
 
         /// \brief Reset the event
@@ -72,7 +72,7 @@ namespace pika::experimental {
             PIKA_ASSERT(l.owns_lock());
 
             // release the threads
-            cond_.notify_all(PIKA_MOVE(l));
+            cond_.notify_all(std::move(l));
         }
 
         mutex_type mtx_;    ///< This mutex protects the queue.

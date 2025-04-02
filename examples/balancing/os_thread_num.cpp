@@ -70,7 +70,7 @@ int pika_main(variables_map& vm)
 
         bool const csv = vm.count("csv");
 
-        const std::size_t pxthreads = vm["pxthreads"].as<std::size_t>();
+        std::size_t const pxthreads = vm["pxthreads"].as<std::size_t>();
 
         result_map results;
 

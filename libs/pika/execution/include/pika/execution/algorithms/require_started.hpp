@@ -109,48 +109,36 @@ namespace pika {
             {
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Error, error));
+                    std::move(r.op_state->receiver), std::forward<Error>(error));
             }
 
             friend void tag_invoke(pika::execution::experimental::set_stopped_t,
                 require_started_receiver_type r) noexcept
             {
                 PIKA_ASSERT(r.op_state != nullptr);
-                pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
+                pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
             };
 
             template <typename... Ts>
             void set_value(Ts&&... ts) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_value(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_FORWARD(Ts, ts)...);
+                    std::move(r.op_state->receiver), std::forward<Ts>(ts)...);
             }
 
-            friend constexpr pika::execution::experimental::empty_env tag_invoke(
-                pika::execution::experimental::get_env_t,
-                require_started_receiver_type const&) noexcept
+            constexpr pika::execution::experimental::empty_env get_env() const& noexcept
             {
                 return {};
             }
         };
 
         template <typename Sender, typename Receiver>
-        struct require_started_op_state_impl
-        {
-            struct require_started_op_state_type;
-        };
-
-        template <typename Sender, typename Receiver>
-        using require_started_op_state =
-            typename require_started_op_state_impl<Sender, Receiver>::require_started_op_state_type;
-
-        template <typename Sender, typename Receiver>
-        struct require_started_op_state_impl<Sender, Receiver>::require_started_op_state_type
+        struct require_started_op_state
         {
             using operation_state_type = pika::execution::experimental::connect_result_t<Sender,
-                require_started_receiver<require_started_op_state_type>>;
+                require_started_receiver<require_started_op_state>>;
 
             PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
             std::optional<operation_state_type> op_state{std::nullopt};
@@ -160,16 +148,16 @@ namespace pika {
             bool started{false};
 
             template <typename Receiver_>
-            require_started_op_state_type(std::decay_t<Sender> sender, Receiver_&& receiver
+            require_started_op_state(std::decay_t<Sender> sender, Receiver_&& receiver
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 ,
                 require_started_mode mode
 #endif
                 )
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
               , op_state(pika::detail::with_result_of([&]() {
-                  return pika::execution::experimental::connect(PIKA_MOVE(sender),
-                      require_started_receiver<require_started_op_state_type>{this});
+                  return pika::execution::experimental::connect(
+                      std::move(sender), require_started_receiver<require_started_op_state>{this});
               }))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(mode)
@@ -177,7 +165,7 @@ namespace pika {
             {
             }
 
-            ~require_started_op_state_type() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
+            ~require_started_op_state() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (!started)
                 {
@@ -194,35 +182,24 @@ namespace pika {
 #endif
                 }
             }
-            require_started_op_state_type(require_started_op_state_type&) = delete;
-            require_started_op_state_type& operator=(require_started_op_state_type&) = delete;
-            require_started_op_state_type(require_started_op_state_type const&) = delete;
-            require_started_op_state_type& operator=(require_started_op_state_type const&) = delete;
+            require_started_op_state(require_started_op_state&) = delete;
+            require_started_op_state& operator=(require_started_op_state&) = delete;
+            require_started_op_state(require_started_op_state const&) = delete;
+            require_started_op_state& operator=(require_started_op_state const&) = delete;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, require_started_op_state_type& os) noexcept
+            void start() & noexcept
             {
-                PIKA_ASSERT(os.op_state.has_value());
+                PIKA_ASSERT(op_state.has_value());
 
-                os.started = true;
+                started = true;
 
                 // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                pika::execution::experimental::start(*(os.op_state));
+                pika::execution::experimental::start(*(op_state));
             }
         };
 
         template <typename Sender>
-        struct require_started_sender_impl
-        {
-            struct require_started_sender_type;
-        };
-
-        template <typename Sender>
-        using require_started_sender =
-            typename require_started_sender_impl<Sender>::require_started_sender_type;
-
-        template <typename Sender>
-        struct require_started_sender_impl<Sender>::require_started_sender_type
+        struct require_started_sender
         {
             PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -250,21 +227,21 @@ namespace pika {
 
             template <typename Sender_,
                 typename Enable = std::enable_if_t<
-                    !std::is_same_v<std::decay_t<Sender_>, require_started_sender_type>>>
-            explicit require_started_sender_type(Sender_&& sender
+                    !std::is_same_v<std::decay_t<Sender_>, require_started_sender>>>
+            explicit require_started_sender(Sender_&& sender
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
                 ,
                 require_started_mode mode = require_started_mode::terminate_on_unstarted
 #endif
                 )
-              : sender(PIKA_FORWARD(Sender_, sender))
+              : sender(std::forward<Sender_>(sender))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(mode)
 #endif
             {
             }
 
-            require_started_sender_type(require_started_sender_type&& other) noexcept
+            require_started_sender(require_started_sender&& other) noexcept
               : sender(std::exchange(other.sender, std::nullopt))
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(other.mode)
@@ -273,8 +250,8 @@ namespace pika {
             {
             }
 
-            require_started_sender_type& operator=(
-                require_started_sender_type&& other) PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
+            require_started_sender& operator=(
+                require_started_sender&& other) PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (sender.has_value() && !connected)
                 {
@@ -304,7 +281,7 @@ namespace pika {
                 return *this;
             }
 
-            require_started_sender_type(require_started_sender_type const& other)
+            require_started_sender(require_started_sender const& other)
               : sender(other.sender)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
               , mode(other.mode)
@@ -313,7 +290,7 @@ namespace pika {
             {
             }
 
-            require_started_sender_type& operator=(require_started_sender_type const& other)
+            require_started_sender& operator=(require_started_sender const& other)
             {
                 if (sender.has_value() && !connected)
                 {
@@ -343,7 +320,7 @@ namespace pika {
                 return *this;
             }
 
-            ~require_started_sender_type() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
+            ~require_started_sender() PIKA_DETAIL_REQUIRE_STARTED_NOEXCEPT
             {
                 if (sender.has_value() && !connected)
                 {
@@ -362,14 +339,12 @@ namespace pika {
             }
 
             template <typename Receiver>
-            friend require_started_op_state<Sender, Receiver>
-            tag_invoke(pika::execution::experimental::connect_t, require_started_sender_type&& s,
-                Receiver&& receiver)
+            require_started_op_state<Sender, Receiver> connect(Receiver&& receiver) &&
             {
-                if (!s.sender.has_value())
+                if (!sender.has_value())
                 {
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::connect(require_started_sender&&)",
                         "Trying to connect an empty require_started sender");
 #else
@@ -379,26 +354,23 @@ namespace pika {
 #endif
                 }
 
-                s.connected = true;
-                return
-                {    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                    *std::exchange(s.sender, std::nullopt), PIKA_FORWARD(Receiver, receiver)
+                connected = true;
+                return {// NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                    *std::exchange(sender, std::nullopt), std::forward<Receiver>(receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                                                                ,
-                        s.mode
+                                                              ,
+                    mode
 #endif
                 };
             }
 
             template <typename Receiver>
-            friend require_started_op_state<Sender, Receiver>
-            tag_invoke(pika::execution::experimental::connect_t,
-                require_started_sender_type const& s, Receiver&& receiver)
+            require_started_op_state<Sender, Receiver> connect(Receiver&& receiver) const&
             {
-                if (!s.sender.has_value())
+                if (!sender.has_value())
                 {
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(s.mode,
+                    PIKA_DETAIL_HANDLE_UNSTARTED_REQUIRE_STARTED_SENDER(mode,
                         "pika::execution::experimental::connect(require_started_sender const&)",
                         "Trying to connect an empty require_started sender");
 #else
@@ -408,13 +380,11 @@ namespace pika {
 #endif
                 }
 
-                s.connected = true;
-                return
-                {
-                    *s.sender, PIKA_FORWARD(Receiver, receiver)
+                connected = true;
+                return {*sender, std::forward<Receiver>(receiver)
 #if defined(PIKA_DETAIL_HAVE_REQUIRE_STARTED_MODE)
-                                   ,
-                        s.mode
+                                     ,
+                    mode
 #endif
                 };
             }
@@ -445,7 +415,7 @@ namespace pika {
             PIKA_STATIC_CALL_OPERATOR(Sender&& sender PIKA_DETAIL_REQUIRE_STARTED_MODE_PARAMETER)
             {
                 return require_started_detail::require_started_sender<Sender>{
-                    PIKA_FORWARD(Sender, sender) PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT};
+                    std::forward<Sender>(sender) PIKA_DETAIL_REQUIRE_STARTED_MODE_ARGUMENT};
             }
 
             constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR()

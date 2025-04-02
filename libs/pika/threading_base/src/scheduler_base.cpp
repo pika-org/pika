@@ -151,55 +151,57 @@ namespace pika::threads::detail {
                 // threads are available for scheduling.
                 auto max_allowed_state = runtime_state::suspended;
 
-                pika::util::yield_while([this, states_size, &l, &num_thread, &max_allowed_state]() {
-                    std::size_t num_allowed_threads = 0;
+                pika::util::yield_while(
+                    [this, states_size, &l, &num_thread, &max_allowed_state]() {
+                        std::size_t num_allowed_threads = 0;
 
-                    for (std::size_t offset = 0; offset < states_size; ++offset)
-                    {
-                        std::size_t num_thread_local = (num_thread + offset) % states_size;
-
-                        l = std::unique_lock<pu_mutex_type>(
-                            pu_mtxs_[num_thread_local], std::try_to_lock);
-
-                        if (l.owns_lock())
+                        for (std::size_t offset = 0; offset < states_size; ++offset)
                         {
-                            if (states_[num_thread_local] <= max_allowed_state)
+                            std::size_t num_thread_local = (num_thread + offset) % states_size;
+
+                            l = std::unique_lock<pu_mutex_type>(
+                                pu_mtxs_[num_thread_local], std::try_to_lock);
+
+                            if (l.owns_lock())
                             {
-                                num_thread = num_thread_local;
-                                return false;
+                                if (states_[num_thread_local] <= max_allowed_state)
+                                {
+                                    num_thread = num_thread_local;
+                                    return false;
+                                }
+
+                                l.unlock();
                             }
 
-                            l.unlock();
+                            if (states_[num_thread_local] <= max_allowed_state)
+                            {
+                                ++num_allowed_threads;
+                            }
                         }
 
-                        if (states_[num_thread_local] <= max_allowed_state)
+                        if (0 == num_allowed_threads)
                         {
-                            ++num_allowed_threads;
+                            if (max_allowed_state <= runtime_state::suspended)
+                            {
+                                max_allowed_state = runtime_state::sleeping;
+                            }
+                            else if (max_allowed_state <= runtime_state::sleeping)
+                            {
+                                max_allowed_state = runtime_state::stopping;
+                            }
+                            else
+                            {
+                                // All threads are terminating or stopped.
+                                // Just return num_thread to avoid infinite
+                                // loop.
+                                return false;
+                            }
                         }
-                    }
 
-                    if (0 == num_allowed_threads)
-                    {
-                        if (max_allowed_state <= runtime_state::suspended)
-                        {
-                            max_allowed_state = runtime_state::sleeping;
-                        }
-                        else if (max_allowed_state <= runtime_state::sleeping)
-                        {
-                            max_allowed_state = runtime_state::stopping;
-                        }
-                        else
-                        {
-                            // All threads are terminating or stopped.
-                            // Just return num_thread to avoid infinite
-                            // loop.
-                            return false;
-                        }
-                    }
-
-                    // Yield after trying all pus, then try again
-                    return true;
-                });
+                        // Yield after trying all pus, then try again
+                        return true;
+                    },
+                    "scheduler_base::select_active_pu");
 
                 return num_thread;
             }

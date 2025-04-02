@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: pika 0.30.1
+title: pika 0.32.0
 repository-code: https://github.com/pika-org/pika
 message: >-
   If you use this software, please cite it using the
@@ -43,8 +43,8 @@ keywords:
   - thread pool
 license: BSL-1.0
 license-url: https://opensource.org/license/bsl-1-0
-version: 0.30.1
-date-released: '2024-11-19'
+version: 0.32.0
+date-released: '2025-02-05'
 references:
   - title: "HPX - The C++ Standard Library for Parallelism and Concurrency"
     doi: 10.21105/joss.02352

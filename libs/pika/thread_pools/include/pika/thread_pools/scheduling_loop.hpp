@@ -84,7 +84,7 @@ namespace pika::threads::detail {
         {
             prev_state_ =
                 thread_state(new_state.first, prev_state_.state_ex(), prev_state_.tag() + 1);
-            next_thread_id_ = PIKA_MOVE(new_state.second);
+            next_thread_id_ = std::move(new_state.second);
             return prev_state_;
         }
 
@@ -114,7 +114,7 @@ namespace pika::threads::detail {
 
         thread_id_ref_type const& get_next_thread() const { return next_thread_id_; }
 
-        thread_id_ref_type move_next_thread() { return PIKA_MOVE(next_thread_id_); }
+        thread_id_ref_type move_next_thread() { return std::move(next_thread_id_); }
 
     private:
         thread_id_ref_type const& thread_;
@@ -246,8 +246,8 @@ namespace pika::threads::detail {
             std::int64_t max_idle_loop_count = PIKA_IDLE_LOOP_COUNT_MAX,
             std::int64_t max_busy_loop_count = PIKA_BUSY_LOOP_COUNT_MAX)
           // NOLINTEND(bugprone-easily-swappable-parameters)
-          : outer_(PIKA_MOVE(outer))
-          , inner_(PIKA_MOVE(inner))
+          : outer_(std::move(outer))
+          , inner_(std::move(inner))
           , max_idle_loop_count_(max_idle_loop_count)
           , max_busy_loop_count_(max_busy_loop_count)
         {
@@ -281,7 +281,10 @@ namespace pika::threads::detail {
         thread_id_ref_type next_thrd;
         while (true)
         {
-            thread_id_ref_type thrd = PIKA_MOVE(next_thrd);
+            // It's ok to use next_thrd here. If it's been moved from in previous iterations, it
+            // will simply be empty.
+            // NOLINTNEXTLINE(bugprone-use-after-move)
+            thread_id_ref_type thrd = std::move(next_thrd);
 
             // Get the next pika thread from the queue
             bool running = this_state.load(std::memory_order_relaxed) < runtime_state::pre_sleep;
@@ -370,7 +373,7 @@ namespace pika::threads::detail {
                                                        data_type_description ?
                                                desc.get_description() :
                                                "<unknown>");
-                                auto task_annotation_str = PIKA_MOVE(task_annotation).str();
+                                auto task_annotation_str = std::move(task_annotation).str();
                                 ZoneTransientN(task, task_annotation_str.c_str(), true);
 #  if defined(TRACY_ENABLE)
                                 task.Color(tracy::Color::DimGray);
@@ -434,7 +437,7 @@ namespace pika::threads::detail {
 
                         // schedule this thread again, make sure it ends up at
                         // the end of the queue
-                        scheduler.SchedulingPolicy::schedule_thread_last(PIKA_MOVE(thrd),
+                        scheduler.SchedulingPolicy::schedule_thread_last(std::move(thrd),
                             execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
                             true);
                         scheduler.SchedulingPolicy::do_some_work(num_thread);
@@ -449,7 +452,7 @@ namespace pika::threads::detail {
                             // background work will be triggered
                             if (PIKA_UNLIKELY(busy_loop_count > params.max_busy_loop_count_))
                             {
-                                next_thrd = PIKA_MOVE(thrd);
+                                next_thrd = std::move(thrd);
                             }
                             else
                             {
@@ -459,7 +462,7 @@ namespace pika::threads::detail {
 
                                 // schedule this thread again immediately with
                                 // boosted priority
-                                scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
+                                scheduler.SchedulingPolicy::schedule_thread(std::move(thrd),
                                     execution::thread_schedule_hint(
                                         static_cast<std::int16_t>(num_thread)),
                                     true, execution::thread_priority::boost);
@@ -470,7 +473,7 @@ namespace pika::threads::detail {
                         {
                             // schedule this thread again immediately with
                             // boosted priority
-                            scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
+                            scheduler.SchedulingPolicy::schedule_thread(std::move(thrd),
                                 execution::thread_schedule_hint(
                                     static_cast<std::int16_t>(num_thread)),
                                 true, execution::thread_priority::boost);
@@ -492,7 +495,7 @@ namespace pika::threads::detail {
                     // scheduler queue already but the state has not been reset
                     // yet
                     auto priority = thrdptr->get_priority();
-                    scheduler.SchedulingPolicy::schedule_thread(PIKA_MOVE(thrd),
+                    scheduler.SchedulingPolicy::schedule_thread(std::move(thrd),
                         execution::thread_schedule_hint(static_cast<std::int16_t>(num_thread)),
                         true, priority);
                     scheduler.SchedulingPolicy::do_some_work(num_thread);

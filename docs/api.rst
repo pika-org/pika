@@ -5,6 +5,8 @@
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+:tocdepth: 3
+
 .. _api:
 
 =============
@@ -29,10 +31,8 @@ headers are internal implementation details.
 
 These headers are part of the public API, but are currently undocumented.
 
-- ``pika/async_rw_mutex.hpp``
 - ``pika/barrier.hpp``
 - ``pika/condition_variable.hpp``
-- ``pika/cuda.hpp``
 - ``pika/latch.hpp``
 - ``pika/mpi.hpp``
 - ``pika/mutex.hpp``
@@ -47,32 +47,56 @@ is to stabilize those APIs over time.
 
 .. _header_pika_init:
 
-``pika/init.hpp``
-=================
+Runtime management (``pika/init.hpp``)
+======================================
 
 The ``pika/init.hpp`` header provides functionality to manage the pika runtime.
+
+----
 
 .. literalinclude:: ../examples/documentation/init_hpp_documentation.cpp
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenfunction:: pika::start(int argc, char const* const* argv, init_params const &params)
+
+----
+
 .. doxygenfunction:: pika::stop()
+
+----
+
 .. doxygenfunction:: pika::finalize()
+
+----
+
 .. doxygenfunction:: pika::wait()
+
+----
+
 .. doxygenfunction:: pika::resume()
+
+----
+
 .. doxygenfunction:: pika::suspend()
+
+----
+
 .. doxygenfunction:: pika::is_runtime_initialized()
 
 .. versionadded:: 0.22.0
+
+----
 
 .. doxygenstruct:: pika::init_params
    :members:
 
 .. _header_pika_execution:
 
-``pika/execution.hpp``
-======================
+``std::execution`` support (``pika/execution.hpp``)
+===================================================
 
 The ``pika/execution.hpp`` header provides functionality related to ``std::execution``.
 ``std::execution`` functionality, including extensions provided by pika, is defined in the
@@ -89,6 +113,8 @@ Documented below are sender adaptors not available in stdexec or not proposed fo
 All sender adaptors are `customization point objects (CPOs)
 <https://eel.is/c++draft/customization.point.object>`__.
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::drop_value
 
 .. versionadded:: 0.6.0
@@ -96,6 +122,8 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/drop_value_documentation.cpp
    :language: c++
    :start-at: #include
+
+----
 
 .. doxygenvariable:: pika::execution::experimental::drop_operation_state
 
@@ -105,6 +133,8 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::require_started
 
 .. versionadded:: 0.21.0
@@ -112,6 +142,8 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/require_started_documentation.cpp
    :language: c++
    :start-at: #include
+
+----
 
 .. doxygenvariable:: pika::execution::experimental::split_tuple
 
@@ -121,6 +153,8 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::unpack
 
 .. versionadded:: 0.17.0
@@ -129,6 +163,8 @@ All sender adaptors are `customization point objects (CPOs)
    :language: c++
    :start-at: #include
 
+----
+
 .. doxygenvariable:: pika::execution::experimental::when_all_vector
 
 .. versionadded:: 0.2.0
@@ -136,3 +172,167 @@ All sender adaptors are `customization point objects (CPOs)
 .. literalinclude:: ../examples/documentation/when_all_vector_documentation.cpp
    :language: c++
    :start-at: #include
+
+----
+
+.. doxygenclass:: pika::execution::experimental::unique_any_sender
+.. doxygenclass:: pika::execution::experimental::any_sender
+.. doxygenfunction:: pika::execution::experimental::make_unique_any_sender
+.. doxygenfunction:: pika::execution::experimental::make_any_sender
+
+.. literalinclude:: ../examples/documentation/any_sender_documentation.cpp
+   :language: c++
+   :start-at: #include
+
+.. _header_pika_async_rw_mutex:
+
+Asynchronous read-write mutex (``pika/async_rw_mutex.hpp``)
+===========================================================
+
+This header provides access to a sender-based asynchronous mutex, allowing both shared and exclusive
+access to a wrapped value. The functionality is in the namespace ``pika::execution::experimental``.
+
+Unlike typical mutexes, this one provides access exactly in the order that it is requested in
+synchronous code. This allows writing algorithms that mostly look like synchronous code, but can run
+asynchronously. This mutex is used extensively in `DLA-Future
+<https://github.com/eth-cscs/DLA-Future>`__, where it forms the basis for asynchronous access to
+blocks of distributed matrices.
+
+----
+
+.. literalinclude:: ../examples/documentation/async_rw_mutex_documentation.cpp
+   :language: c++
+   :start-at: #include
+
+----
+
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex
+
+----
+
+.. doxygenenum:: pika::execution::experimental::async_rw_mutex_access_type
+
+----
+
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::readwrite >
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< ReadWriteT, ReadT, async_rw_mutex_access_type::read >
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::read >
+.. doxygenclass:: pika::execution::experimental::async_rw_mutex_access_wrapper< void, void, async_rw_mutex_access_type::readwrite >
+
+.. _header_pika_cuda:
+
+CUDA/HIP support (``pika/cuda.hpp``)
+====================================
+
+The ``pika/cuda.hpp`` header provides functionality related to CUDA and HIP. All functionality is
+under the ``pika::cuda::experimental`` namespace and class and function names contain ``cuda``, even
+when HIP support is enabled. CUDA and HIP functionality can be enabled with the CMake options
+``PIKA_WITH_CUDA`` and ``PIKA_WITH_HIP``, respectively, but they are mutually exclusive. In the
+following, whenever CUDA is mentioned, it refers to to CUDA and HIP interchangeably.
+
+.. note::
+   https://github.com/pika-org/pika/issues/116 tracks a potential renaming of the functionality
+   to avoid using ``cuda`` even when HIP is enabled. If you have feedback on a rename or just want
+   to follow along, please see that issue.
+
+.. note::
+   pika uses `whip <https://github.com/eth-cscs/whip>`__ internally for portability between CUDA and
+   HIP. However, users of pika are not forced to use whip as whip only creates aliases for CUDA/HIP
+   types and enumerations. whip is thus compatible with directly using the types and enumerations
+   provided by CUDA/HIP. For cuBLAS, cuSOLVER, rocBLAS, and rocSOLVER support pika does not use a
+   portability library, but simply uses the appropriate types depending on if CUDA or HIP support is
+   enabled.
+
+.. warning::
+   At the moment, ``nvcc`` can not compile stdexec headers. Of the CUDA compilers, only ``nvc++`` is
+   able to compile stdexec headers. If you have stdexec support enabled in pika, either ensure that
+   ``.cu`` files do not include stdexec headers, or use ``nvc++`` to compile your application.
+   However, ``nvc++`` does not officially support compiling device code. Use at your own risk.
+
+   For HIP there are no known restrictions.
+
+The CUDA support in pika relies on four major components:
+
+1. A pool of CUDA streams as well as cuBLAS and cuSOLVER handles
+   (:cpp:class:`pika::cuda::experimental::cuda_pool`). These streams and handles are used in a
+   round-robin fashion by various sender adaptors.
+2. A CUDA scheduler, in the ``std::execution`` sense
+   (:cpp:class:`pika::cuda::experimental::cuda_scheduler`). This uses the CUDA pool to schedule work
+   on a GPU.
+3. Sender adaptors (:cpp:var:`pika::cuda::experimental::then_with_stream` etc.). A few
+   special-purpose sender adaptors, as well as customizations of a few ``std::execution`` adaptors
+   are provided to help schedule different types of work on a GPU.
+4. Polling of CUDA events integrated into the pika scheduling loop
+   (:cpp:class:`pika::cuda::experimental::enable_user_polling`). This integration is essential to
+   avoid calling e.g. ``cudaStreamSynchronize`` on a pika task, which would block the underlying
+   worker thread and thus block progress of other work.
+
+The following example gives an overview of using the above CUDA functionalities in pika:
+
+.. literalinclude:: ../examples/documentation/cuda_overview_documentation.cu
+   :language: c++
+   :start-at: #include
+
+While :cpp:class:`pika::cuda::experimental::cuda_pool` gives direct access to streams and handles,
+the recommended way to access them is through the
+:cpp:class:`pika::cuda::experimental::cuda_scheduler` and the sender adaptors available below.
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::cuda_scheduler
+
+----
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_stream_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_stream
+
+.. literalinclude:: ../examples/documentation/then_with_stream_documentation.cu
+    :language: c++
+    :start-at: #include
+
+----
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_cublas_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_cublas
+
+.. literalinclude:: ../examples/documentation/then_with_cublas_documentation.cu
+    :language: c++
+    :start-at: #include
+
+----
+
+.. doxygenstruct:: pika::cuda::experimental::then_with_cusolver_t
+.. doxygenvariable:: pika::cuda::experimental::then_with_cusolver
+
+See :cpp:var:`pika::cuda::experimental::then_with_cublas` for an example of what can be done with
+:cpp:var:`pika::cuda::experimental::then_with_cusolver`. The interfaces are identical except for the
+type of handle passed to the callable.
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::enable_user_polling
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::cuda_pool
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::cuda_stream
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::cublas_handle
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::locked_cublas_handle
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::cusolver_handle
+
+----
+
+.. doxygenclass:: pika::cuda::experimental::locked_cusolver_handle

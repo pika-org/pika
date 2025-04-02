@@ -19,7 +19,7 @@ jobs:
   build:
     name: github/linux/valgrind
     runs-on: ubuntu-24.04
-    container: pikaorg/pika-ci-base:28
+    container: pikaorg/pika-ci-base:29
 
     strategy:
       matrix:
@@ -32,7 +32,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-linux-valgrind
+          key: ccache-linux-valgrind-${{ matrix.build_type }}
       - name: Configure
         shell: bash
         # -gdwarf-4 because of https://github.com/llvm/llvm-project/issues/56550
@@ -57,7 +57,6 @@ jobs:
                 -DPIKA_WITH_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND_OPTIONS="--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$PWD/tools/valgrind/memcheck.supp" \
-                -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         shell: bash

@@ -25,7 +25,7 @@
 #include <utility>
 
 namespace pika::util::detail {
-    static const std::size_t function_storage_size = 3 * sizeof(void*);
+    static std::size_t const function_storage_size = 3 * sizeof(void*);
 
     ///////////////////////////////////////////////////////////////////////////
     class PIKA_EXPORT function_base
@@ -113,7 +113,7 @@ namespace pika::util::detail {
         }
 
         basic_function(basic_function&& other) noexcept
-          : base_type(PIKA_MOVE(other), get_empty_vtable())
+          : base_type(std::move(other), get_empty_vtable())
         {
         }
 
@@ -125,7 +125,7 @@ namespace pika::util::detail {
 
         basic_function& operator=(basic_function&& other) noexcept
         {
-            base_type::op_assign(PIKA_MOVE(other), get_empty_vtable());
+            base_type::op_assign(std::move(other), get_empty_vtable());
             return *this;
         }
 
@@ -155,7 +155,8 @@ namespace pika::util::detail {
                     vptr = f_vptr;
                     buffer = vtable::template allocate<T>(storage, function_storage_size);
                 }
-                object = ::new (buffer) T(PIKA_FORWARD(F, f));
+                // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
+                object = ::new (buffer) T(std::forward<F>(f));
             }
             else { base_type::reset(get_empty_vtable()); }
         }
@@ -195,7 +196,7 @@ namespace pika::util::detail {
         PIKA_FORCEINLINE R operator()(Ts... vs) const
         {
             vtable const* vptr = static_cast<vtable const*>(base_type::vptr);
-            return vptr->invoke(object, PIKA_FORWARD(Ts, vs)...);
+            return vptr->invoke(object, std::forward<Ts>(vs)...);
         }
 
         using base_type::get_function_address;

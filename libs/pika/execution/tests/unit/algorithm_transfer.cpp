@@ -58,15 +58,11 @@ struct scheduler_schedule_from
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -92,9 +88,9 @@ struct scheduler_schedule_from
             }
         };
 
-        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -155,15 +151,11 @@ struct scheduler_transfer
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -189,9 +181,9 @@ struct scheduler_transfer
             }
         };
 
-        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -234,10 +226,7 @@ struct sender_with_completion_scheduler : void_sender
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender_with_completion_scheduler const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 int main()
@@ -530,8 +519,6 @@ int main()
 #endif
         PIKA_TEST(!scheduler_execute_called);
     }
-
-    test_adl_isolation(ex::transfer(ex::just(), my_namespace::my_scheduler{}));
 
     return 0;
 }

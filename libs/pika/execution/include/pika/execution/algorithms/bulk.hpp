@@ -32,16 +32,7 @@
 
 namespace pika::bulk_detail {
     template <typename Sender, typename Shape, typename F>
-    struct bulk_sender_impl
-    {
-        struct bulk_sender_type;
-    };
-
-    template <typename Sender, typename Shape, typename F>
-    using bulk_sender = typename bulk_sender_impl<Sender, Shape, F>::bulk_sender_type;
-
-    template <typename Sender, typename Shape, typename F>
-    struct bulk_sender_impl<Sender, Shape, F>::bulk_sender_type
+    struct bulk_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
@@ -59,10 +50,9 @@ namespace pika::bulk_detail {
 
         static constexpr bool sends_done = false;
 
-        friend constexpr decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, bulk_sender_type const& s) noexcept
+        constexpr decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
 
         template <typename Receiver>
@@ -74,9 +64,9 @@ namespace pika::bulk_detail {
 
             template <typename Receiver_, typename Shape_, typename F_>
             bulk_receiver(Receiver_&& receiver, Shape_&& shape, F_&& f)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , shape(PIKA_FORWARD(Shape_, shape))
-              , f(PIKA_FORWARD(F_, f))
+              : receiver(std::forward<Receiver_>(receiver))
+              , shape(std::forward<Shape_>(shape))
+              , f(std::forward<F_>(f))
             {
             }
 
@@ -85,47 +75,45 @@ namespace pika::bulk_detail {
                 Error&& error) noexcept
             {
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.receiver), PIKA_FORWARD(Error, error));
+                    std::move(r.receiver), std::forward<Error>(error));
             }
 
             friend void tag_invoke(
                 pika::execution::experimental::set_stopped_t, bulk_receiver&& r) noexcept
             {
-                pika::execution::experimental::set_stopped(PIKA_MOVE(r.receiver));
+                pika::execution::experimental::set_stopped(std::move(r.receiver));
             }
 
             template <typename... Ts>
             void set_value(Ts&&... ts) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
                         for (auto const& s : r.shape) { PIKA_INVOKE(r.f, s, ts...); }
                         pika::execution::experimental::set_value(
-                            PIKA_MOVE(r.receiver), PIKA_FORWARD(Ts, ts)...);
+                            std::move(r.receiver), std::forward<Ts>(ts)...);
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(r.receiver), PIKA_MOVE(ep));
+                            std::move(r.receiver), std::move(ep));
                     });
             }
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, bulk_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(PIKA_MOVE(s.sender),
+            return pika::execution::experimental::connect(std::move(sender),
                 bulk_receiver<Receiver>(
-                    PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.shape), PIKA_MOVE(s.f)));
+                    std::forward<Receiver>(receiver), std::move(shape), std::move(f)));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, bulk_sender_type const& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                s.sender, bulk_receiver<Receiver>(PIKA_FORWARD(Receiver, receiver), s.shape, s.f));
+                sender, bulk_receiver<Receiver>(std::forward<Receiver>(receiver), shape, f));
         }
     };
 }    // namespace pika::bulk_detail
@@ -149,8 +137,8 @@ namespace pika::execution::experimental {
             auto scheduler = pika::execution::experimental::get_completion_scheduler<
                 pika::execution::experimental::set_value_t>(
                 pika::execution::experimental::get_env(sender));
-            return pika::functional::detail::tag_invoke(bulk_t{}, PIKA_MOVE(scheduler),
-                PIKA_FORWARD(Sender, sender), shape, PIKA_FORWARD(F, f));
+            return pika::functional::detail::tag_invoke(bulk_t{}, std::move(scheduler),
+                std::forward<Sender>(sender), shape, std::forward<F>(f));
         }
 
         // clang-format off
@@ -164,8 +152,8 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(bulk_t, Sender&& sender, Shape const& shape, F&& f)
         {
             return bulk_detail::bulk_sender<Sender, pika::util::detail::counting_shape_type<Shape>,
-                F>{PIKA_FORWARD(Sender, sender), pika::util::detail::make_counting_shape(shape),
-                PIKA_FORWARD(F, f)};
+                F>{std::forward<Sender>(sender), pika::util::detail::make_counting_shape(shape),
+                std::forward<F>(f)};
         }
 
         // clang-format off
@@ -179,14 +167,14 @@ namespace pika::execution::experimental {
         tag_fallback_invoke(bulk_t, Sender&& sender, Shape&& shape, F&& f)
         {
             return bulk_detail::bulk_sender<Sender, Shape, F>{
-                PIKA_FORWARD(Sender, sender), PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
+                std::forward<Sender>(sender), std::forward<Shape>(shape), std::forward<F>(f)};
         }
 
         template <typename Shape, typename F>
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(bulk_t, Shape&& shape, F&& f)
         {
             return detail::partial_algorithm<bulk_t, Shape, F>{
-                PIKA_FORWARD(Shape, shape), PIKA_FORWARD(F, f)};
+                std::forward<Shape>(shape), std::forward<F>(f)};
         }
     } bulk{};
 }    // namespace pika::execution::experimental

@@ -32,34 +32,190 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::mpi::experimental::detail {
+namespace pika::trigger_mpi_detail {
     namespace ex = pika::execution::experimental;
+    namespace mpi = pika::mpi::experimental;
 
     // -----------------------------------------------------------------
-    // route calls through an impl layer for ADL isolation
-    template <typename Sender>
-    struct trigger_mpi_sender_impl
+    // operation state for an internal receiver
+    template <typename Receiver, typename Sender>
+    struct operation_state
     {
-        struct trigger_mpi_sender_type;
-    };
+        PIKA_NO_UNIQUE_ADDRESS Receiver r;
+        int mode_flags;
+        int status;
+        // these vars are needed by suspend/resume mode
+        bool completed{false};
+        pika::detail::spinlock mutex;
+        pika::condition_variable cond_var;
+        // MPI_EXT_CONTINUE
+        MPI_Request request{MPI_REQUEST_NULL};
 
-    template <typename Sender>
-    using trigger_mpi_sender = typename trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type;
+        // -----------------------------------------------------------------
+        // The mpi_receiver receives inputs from the previous sender,
+        // invokes the mpi call, and sets a callback on the polling handler
+        struct receiver
+        {
+            PIKA_STDEXEC_RECEIVER_CONCEPT
+            operation_state& op_state;
+
+            template <typename Error>
+            friend constexpr void tag_invoke(ex::set_error_t, receiver r, Error&& error) noexcept
+            {
+                ex::set_error(std::move(r.op_state.r), std::forward<Error>(error));
+            }
+
+            friend constexpr void tag_invoke(ex::set_stopped_t, receiver r) noexcept
+            {
+                ex::set_stopped(std::move(r.op_state.r));
+            }
+
+            // receive the MPI Request and set a callback to be
+            // triggered when the mpi request completes
+            constexpr void set_value(MPI_Request request) && noexcept
+            {
+                auto r = std::move(*this);
+
+                // early poll just in case the request completed immediately
+                if (mpi::detail::poll_request(request))
+                {
+#ifdef PIKA_HAVE_APEX
+                    apex::scoped_timer apex_ invoke("pika::mpi::trigger");
+#endif
+                    PIKA_DETAIL_DP(mpi::detail::mpi_tran<7>,
+                        debug(str<>("trigger_mpi_recv"), "eager poll ok", ptr(request)));
+                    ex::set_value(std::move(r.op_state.r));
+                    return;
+                }
+
+                r.op_state.request = request;
+
+                // which polling/testing mode are we using
+                mpi::detail::handler_method mode =
+                    mpi::detail::get_handler_method(r.op_state.mode_flags);
+                execution::thread_priority p =
+                    mpi::detail::use_priority_boost(r.op_state.mode_flags) ?
+                    execution::thread_priority::boost :
+                    execution::thread_priority::normal;
+
+                PIKA_DETAIL_DP(mpi::detail::mpi_tran<5>,
+                    debug(str<>("trigger_mpi_recv"), "set_value_t", "req", ptr(r.op_state.request),
+                        "flags", bin<8>(r.op_state.mode_flags),
+                        mode_string(r.op_state.mode_flags)));
+
+                pika::detail::try_catch_exception_ptr(
+                    [&]() mutable {
+                        switch (mode)
+                        {
+                        case mpi::detail::handler_method::yield_while:
+                        {
+                            // yield/while is invalid on a non pika thread
+                            PIKA_ASSERT(pika::threads::detail::get_self_id());
+                            pika::util::yield_while(
+                                [&r]() { return !mpi::detail::poll_request(r.op_state.request); },
+                                "trigger_mpi wait for request");
+#ifdef PIKA_HAVE_APEX
+                            apex::scoped_timer apex_invoke("pika::mpi::trigger");
+#endif
+                            // we just assume the return from mpi_test is always MPI_SUCCESS
+                            ex::set_value(std::move(r.op_state.r));
+                            break;
+                        }
+                        case mpi::detail::handler_method::suspend_resume:
+                        {
+                            // suspend is invalid on a non pika thread
+                            PIKA_ASSERT(pika::threads::detail::get_self_id());
+                            // the callback will resume _this_ thread
+                            {
+                                std::unique_lock l{r.op_state.mutex};
+                                mpi::detail::add_suspend_resume_request_callback(r.op_state);
+                                if (mpi::detail::use_priority_boost(r.op_state.mode_flags))
+                                {
+                                    threads::detail::thread_data::scoped_thread_priority
+                                        set_restore(p);
+                                    r.op_state.cond_var.wait(
+                                        l, [&]() { return r.op_state.completed; });
+                                }
+                                else
+                                {
+                                    r.op_state.cond_var.wait(
+                                        l, [&]() { return r.op_state.completed; });
+                                }
+                            }
+
+#ifdef PIKA_HAVE_APEX
+                            apex::scoped_timer apex_invoke("pika::mpi::trigger");
+#endif
+                            // call set_value/set_error depending on mpi return status
+                            mpi::detail::set_value_error_helper(
+                                r.op_state.status, std::move(r.op_state.r));
+                            break;
+                        }
+                        case mpi::detail::handler_method::new_task:
+                        {
+                            // The callback will call set_value/set_error inside a new task
+                            // and execution will continue on that thread
+                            mpi::detail::add_new_task_request_callback(r.op_state);
+                            break;
+                        }
+                        case mpi::detail::handler_method::continuation:
+                        {
+                            // The callback will call set_value/set_error
+                            // execution will continue on the callback thread
+                            mpi::detail::add_continuation_request_callback(r.op_state);
+                            break;
+                        }
+                        case mpi::detail::handler_method::mpix_continuation:
+                        {
+                            PIKA_DETAIL_DP(mpi::detail::mpi_tran<1>,
+                                debug(str<>("MPI_EXT_CONTINUE"), "register_mpix_continuation",
+                                    ptr(r.op_state.request), ptr(r.op_state.request)));
+                            mpi::detail::MPIX_Continue_cb_function* func =
+                                &mpi::detail::mpix_callback_continuation<operation_state>;
+                            mpi::detail::register_mpix_continuation(
+                                &r.op_state.request, func, &r.op_state);
+                            break;
+                        }
+                        default: PIKA_UNREACHABLE;
+                        }
+                    },
+                    [&](std::exception_ptr ep) {
+                        ex::set_error(std::move(r.op_state.r), std::move(ep));
+                    });
+            }
+
+            constexpr ex::empty_env get_env() const& noexcept { return {}; }
+        };
+
+        using operation_state_type = ex::connect_result_t<Sender, receiver>;
+        operation_state_type op_state;
+
+        template <typename Receiver_, typename Sender_>
+        operation_state(Receiver_&& r, Sender_&& sender, int flags)
+          : r(std::forward<Receiver_>(r))
+          , mode_flags{flags}
+          , status{MPI_SUCCESS}
+          , op_state(ex::connect(std::forward<Sender_>(sender), receiver{*this}))
+        {
+        }
+
+        void start() & noexcept { return ex::start(op_state); }
+    };
 
     // -----------------------------------------------------------------
     // transform MPI adapter - sender type
     template <typename Sender>
-    struct trigger_mpi_sender_impl<Sender>::trigger_mpi_sender_type
+    struct sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
-        std::decay_t<Sender> sender;
+        PIKA_NO_UNIQUE_ADDRESS Sender sender;
         int completion_mode_flags_;
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename...>
         using no_value_completion = pika::execution::experimental::completion_signatures<>;
         using completion_signatures =
-            pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
+            pika::execution::experimental::transform_completion_signatures_of<Sender,
                 pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_value_t(),
@@ -78,189 +234,21 @@ namespace pika::mpi::experimental::detail {
 
         static constexpr bool sends_done = false;
 
-        // -----------------------------------------------------------------
-        // operation state for an internal receiver
         template <typename Receiver>
-        struct operation_state
+        constexpr auto connect(Receiver&& r) const&
         {
-            std::decay_t<Receiver> receiver;
-            int mode_flags;
-            int status;
-            // these vars are needed by suspend/resume mode
-            bool completed{false};
-            pika::detail::spinlock mutex;
-            pika::condition_variable cond_var;
-            // MPI_EXT_CONTINUE
-            MPI_Request request{MPI_REQUEST_NULL};
-
-            // -----------------------------------------------------------------
-            // The mpi_receiver receives inputs from the previous sender,
-            // invokes the mpi call, and sets a callback on the polling handler
-            struct trigger_mpi_receiver
-            {
-                PIKA_STDEXEC_RECEIVER_CONCEPT
-                operation_state& op_state;
-
-                template <typename Error>
-                friend constexpr void
-                tag_invoke(ex::set_error_t, trigger_mpi_receiver r, Error&& error) noexcept
-                {
-                    ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_FORWARD(Error, error));
-                }
-
-                friend constexpr void tag_invoke(ex::set_stopped_t, trigger_mpi_receiver r) noexcept
-                {
-                    ex::set_stopped(PIKA_MOVE(r.op_state.receiver));
-                }
-
-                // receive the MPI Request and set a callback to be
-                // triggered when the mpi request completes
-                constexpr void set_value(MPI_Request request) && noexcept
-                {
-                    auto r = PIKA_MOVE(*this);
-
-                    // early exit check
-                    if (request == MPI_REQUEST_NULL)
-                    {
-                        ex::set_value(PIKA_MOVE(r.op_state.receiver));
-                        return;
-                    }
-
-                    r.op_state.request = request;
-
-                    // which polling/testing mode are we using
-                    handler_method mode = get_handler_method(r.op_state.mode_flags);
-                    execution::thread_priority p = use_priority_boost(r.op_state.mode_flags) ?
-                        execution::thread_priority::boost :
-                        execution::thread_priority::normal;
-
-                    PIKA_DETAIL_DP(mpi_tran<5>,
-                        debug(str<>("trigger_mpi_recv"), "set_value_t", "req",
-                            ptr(r.op_state.request), "flags", bin<8>(r.op_state.mode_flags),
-                            mode_string(r.op_state.mode_flags)));
-
-                    pika::detail::try_catch_exception_ptr(
-                        [&]() mutable {
-                            switch (mode)
-                            {
-                            case handler_method::yield_while:
-                            {
-                                // yield/while is invalid on a non pika thread
-                                PIKA_ASSERT(pika::threads::detail::get_self_id());
-                                pika::util::yield_while(
-                                    [&r]() { return !poll_request(r.op_state.request); });
-#ifdef PIKA_HAVE_APEX
-                                apex::scoped_timer apex_invoke("pika::mpi::trigger");
-#endif
-                                // we just assume the return from mpi_test is always MPI_SUCCESS
-                                ex::set_value(PIKA_MOVE(r.op_state.receiver));
-                                break;
-                            }
-                            case handler_method::suspend_resume:
-                            {
-                                // suspend is invalid on a non pika thread
-                                PIKA_ASSERT(pika::threads::detail::get_self_id());
-                                // the callback will resume _this_ thread
-                                {
-                                    std::unique_lock l{r.op_state.mutex};
-                                    add_suspend_resume_request_callback(r.op_state);
-                                    if (use_priority_boost(r.op_state.mode_flags))
-                                    {
-                                        threads::detail::thread_data::scoped_thread_priority
-                                            set_restore(p);
-                                        r.op_state.cond_var.wait(
-                                            l, [&]() { return r.op_state.completed; });
-                                    }
-                                    else
-                                    {
-                                        r.op_state.cond_var.wait(
-                                            l, [&]() { return r.op_state.completed; });
-                                    }
-                                }
-
-#ifdef PIKA_HAVE_APEX
-                                apex::scoped_timer apex_invoke("pika::mpi::trigger");
-#endif
-                                // call set_value/set_error depending on mpi return status
-                                set_value_error_helper(
-                                    r.op_state.status, PIKA_MOVE(r.op_state.receiver));
-                                break;
-                            }
-                            case handler_method::new_task:
-                            {
-                                // The callback will call set_value/set_error inside a new task
-                                // and execution will continue on that thread
-                                add_new_task_request_callback(r.op_state);
-                                break;
-                            }
-                            case handler_method::continuation:
-                            {
-                                // The callback will call set_value/set_error
-                                // execution will continue on the callback thread
-                                add_continuation_request_callback(r.op_state);
-                                break;
-                            }
-                            case handler_method::mpix_continuation:
-                            {
-                                PIKA_DETAIL_DP(mpi_tran<1>,
-                                    debug(str<>("MPI_EXT_CONTINUE"), "register_mpix_continuation",
-                                        ptr(r.op_state.request), ptr(r.op_state.request)));
-                                MPIX_Continue_cb_function* func =
-                                    &mpix_callback_continuation<operation_state>;
-                                register_mpix_continuation(&r.op_state.request, func, &r.op_state);
-                                break;
-                            }
-                            default: PIKA_UNREACHABLE;
-                            }
-                        },
-                        [&](std::exception_ptr ep) {
-                            ex::set_error(PIKA_MOVE(r.op_state.receiver), PIKA_MOVE(ep));
-                        });
-                }
-
-                friend constexpr ex::empty_env tag_invoke(
-                    ex::get_env_t, trigger_mpi_receiver const&) noexcept
-                {
-                    return {};
-                }
-            };
-
-            using operation_state_type =
-                ex::connect_result_t<std::decay_t<Sender>, trigger_mpi_receiver>;
-            operation_state_type op_state;
-
-            template <typename Receiver_, typename Sender_>
-            operation_state(Receiver_&& receiver, Sender_&& sender, int flags)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
-              , mode_flags{flags}
-              , status{MPI_SUCCESS}
-              , op_state(ex::connect(PIKA_FORWARD(Sender_, sender), trigger_mpi_receiver{*this}))
-            {
-            }
-
-            friend constexpr auto tag_invoke(ex::start_t, operation_state& os) noexcept
-            {
-                return ex::start(os.op_state);
-            }
-        };
-
-        template <typename Receiver>
-        friend constexpr auto
-        tag_invoke(ex::connect_t, trigger_mpi_sender_type const& s, Receiver&& receiver)
-        {
-            return operation_state<Receiver>(PIKA_FORWARD(Receiver, receiver), s.sender);
+            return operation_state<std::decay_t<Receiver>, Sender>(
+                std::forward<Receiver>(r), sender, completion_mode_flags_);
         }
 
         template <typename Receiver>
-        friend constexpr auto
-        tag_invoke(ex::connect_t, trigger_mpi_sender_type&& s, Receiver&& receiver)
+        constexpr auto connect(Receiver&& r) &&
         {
-            return operation_state<Receiver>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.sender), s.completion_mode_flags_);
+            return operation_state<std::decay_t<Receiver>, Sender>(
+                std::forward<Receiver>(r), std::move(sender), completion_mode_flags_);
         }
     };
-
-}    // namespace pika::mpi::experimental::detail
+}    // namespace pika::trigger_mpi_detail
 
 namespace pika::mpi::experimental {
 
@@ -274,7 +262,8 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto
         tag_fallback_invoke(trigger_mpi_t, Sender&& sender, int flags)
         {
-            return detail::trigger_mpi_sender<Sender>{PIKA_FORWARD(Sender, sender), flags};
+            return trigger_mpi_detail::sender<std::decay_t<Sender>>{
+                std::forward<Sender>(sender), flags};
         }
 
         //

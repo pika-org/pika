@@ -21,11 +21,15 @@
 
 using pika::execution::experimental::async_rw_mutex;
 using pika::execution::experimental::continues_on;
+using pika::execution::experimental::drop_operation_state;
+using pika::execution::experimental::ensure_started;
 using pika::execution::experimental::execute;
-using pika::execution::experimental::start_detached;
+using pika::execution::experimental::schedule;
 using pika::execution::experimental::then;
 using pika::execution::experimental::thread_pool_scheduler;
+using pika::execution::experimental::unique_any_sender;
 using pika::execution::experimental::when_all;
+using pika::execution::experimental::when_all_vector;
 using pika::this_thread::experimental::sync_wait;
 
 unsigned int seed = std::random_device{}();
@@ -65,10 +69,10 @@ public:
 struct checker
 {
     bool const expect_readonly;
-    const std::size_t expected_predecessor_value;
+    std::size_t const expected_predecessor_value;
     std::atomic<std::size_t>& count;
-    const std::size_t count_min;
-    const std::size_t count_max = count_min;
+    std::size_t const count_min;
+    std::size_t const count_max = count_min;
 
     // Access types are differently tagged for read-only and read-write access.
     using void_read_access_type = typename async_rw_mutex<void>::read_access_type;
@@ -280,6 +284,23 @@ void test_multiple_when_all(async_rw_mutex<ReadWriteT, ReadT> rwm)
     }
 }
 
+template <typename ReadWriteT, typename ReadT = ReadWriteT>
+void test_async_drop_sender(async_rw_mutex<ReadWriteT, ReadT> rwm)
+{
+    thread_pool_scheduler sched{};
+
+    for (std::size_t i = 0; i < 100; ++i)
+    {
+        std::vector<unique_any_sender<>> senders;
+        for (std::size_t j = 0; j < 10; ++j)
+        {
+            senders.push_back(schedule(sched) | then([s = rwm.readwrite()]() {}) |
+                drop_operation_state() | ensure_started());
+        }
+        sync_wait(when_all_vector(std::move(senders)));
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int pika_main(pika::program_options::variables_map& vm)
 {
@@ -317,6 +338,10 @@ int pika_main(pika::program_options::variables_map& vm)
     test_multiple_when_all(async_rw_mutex<void>{});
     test_multiple_when_all(async_rw_mutex<std::size_t>{0});
     test_multiple_when_all(async_rw_mutex<mytype, mytype_base>{mytype{}});
+
+    test_async_drop_sender(async_rw_mutex<void>{});
+    test_async_drop_sender(async_rw_mutex<std::size_t>{0});
+    test_async_drop_sender(async_rw_mutex<mytype, mytype_base>{mytype{}});
 
     pika::finalize();
     return EXIT_SUCCESS;

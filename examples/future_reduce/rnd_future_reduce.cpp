@@ -101,9 +101,8 @@ int pika_main()
     }
     double pr_pass = std::pow(1.0 - FAILURE_RATE_PERCENT / 100.0, SAMPLES_PER_LOOP);
     double exp_pass = TEST_LOOPS * pr_pass;
-    std::cout << "From " << TEST_LOOPS << " tests, we got "
-              << "\n " << count << " passes"
-              << "\n " << exp_pass << " expected \n"
+    std::cout << "From " << TEST_LOOPS << " tests, we got " << "\n " << count << " passes" << "\n "
+              << exp_pass << " expected \n"
               << "\n " << htimer.elapsed<std::chrono::seconds>() << " seconds \n"
               << std::flush;
     // Initiate shutdown of the runtime system.

@@ -348,8 +348,8 @@ int pika_main(pika::program_options::variables_map& vm)
     // --------------------------
     // Get user options/flags
     // --------------------------
-    const std::uint32_t iterations = vm["iterations"].as<std::uint32_t>();
-    const std::uint32_t num_rounds = vm["rounds"].as<std::uint32_t>();
+    std::uint32_t const iterations = vm["iterations"].as<std::uint32_t>();
+    std::uint32_t const num_rounds = vm["rounds"].as<std::uint32_t>();
     output = vm.count("output") != 0;
     recv_before_send = vm["recv-before-send"].as<bool>();
     //
@@ -441,7 +441,7 @@ int pika_main(pika::program_options::variables_map& vm)
         }
 
         // don't exit until all messages are drained
-        pika::util::yield_while([&] { return counter > 0; });
+        pika::util::yield_while([&] { return counter > 0; }, "wait counter");
         if (output)
         {
             // clang-format off

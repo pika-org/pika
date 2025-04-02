@@ -52,18 +52,18 @@ namespace pika::drop_op_state_detail {
 
             try
             {
-                auto error_local = PIKA_FORWARD(Error, error);
+                auto error_local = std::forward<Error>(error);
                 r.op_state->op_state.reset();
 
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), PIKA_MOVE(error_local));
+                    std::move(r.op_state->receiver), std::move(error_local));
             }
             catch (...)
             {
                 r.op_state->op_state.reset();
 
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), std::current_exception());
+                    std::move(r.op_state->receiver), std::current_exception());
             }
         }
 
@@ -75,95 +75,70 @@ namespace pika::drop_op_state_detail {
 
             r.op_state->op_state.reset();
 
-            pika::execution::experimental::set_stopped(PIKA_MOVE(r.op_state->receiver));
+            pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
         };
 
         template <typename... Ts>
         void set_value(Ts&&... ts) && noexcept
         {
-            auto r = PIKA_MOVE(*this);
+            auto r = std::move(*this);
 
             PIKA_ASSERT(r.op_state != nullptr);
             PIKA_ASSERT(r.op_state->op_state.has_value());
 
             try
             {
-                std::tuple<std::decay_t<Ts>...> ts_local(PIKA_FORWARD(Ts, ts)...);
+                std::tuple<std::decay_t<Ts>...> ts_local(std::forward<Ts>(ts)...);
                 r.op_state->op_state.reset();
 
                 std::apply(pika::util::detail::bind_front(pika::execution::experimental::set_value,
-                               PIKA_MOVE(r.op_state->receiver)),
-                    PIKA_MOVE(ts_local));
+                               std::move(r.op_state->receiver)),
+                    std::move(ts_local));
             }
             catch (...)
             {
                 r.op_state->op_state.reset();
 
                 pika::execution::experimental::set_error(
-                    PIKA_MOVE(r.op_state->receiver), std::current_exception());
+                    std::move(r.op_state->receiver), std::current_exception());
             }
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, drop_op_state_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender, typename Receiver>
-    struct drop_op_state_op_state_impl
-    {
-        struct drop_op_state_op_state_type;
-    };
-
-    template <typename Sender, typename Receiver>
-    using drop_op_state_op_state =
-        typename drop_op_state_op_state_impl<Sender, Receiver>::drop_op_state_op_state_type;
-
-    template <typename Sender, typename Receiver>
-    struct drop_op_state_op_state_impl<Sender, Receiver>::drop_op_state_op_state_type
+    struct drop_op_state_op_state
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Receiver> receiver;
         using operation_state_type = pika::execution::experimental::connect_result_t<Sender,
-            drop_op_state_receiver<drop_op_state_op_state_type>>;
+            drop_op_state_receiver<drop_op_state_op_state>>;
         std::optional<operation_state_type> op_state;
 
         template <typename Receiver_>
-        drop_op_state_op_state_type(std::decay_t<Sender> sender, Receiver_&& receiver)
-          : receiver(PIKA_FORWARD(Receiver_, receiver))
+        drop_op_state_op_state(std::decay_t<Sender> sender, Receiver_&& receiver)
+          : receiver(std::forward<Receiver>(receiver))
           , op_state(pika::detail::with_result_of([&]() mutable {
               return pika::execution::experimental::connect(
-                  PIKA_MOVE(sender), drop_op_state_receiver<drop_op_state_op_state_type>{this});
+                  std::move(sender), drop_op_state_receiver<drop_op_state_op_state>{this});
           }))
         {
         }
-        drop_op_state_op_state_type(drop_op_state_op_state_type&) = delete;
-        drop_op_state_op_state_type& operator=(drop_op_state_op_state_type&) = delete;
-        drop_op_state_op_state_type(drop_op_state_op_state_type const&) = delete;
-        drop_op_state_op_state_type& operator=(drop_op_state_op_state_type const&) = delete;
+        drop_op_state_op_state(drop_op_state_op_state&) = delete;
+        drop_op_state_op_state& operator=(drop_op_state_op_state&) = delete;
+        drop_op_state_op_state(drop_op_state_op_state const&) = delete;
+        drop_op_state_op_state& operator=(drop_op_state_op_state const&) = delete;
 
-        friend void tag_invoke(
-            pika::execution::experimental::start_t, drop_op_state_op_state_type& os) noexcept
+        void start() & noexcept
         {
-            PIKA_ASSERT(os.op_state.has_value());
+            PIKA_ASSERT(op_state.has_value());
             // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-            pika::execution::experimental::start(*(os.op_state));
+            pika::execution::experimental::start(*(op_state));
         }
     };
 
     template <typename Sender>
-    struct drop_op_state_sender_impl
-    {
-        struct drop_op_state_sender_type;
-    };
-
-    template <typename Sender>
-    using drop_op_state_sender =
-        typename drop_op_state_sender_impl<Sender>::drop_op_state_sender_type;
-
-    template <typename Sender>
-    struct drop_op_state_sender_impl<Sender>::drop_op_state_sender_type
+    struct drop_op_state_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -207,31 +182,27 @@ namespace pika::drop_op_state_detail {
 
         template <typename Sender_,
             typename Enable =
-                std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, drop_op_state_sender_type>>>
-        explicit drop_op_state_sender_type(Sender_&& sender)
-          : sender(PIKA_FORWARD(Sender_, sender))
+                std::enable_if_t<!std::is_same_v<std::decay_t<Sender_>, drop_op_state_sender>>>
+        explicit drop_op_state_sender(Sender_&& sender)
+          : sender(std::forward<Sender_>(sender))
         {
         }
 
-        drop_op_state_sender_type(drop_op_state_sender_type const&) = default;
-        drop_op_state_sender_type& operator=(drop_op_state_sender_type const&) = default;
-        drop_op_state_sender_type(drop_op_state_sender_type&&) = default;
-        drop_op_state_sender_type& operator=(drop_op_state_sender_type&&) = default;
+        drop_op_state_sender(drop_op_state_sender const&) = default;
+        drop_op_state_sender& operator=(drop_op_state_sender const&) = default;
+        drop_op_state_sender(drop_op_state_sender&&) = default;
+        drop_op_state_sender& operator=(drop_op_state_sender&&) = default;
 
         template <typename Receiver>
-        friend drop_op_state_op_state<Sender, Receiver>
-        tag_invoke(pika::execution::experimental::connect_t, drop_op_state_sender_type&& s,
-            Receiver&& receiver)
+        drop_op_state_op_state<Sender, Receiver> connect(Receiver&& receiver) &&
         {
-            return {PIKA_MOVE(s.sender), PIKA_FORWARD(Receiver, receiver)};
+            return {std::move(sender), std::forward<Receiver>(receiver)};
         }
 
         template <typename Receiver>
-        friend drop_op_state_op_state<Sender, Receiver>
-        tag_invoke(pika::execution::experimental::connect_t, drop_op_state_sender_type const& s,
-            Receiver&& receiver)
+        drop_op_state_op_state<Sender, Receiver> connect(Receiver&& receiver) const&
         {
-            return {s.sender, PIKA_FORWARD(Receiver, receiver)};
+            return {sender, std::forward<Receiver>(receiver)};
         }
     };
 }    // namespace pika::drop_op_state_detail
@@ -243,7 +214,7 @@ namespace pika::execution::experimental {
         template <typename Sender, PIKA_CONCEPT_REQUIRES_(is_sender_v<Sender>)>
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR(Sender&& sender)
         {
-            return drop_op_state_detail::drop_op_state_sender<Sender>{PIKA_FORWARD(Sender, sender)};
+            return drop_op_state_detail::drop_op_state_sender<Sender>{std::forward<Sender>(sender)};
         }
 
         constexpr PIKA_FORCEINLINE auto PIKA_STATIC_CALL_OPERATOR()

@@ -226,7 +226,7 @@ namespace pika::mpi::experimental {
         {
             mpi_data_.requests_.push_back(req_callback.request_);
             mpi_data_.callbacks_.push_back(
-                {PIKA_MOVE(req_callback.callback_function_), MPI_SUCCESS, req_callback.request_});
+                {std::move(req_callback.callback_function_), MPI_SUCCESS, req_callback.request_});
 
             PIKA_DETAIL_DP(mpi_debug<5>,
                 debug(str<>("CB queue => vector"), mpi_data_, ptr(req_callback.request_), "nulls",
@@ -246,9 +246,9 @@ namespace pika::mpi::experimental {
 
             // can skip the queue and go direct to the polling vector when singlethreaded
             if (mpi_data_.single_thread_mode_)
-                add_to_request_callback_vector(PIKA_MOVE(req_callback));
+                add_to_request_callback_vector(std::move(req_callback));
             else
-                mpi_data_.request_callback_queue_.enqueue(PIKA_MOVE(req_callback));
+                mpi_data_.request_callback_queue_.enqueue(std::move(req_callback));
         }
 
 #if defined(PIKA_DEBUG)
@@ -265,7 +265,7 @@ namespace pika::mpi::experimental {
             PIKA_ASSERT_MSG(get_register_polling_count() != 0,
                 "MPI event polling has not been enabled on any pool. Make sure that MPI event "
                 "polling is enabled on at least one thread pool.");
-            add_to_request_callback_queue(request_callback{request, PIKA_MOVE(callback)});
+            add_to_request_callback_queue(request_callback{request, std::move(callback)});
             return true;
         }
 
@@ -324,7 +324,7 @@ namespace pika::mpi::experimental {
                 if (mpi_data_.requests_[i] != MPI_REQUEST_NULL)
                 {
                     mpi_data_.requests_[pos] = mpi_data_.requests_[i];
-                    mpi_data_.callbacks_[pos] = PIKA_MOVE(mpi_data_.callbacks_[i]);
+                    mpi_data_.callbacks_[pos] = std::move(mpi_data_.callbacks_[i]);
                     pos++;
                 }
             }
@@ -399,7 +399,7 @@ namespace pika::mpi::experimental {
 
                 // decrement before invoking callback : race if invoked code checks in_flight
                 --mpi_data_.all_in_flight_;
-                PIKA_INVOKE(PIKA_MOVE(ready_callback_.cb_), ready_callback_.err_);
+                PIKA_INVOKE(std::move(ready_callback_.cb_), ready_callback_.err_);
                 pika::threads::detail::decrement_global_activity_count();
             }
 
@@ -444,7 +444,7 @@ namespace pika::mpi::experimental {
                     request_callback req_callback;
                     while (mpi_data_.request_callback_queue_.try_dequeue(req_callback))
                     {
-                        add_to_request_callback_vector(PIKA_MOVE(req_callback));
+                        add_to_request_callback_vector(std::move(req_callback));
                     }
 
                     std::uint32_t vsize = mpi_data_.requests_.size();
@@ -481,7 +481,7 @@ namespace pika::mpi::experimental {
                                 {
                                     size_t index = indices_vector_[i];
                                     mpi_data_.ready_requests_.enqueue(
-                                        {PIKA_MOVE(mpi_data_.callbacks_[req_init + index].cb_),
+                                        {std::move(mpi_data_.callbacks_[req_init + index].cb_),
                                             mpi_data_.callbacks_[req_init + index].request_,
                                             status_valid ? status_vector_[i].MPI_ERROR :
                                                            MPI_SUCCESS});
@@ -503,7 +503,7 @@ namespace pika::mpi::experimental {
                             size_t index = static_cast<size_t>(rindex);
                             event_handled = true;
                             mpi_data_.ready_requests_.enqueue(
-                                {PIKA_MOVE(mpi_data_.callbacks_[index].cb_),
+                                {std::move(mpi_data_.callbacks_[index].cb_),
                                     mpi_data_.callbacks_[index].request_, status});
                             // Remove the request from our vector to prevent retesting
                             mpi_data_.requests_[index] = MPI_REQUEST_NULL;
@@ -534,7 +534,7 @@ namespace pika::mpi::experimental {
 
                 // decrement before invoking callback : race if invoked code checks in_flight
                 --mpi_data_.all_in_flight_;
-                PIKA_INVOKE(PIKA_MOVE(ready_callback_.cb_), ready_callback_.err_);
+                PIKA_INVOKE(std::move(ready_callback_.cb_), ready_callback_.err_);
                 pika::threads::detail::decrement_global_activity_count();
             }
 
@@ -573,7 +573,7 @@ namespace pika::mpi::experimental {
                 request_callback req_callback;
                 while (mpi_data_.request_callback_queue_.try_dequeue(req_callback))
                 {
-                    add_to_request_callback_vector(PIKA_MOVE(req_callback));
+                    add_to_request_callback_vector(std::move(req_callback));
                 }
 
                 int rindex, flag;
@@ -593,7 +593,7 @@ namespace pika::mpi::experimental {
 
                     // decrement before invoking callback : race if invoked code checks in_flight
                     --mpi_data_.all_in_flight_;
-                    PIKA_INVOKE(PIKA_MOVE(mpi_data_.callbacks_[index].cb_), status);
+                    PIKA_INVOKE(std::move(mpi_data_.callbacks_[index].cb_), status);
                     pika::threads::detail::decrement_global_activity_count();
                 }
             } while (event_handled == true);
@@ -626,7 +626,8 @@ namespace pika::mpi::experimental {
         {
             // try to ensure that no (other) threads are still polling elsewhere
             // before we allow polling to commence on this/another pool
-            pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
+            pika::util::yield_while(
+                [&] { return detail::mpi_data_.all_in_flight_ > 0; }, "mpi::register_polling");
 
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
@@ -975,7 +976,8 @@ namespace pika::mpi::experimental {
 
         // try to ensure that no (other) threads are still polling
         // before we exit and allow polling to commence on another pool
-        pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
+        pika::util::yield_while(
+            [&] { return detail::mpi_data_.all_in_flight_ > 0; }, "mpi::stop_polling");
 
         // remove error handler if we installed it
         if (detail::mpi_data_.error_handler_initialized_)

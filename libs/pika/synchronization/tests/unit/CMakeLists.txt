@@ -5,7 +5,6 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 set(tests
-    async_rw_mutex
     barrier
     binary_semaphore
     condition_variable
@@ -18,7 +17,6 @@ set(tests
     stop_token_cb2
 )
 
-set(async_rw_mutex_PARAMETERS THREADS 4)
 set(barrier_cpp20_PARAMETERS THREADS 4)
 set(binary_semaphore_cpp20_PARAMETERS THREADS 4)
 

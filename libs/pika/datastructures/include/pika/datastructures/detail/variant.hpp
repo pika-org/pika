@@ -307,7 +307,7 @@ namespace std {
 
 #include <cstddef>
 
-namespace pika { namespace variant_ns {
+namespace pika::variant_ns {
 
   struct in_place_t { explicit in_place_t() = default; };
 
@@ -333,7 +333,7 @@ namespace pika { namespace variant_ns {
   template <typename T> constexpr in_place_type_t<T> in_place_type{};
 #endif
 
-}}  // namespace pika::variant_ns
+}  // namespace pika::variant_ns
 
 // MPark.Variant
 //

@@ -44,7 +44,7 @@ Manual installation
 If you'd like to build pika manually you will need CMake 3.22.0 or greater and a recent C++ compiler
 supporting C++17:
 
-- `GCC <https://gcc.gnu.org>`__ 9 or greater
+- `GCC <https://gcc.gnu.org>`__ 11 or greater
 - `clang <https://clang.llvm.org>`__ 13 or greater
 
 Additionally, pika depends on:
@@ -61,12 +61,13 @@ pika optionally depends on:
   allocators. You can set the allocator through the CMake variable ``PIKA_WITH_MALLOC``. If you want
   to use the system allocator (e.g. for debugging) you can do so by setting
   ``PIKA_WITH_MALLOC=system``.
-* `CUDA <https://docs.nvidia.com/cuda/>`__ 11.0 or greater. CUDA support can be enabled with
+* `CUDA <https://docs.nvidia.com/cuda/>`__ 12.0 or greater. CUDA support can be enabled with
   ``PIKA_WITH_CUDA=ON``. pika can also be built with nvc++ from the `NVIDIA HPC SDK
   <https://developer.nvidia.com/hpc-sdk>`__. In the latter case, set ``CMAKE_CXX_COMPILER`` to
   ``nvc++``.
 * `HIP <https://rocmdocs.amd.com/en/latest/index.html>`__ 5.2.0 or greater. HIP support can be
   enabled with ``PIKA_WITH_HIP=ON``.
+* `whip <https://github.com/eth-cscs/whip>`__  when CUDA or HIP support is enabled.
 * `MPI <https://www.mpi-forum.org/>`__. MPI support can be enabled with ``PIKA_WITH_MPI=ON``.
 * `Boost.Context <https://boost.org>`__ on macOS or exotic platforms which are not supported by the
   default user-level thread implementations in pika. This can be enabled with
@@ -136,30 +137,65 @@ Controlling the number of threads and thread bindings
 
 The thread pool created by the pika runtime will by default be created with a number of threads
 equal to the number of cores on the system. The number of threads can explicitly be controlled by a
-few command line options. The most straightforward way of changing the number of threads is with the
-``--pika:threads`` command line option. It takes an explicit number of threads. Alternatively it can
-also be passed the special values ``cores`` (the default, use one thread per core) or ``all`` (use
-one thread per hyperthread).
+few environment variables or command line options. The most straightforward ways of changing the
+number of threads are with the environment variable ``PIKA_THREADS`` or the ``--pika:threads``
+command line option. Both take an explicit number of threads. They also support the special values
+``cores`` (the default, use one thread per core) or ``all`` (use one thread per hyperthread).
+
+.. note::
+   Command line options always take precedence over environment variables.
 
 Process masks
 -------------
+
+.. |hwloc_calc_man| replace:: man page of ``hwloc-calc``
+.. _hwloc_calc_man: https://linux.die.net/man/1/hwloc-calc
 
 Many batch systems and e.g. MPI can set a process mask on the application to restrict on what cores
 an application can run. pika will by default take this process mask into account when determining
 how many threads to use for the runtime. ``hwloc-bind`` can also be used to manually set a process
 mask on the application. When a process mask is set, the default behaviour is to use only one thread
-per core in the process mask. Setting ``--pika:threads`` to a number higher than the number of cores
-available in the mask is not allowed. Using ``--pika:threads=all`` will use all the hyperthreads in
-the process mask.
+per core in the process mask. Setting the number of threads to a number higher than the number of
+cores available in the mask is not allowed. Using ``all`` as the number of threads will use all the
+hyperthreads in the process mask.
 
-The process mask can explicitly be ignored with the option ``--pika:ignore-process-mask`` or
-overridden with ``--pika:process-mask``. With ``--pika:ignore-process-mask`` pika behaves as if no
-process mask is set. ``--pika:process-mask`` takes an explicit hexadecimal string (beginning with
-``0x``) representing the process mask to use. The mask can also be set with the environment variable
-``PIKA_PROCESS_MASK``. ``--pika:process-mask`` takes precedence over ``PIKA_PROCESS_MASK``.
-``--pika:print-bind`` can be used to verify that the bindings used by pika are correct. Exporting
-the environment variable ``PIKA_PRINT_BIND`` (any value) is equivalent to using the
-``--pika:print-bind`` option.
+The process mask can explicitly be ignored with the environment variable
+``PIKA_IGNORE_PROCESS_MASK=1`` or the command line option ``--pika:ignore-process-mask``. A process
+mask set on the process can explicitly be overridden with the environment variable
+``PIKA_PROCESS_MASK`` or the command line option ``--pika:process-mask``. When the process mask is
+ignored, pika behaves as if no process mask is set and all cores or hyperthreads can be used by the
+runtime. ``PIKA_PROCESS_MASK`` and ``--pika:process-mask`` take an explicit hexadecimal string
+(beginning with ``0x``) representing the process mask to use. ``--pika:print-bind`` can be used to
+verify that the bindings used by pika are correct. Exporting the environment variable
+``PIKA_PRINT_BIND`` (any value) is equivalent to using the ``--pika:print-bind`` option.
+
+.. note::
+   If you find yourself in a situation where you need to explicitly generate a process mask, we
+   recommend the use of ``hwloc-calc``. ``hwloc-calc`` produces the format expected by pika with the
+   ``--taskset`` command line option. The |hwloc_calc_man|_ contains useful examples of generating
+   different process masks.
+
+   In addition to ``hwloc-calc``, ``hwloc-distrib`` (`man page
+   <https://linux.die.net/man/1/hwloc-distrib>`_) can be useful if you need to generate multiple
+   process masks that e.g. don't overlap.
+
+pika binds (or pins) worker threads to cores by default (except on macOS where thread binding is not
+supported) to avoid threads being scheduled on different cores, generally improving performance.
+Thread binding can be disabled by setting the environment variable ``PIKA_BIND`` or the command line
+option ``--pika:bind`` to the value ``none``. Threads will in this case not be bound to any
+particular core and are free to migrate between cores. This is not recommended for most use cases,
+but can be beneficial e.g. if the system is oversubscribed and threads from different processes
+would otherwise be competing for time on the same core. The default value for the binding option is
+``balanced``, which will bind threads to cores in a "balanced" way, placing threads on consecutive
+cores, avoiding the use of hyperthreads (if available). A value of ``compact`` will fill all
+hyperthreads on a core with worker threads before filling the next core.
+
+.. note::
+   Command line options always take precedence over environment variables.
+
+.. note::
+   The ``PIKA_THREADS``, ``PIKA_IGNORE_PROCESS_MASK``, and ``PIKA_BIND`` environment variables were
+   added in 0.32.0.
 
 Interaction with OpenMP
 -----------------------
@@ -172,14 +208,17 @@ read the mask. Typically, OpenMP will bind threads to cores if the ``OMP_PROC_BI
 binding of the main thread only at the first parallel region which means that if pika is initialized
 before the first parallel region, the mask will most likely be read correctly. Other implementations
 (e.g. GNU) set the binding of the main thread in global constructors which may run before pika can
-read the process mask. In that case you may need to either use ``--pika:ignore-process-mask`` to use
-all cores on the system or explicitly set a mask with ``--pika:process-mask``. If there is a process
-mask already set in the environment that is launching the application (e.g. in a SLURM job) you can
-read the mask before the application runs with hwloc:
+read the process mask. In that case you may need to either use
+``PIKA_IGNORE_PROCESS_MASK``\/``--pika:ignore-process-mask`` to use all cores on the system or
+explicitly set a mask with ``--pika:process-mask``. If there is a process mask already set in the
+environment that is launching the application (e.g. in a SLURM job) you can read the mask before the
+application runs with hwloc (see :ref:`pika_bind` for a more convenient option):
 
 .. code-block:: bash
 
    ./app --pika:process-mask=$(hwloc-bind --get --taskset)
+
+.. _pika_bind:
 
 ``pika-bind`` helper script
 ---------------------------
@@ -188,6 +227,24 @@ Since version ``0.20.0``, the ``pika-bind`` helper script is bundled with pika. 
 ``PIKA_PROCESS_MASK`` environment variable based on process mask information found before the pika runtime is started,
 and then runs the given command. ``pika-bind`` is a more convenient alternative to manually setting ``PIKA_PROCESS_MASK``
 when pika is used together with a runtime that may reset the process mask of the main thread, like OpenMP.
+
+.. _cli_options:
+
+Command line options
+====================
+
+pika's behaviour can be controlled with command line options, or environment variables. Not all
+command line options are exposed as environment variables. When both are present, command line
+options take precedence over environment variables.
+
+If a command line option is not exposed as an environment variable, but it is necessary to set it,
+it is possible to use the ``PIKA_COMMANDLINE_OPTIONS`` environment variable.
+
+For example, the following disables thread binding and explicitly sets the number of threads:
+
+.. code-block:: bash
+
+   export PIKA_COMMANDLINE_OPTIONS="--pika:bind=none --pika:threads=4"
 
 .. _logging:
 
@@ -244,6 +301,112 @@ following:
 - ``%w``: The thread pool and worker thread ids.
 - ``%q``: The parent task id and description.
 - ``%k``: The current task id and description.
+
+.. _debugging:
+
+Debugging
+=========
+
+Writing task based applications can be tricky, and debugging them even more so. This section
+describes a few options and tools that can be helpful when debugging applications using pika.
+
+.. _segfaults_and_stack_overflows:
+
+Segmentation faults and stack overflows
+---------------------------------------
+
+Due to the small default stack sizes of user level threads a common problem is stack overflows. When
+using the ``mmap``-based stack allocation (default on platforms that support it) pika provides a
+configuration option to enable guard pages at the end of a stack. When enabled, a protected page
+will be allocated such that if one attempts to read or write within a page of the end of the stack,
+a segmentation fault will be triggered. The option can be enabled by exporting
+``PIKA_USE_GUARD_PAGES=1``. The option is disabled by default.
+
+Additionally, pika can install signal handlers that print information about failures, such as
+backtraces. These handlers will handle the most common events, such as interrupts, segmentation
+faults, illegal instructions etc. and they can be enabled with the environment variable
+``PIKA_INSTALL_SIGNAL_HANDLERS=1``. The verbosity can be controlled with
+``PIKA_EXCEPTION_VERBOSITY`` (this also controls how much information pika exceptions capture and
+print). The default value of ``1`` will print a backtrace. ``2`` or higher will print additional
+information about the pika build. ``0`` will print the minimum information.
+
+.. info::
+
+   Many MPI implementations also install signal handlers or have options for enabling them.
+   ``libSegFault.so`` (part of ``glibc-tools``, more info in `this blog post
+   <https://www.marcusfolkesson.se/blog/libsegfault/>`_) also provides a way to install a signal
+   handler. These can be useful alternatives to the signal handlers provided by pika. Depending on
+   the type of issue you are debugging, different signal handlers can be more or less helpful as
+   they print slightly different information.
+
+   pika does not install any signal handlers by default. They have to be enabled explicitly using
+   the option described above. Keep in mind that if multiple libraries try to set signal handlers,
+   they will likely overwrite each other such that only one is active at a time. Which signal
+   handler is actually used may depend on when a failure happens, order of linking, order of
+   initialization, etc. and may even be non-deterministic.
+
+The signal handler in pika for segmentation faults is a simplified version of the regular signal
+handler and always prints a limited amount of information. The reason for this is that it needs to
+be able to handle segmentation faults caused by stack overflows. When stack overflows happen,
+regular signal handlers will be run on the stack of the failing thread. However, since the stack
+already overflowed, the signal handler will trigger another segmentation fault, and not be able to
+print anything before the program is terminated. The handler in pika for segmentation faults uses
+which uses `sigaltstack <https://man7.org/linux/man-pages/man2/sigaltstack.2.html>`_ which  allows
+the signal handler to run on a new stack, guaranteeing that it can print some information on
+failure. The handler will print a message similar to:
+
+.. code-block:: console
+
+   Segmentation fault caught by pika's SIGSEGV handler (enabled with
+   PIKA_INSTALL_SIGNAL_HANDLERS=1).
+
+   This may be caused by a stack overflow, in which case you can increase the
+   stack sizes by modifying the configuration options PIKA_SMALL_STACK_SIZE
+   (default), PIKA_MEDIUM_STACK_SIZE, PIKA_LARGE_STACK_SIZE, or
+   PIKA_HUGE_STACK_SIZE.
+
+   Segmentation fault at address: 0x00007fdb152935f8
+
+The signal handlers are especially useful in conjunction with ``PIKA_USE_GUARD_PAGES``, as without
+the latter option a stack overflow may simply end up writing e.g. into another task's stack, which
+can be very hard to detect as a stack overflow. Inspecting the core dump of a segmentation fault can
+be helpful in identifying whether a segmentation fault was likely caused by a stack overflow.
+Comparing stack pointers (see e.g. the `GDB documentation
+<https://sourceware.org/gdb/current/onlinedocs/gdb#Registers>`_) can tell you how much stack space
+the current task is using (if in a task).
+
+If you've identified a stack overflow in your program you can do one or more of the following to
+avoid the stack overflow:
+
+- Use less stack space
+- Avoid deep recursion, e.g. by creating new tasks at some point in the computation which will get a
+  new stack
+- Use a bigger stack size for the task triggering a stack overflow (this can be changed by using a
+  different ``pika::execution::thread_stacksize`` for the task; this is currently undocumented
+  though pika's examples or unit tests may help you)
+- Set bigger stack sizes with ``PIKA_SMALL_STACK_SIZE``, ``PIKA_MEDIUM_STACK_SIZE``,
+  ``PIKA_LARGE_STACK_SIZE``, or ``PIKA_HUGE_STACK_SIZE``. Tasks use the small stack size by default,
+  which is 64 KiB, or ``0x10000`` bytes.
+
+.. _debugging_sanitizers:
+
+Sanitizers
+----------
+
+`Address <https://clang.llvm.org/docs/AddressSanitizer.html>`_, `thread
+<https://clang.llvm.org/docs/ThreadSanitizer.html>`_, and other sanitizers can be invaluable when
+debugging concurrent programs. pika can be instrumented with sanitizers as most programs. To reduce
+the chances of false positives make sure to build pika with the CMake option
+``PIKA_WITH_SANITIZERS=ON``. This does not enable any sanitizers directly, but disables certain
+functionalities internally to work better with sanitizers. To actually enable sanitizers, enable
+them explicitly by setting ``-fsanitize=`` flags as for any other CMake project. It's highly
+recommended to use ``-fno-omit-frame-pointer`` with sanitizers.
+
+There are known issues that may prevent you from using sanitizers with pika. Under the ``tools``
+subdirectory of the pika repository you can find the most recent suppression files that are used for
+CI runs with sanitizers. Similarly, under ``.github/workflows`` you can find the most recent build
+configurations (including sanitizer options) that work with sanitizers, along with blacklists of
+tests that are currently known to fail with sanitizers.
 
 .. _malloc:
 

@@ -211,10 +211,12 @@ void test_detach()
     PIKA_TEST(ssource.stop_requested());
 
     auto t0 = std::chrono::high_resolution_clock::now();
-    pika::util::yield_while([&]() {
-        return !finally_interrupted.load() &&
-            (std::chrono::high_resolution_clock::now() - t0 < std::chrono::seconds(1));
-    });
+    pika::util::yield_while(
+        [&]() {
+            return !finally_interrupted.load() &&
+                (std::chrono::high_resolution_clock::now() - t0 < std::chrono::seconds(1));
+        },
+        "wait finally_interrupted");
 
     PIKA_TEST(finally_interrupted.load());
 }
@@ -245,7 +247,7 @@ void test_pika_thread()
             // "interrupted" not derived from std::exception
             PIKA_TEST(false);
         }
-        catch (const char* e)
+        catch (char const* e)
         {
             caught_exception = true;
         }
@@ -334,7 +336,7 @@ void test_temporarily_disable_token()
             {
                 if (actToken.stop_requested()) { throw "interrupted"; }
             }
-            catch (const char*)
+            catch (char const*)
             {
                 state.store(State::interrupted);
             }

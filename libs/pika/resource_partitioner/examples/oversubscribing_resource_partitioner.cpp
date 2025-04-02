@@ -96,13 +96,11 @@ int pika_main(/*pika::program_options::variables_map& vm*/)
     else { pool_scheduler = high_priority_scheduler; }
 
     // print partition characteristics
-    std::cout << "\n\n[pika_main] print resource_partitioner characteristics : "
-              << "\n";
+    std::cout << "\n\n[pika_main] print resource_partitioner characteristics : " << "\n";
     pika::resource::get_partitioner().print_init_pool_data(std::cout);
 
     // print partition characteristics
-    std::cout << "\n\n[pika_main] print thread-manager pools : "
-              << "\n";
+    std::cout << "\n\n[pika_main] print thread-manager pools : " << "\n";
     pika::detail::get_runtime().get_thread_manager().print_pools(std::cout);
 
     // print system characteristics
@@ -205,14 +203,13 @@ void init_resource_partitioner_handler(
     use_pools = vm.count("use-pools") != 0;
     pool_threads = vm["pool-threads"].as<int>();
 
-    std::cout << "[pika_main] starting ..."
-              << "use_pools " << use_pools << " "
-              << "pool-threads " << pool_threads << "\n";
+    std::cout << "[pika_main] starting ..." << "use_pools " << use_pools << " " << "pool-threads "
+              << pool_threads << "\n";
 
     if (pool_threads > 0)
     {
         // we use unspecified as the scheduler type and it will be set according to
-        // the --pika:queuing=xxx option or default.
+        // the --pika:scheduler=xxx option or default.
         auto deft = ::pika::threads::scheduler_mode::default_mode;
         rp.create_thread_pool(pool_name, pika::resource::scheduling_policy::shared_priority, deft);
         // add N pus to network pool

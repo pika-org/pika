@@ -210,8 +210,16 @@ namespace pika::execution::experimental {
     }    // namespace detail
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct connect_t : pika::functional::detail::tag<connect_t>
+    struct connect_t
     {
+        template <typename Sender, typename Receiver>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(Sender&& sender, Receiver&& receiver) noexcept(
+            noexcept(std::forward<Sender>(sender).connect(std::forward<Receiver>(receiver))))
+            -> decltype(std::forward<Sender>(sender).connect(std::forward<Receiver>(receiver)))
+        {
+            return std::forward<Sender>(sender).connect(std::forward<Receiver>(receiver));
+        }
     } connect{};
 
     namespace detail {
@@ -415,13 +423,34 @@ namespace pika::execution::experimental {
     {
     };
 
-    inline constexpr struct get_env_t final : pika::functional::detail::tag_fallback<get_env_t>
+    template <typename T, typename Enable = void>
+    struct has_get_env : std::false_type
+    {
+    };
+
+    template <typename T>
+    struct has_get_env<T, std::void_t<decltype(std::declval<T const&>().get_env())>>
+      : std::true_type
+    {
+    };
+
+    inline constexpr struct get_env_t
     {
         template <typename T>
-        friend constexpr auto tag_fallback_invoke(get_env_t const&, T const&) noexcept
+        constexpr auto PIKA_STATIC_CALL_OPERATOR(T const& t) noexcept
         {
-            if constexpr (is_sender_v<T>) { return empty_env{}; }
-            else { static_assert(sizeof(T) == 0, "No environment for type T"); }
+            if constexpr (has_get_env<T>::value)
+            {
+                static_assert(noexcept(t.get_env()),
+                    "std::execution get_env member function must be noexcept");
+                return t.get_env();
+            }
+            else if constexpr (is_sender_v<T>) { return empty_env{}; }
+            else
+            {
+                static_assert(sizeof(T) == 0, "No environment for type T");
+                return empty_env{};
+            }
         }
     } get_env{};
 }    // namespace pika::execution::experimental

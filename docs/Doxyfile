@@ -7,9 +7,13 @@ GENERATE_RTF           = NO
 GENERATE_HTML          = NO
 QUIET                  = NO
 OUTPUT_DIRECTORY       = "$(PIKA_DOCS_DOXYGEN_OUTPUT_DIRECTORY)"
-INPUT                  = "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/init_runtime" \
+INPUT                  = "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/async_cuda" \
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/async_cuda_base" \
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/init_runtime" \
                          "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/runtime" \
-                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/execution"
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/execution" \
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/execution_base" \
+                         "$(PIKA_DOCS_DOXYGEN_INPUT_ROOT)/libs/pika/synchronization"
 FILE_PATTERNS          = *.cpp *.hpp *.cu
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */test */detail
@@ -18,4 +22,9 @@ EXTRACT_ALL            = YES
 ENABLE_PREPPROCESSING  = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
-PREDEFINED             = PIKA_EXPORT=
+PREDEFINED             = PIKA_EXPORT= \
+                         PIKA_FORCEINLINE= \
+                         PIKA_HAVE_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR= \
+                         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE= \
+                         "PIKA_STATIC_CALL_OPERATOR(...)=operator()(__VA_ARGS__) const" \
+                         PIKA_STDEXEC_SENDER_CONCEPT=

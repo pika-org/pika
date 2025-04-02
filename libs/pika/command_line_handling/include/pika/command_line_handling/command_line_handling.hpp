@@ -61,7 +61,7 @@ namespace pika::detail {
         std::size_t num_cores_;
         std::size_t pu_step_;
         std::size_t pu_offset_;
-        std::string queuing_;
+        std::string scheduler_;
         std::string affinity_domain_;
         std::string affinity_bind_;
         std::size_t numa_sensitive_;

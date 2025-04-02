@@ -30,7 +30,7 @@ namespace pika::util::detail {
         static constexpr PIKA_HOST_DEVICE decltype(auto) call(T&& /*t*/, Us&&... vs)
         {
             return util::detail::member_pack_for<Us&&...>(
-                std::piecewise_construct, PIKA_FORWARD(Us, vs)...)
+                std::piecewise_construct, std::forward<Us>(vs)...)
                 .template get<I>();
         }
     };
@@ -41,7 +41,7 @@ namespace pika::util::detail {
         template <typename... Us>
         static constexpr PIKA_HOST_DEVICE T&& call(T&& t, Us&&... /*vs*/)
         {
-            return PIKA_FORWARD(T, t);
+            return std::forward<T>(t);
         }
     };
 
@@ -59,7 +59,7 @@ namespace pika::util::detail {
         template <typename... Us>
         static constexpr PIKA_HOST_DEVICE std::invoke_result_t<T, Us...> call(T&& t, Us&&... vs)
         {
-            return PIKA_INVOKE(PIKA_FORWARD(T, t), PIKA_FORWARD(Us, vs)...);
+            return PIKA_INVOKE(std::forward<T>(t), std::forward<Us>(vs)...);
         }
     };
 
@@ -89,8 +89,8 @@ namespace pika::util::detail {
         template <typename F_, typename... Ts_,
             typename = std::enable_if_t<std::is_constructible_v<F, F_>>>
         constexpr explicit bound(F_&& f, Ts_&&... vs)
-          : _f(PIKA_FORWARD(F_, f))
-          , _args(std::piecewise_construct, PIKA_FORWARD(Ts_, vs)...)
+          : _f(std::forward<F_>(f))
+          , _args(std::piecewise_construct, std::forward<Ts_>(vs)...)
         {
         }
 
@@ -107,8 +107,8 @@ namespace pika::util::detail {
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
         constexpr PIKA_HOST_DEVICE bound(bound&& other)
-          : _f(PIKA_MOVE(other._f))
-          , _args(PIKA_MOVE(other._args))
+          : _f(std::move(other._f))
+          , _args(std::move(other._args))
         {
         }
 #endif
@@ -124,7 +124,7 @@ namespace pika::util::detail {
         {
             return PIKA_INVOKE(_f,
                 detail::bind_eval<Ts&, sizeof...(Us)>::call(
-                    _args.template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
+                    _args.template get<Is>(), std::forward<Us>(vs)...)...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -135,7 +135,7 @@ namespace pika::util::detail {
         {
             return PIKA_INVOKE(_f,
                 detail::bind_eval<Ts const&, sizeof...(Us)>::call(
-                    _args.template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
+                    _args.template get<Is>(), std::forward<Us>(vs)...)...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -143,9 +143,9 @@ namespace pika::util::detail {
         constexpr PIKA_HOST_DEVICE invoke_bound_result_t<F&&, util::detail::pack<Ts&&...>, Us&&...>
         operator()(Us&&... vs) &&
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f),
+            return PIKA_INVOKE(std::move(_f),
                 detail::bind_eval<Ts, sizeof...(Us)>::call(
-                    PIKA_MOVE(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
+                    std::move(_args).template get<Is>(), std::forward<Us>(vs)...)...);
         }
 
         PIKA_NVCC_PRAGMA_HD_WARNING_DISABLE
@@ -154,9 +154,9 @@ namespace pika::util::detail {
             invoke_bound_result_t<F const&&, util::detail::pack<Ts const&&...>, Us&&...>
             operator()(Us&&... vs) const&&
         {
-            return PIKA_INVOKE(PIKA_MOVE(_f),
+            return PIKA_INVOKE(std::move(_f),
                 detail::bind_eval<Ts const, sizeof...(Us)>::call(
-                    PIKA_MOVE(_args).template get<Is>(), PIKA_FORWARD(Us, vs)...)...);
+                    std::move(_args).template get<Is>(), std::forward<Us>(vs)...)...);
         }
 
         constexpr std::size_t get_function_address() const
@@ -187,7 +187,7 @@ namespace pika::util::detail {
         using result_type = bound<std::decay_t<F>, util::detail::make_index_pack_t<sizeof...(Ts)>,
             ::pika::detail::decay_unwrap_t<Ts>...>;
 
-        return result_type(PIKA_FORWARD(F, f), PIKA_FORWARD(Ts, vs)...);
+        return result_type(std::forward<F>(f), std::forward<Ts>(vs)...);
     }
 }    // namespace pika::util::detail
 

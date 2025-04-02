@@ -51,7 +51,7 @@ namespace pika::threads::detail {
 
         bool push(rvalue_reference val, bool /*other_end*/ = false)
         {
-            return queue_.enqueue(PIKA_MOVE(val));
+            return queue_.enqueue(std::move(val));
         }
 
         bool pop(reference val, bool /* steal */ = true) { return queue_.try_dequeue(val); }
@@ -99,8 +99,8 @@ namespace pika::threads::detail {
 
         bool push(rvalue_reference val, bool other_end = false)
         {
-            if (other_end) return queue_.push_right(PIKA_MOVE(val));
-            return queue_.push_left(PIKA_MOVE(val));
+            if (other_end) return queue_.push_right(std::move(val));
+            return queue_.push_left(std::move(val));
         }
 
         bool pop(reference val, bool /* steal */ = true) { return queue_.pop_left(val); }
@@ -143,7 +143,7 @@ namespace pika::threads::detail {
 
         bool push(rvalue_reference val, bool /*other_end*/ = false)
         {
-            return queue_.push_left(PIKA_MOVE(val));
+            return queue_.push_left(std::move(val));
         }
 
         bool pop(reference val, bool steal = true)
@@ -191,8 +191,8 @@ namespace pika::threads::detail {
 
         bool push(const_reference val, bool other_end = false)
         {
-            if (other_end) return queue_.push_right(PIKA_MOVE(val));
-            return queue_.push_left(PIKA_MOVE(val));
+            if (other_end) return queue_.push_right(std::move(val));
+            return queue_.push_left(std::move(val));
         }
 
         bool push(rvalue_reference val, bool other_end = false)

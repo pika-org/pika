@@ -29,14 +29,11 @@ struct uncustomized_scheduler
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(ex::start_t, operation_state& os) noexcept
-            {
-                ex::set_value(std::move(os.r));
-            };
+            void start() & noexcept { ex::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(ex::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }

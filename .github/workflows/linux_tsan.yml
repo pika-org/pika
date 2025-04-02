@@ -21,9 +21,13 @@ jobs:
     name: github/linux/sanitizers/thread
     runs-on: ubuntu-24.04
     container:
-      image: pikaorg/pika-ci-base:28
+      image: pikaorg/pika-ci-base:29
       # --privileged is enabled for sysctl further down.
       options: --privileged
+
+    strategy:
+      matrix:
+        build_type: ["Debug", "RelWithDebInfo"]
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +36,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-linux-sanitizers-thread
+          key: ccache-linux-sanitizers-thread-${{ matrix.build_type }}
       - name: Switch OpenMPI to MPICH
         shell: bash
         run: |
@@ -40,6 +44,21 @@ jobs:
             apt-get remove --yes mpi-default-dev
             apt-get autoremove --yes
             apt-get install --no-install-recommends --yes libmpich-dev
+      # Works around https://bugs.launchpad.net/ubuntu/+source/mpich/+bug/2072338. Workaround based
+      # on https://stackoverflow.com/a/78832608
+      - name: Install custom version of prterun
+        shell: bash
+        run: |
+            apt-get install --no-install-recommends --yes libevent-dev libpmix-bin libpmix-dev
+            curl --output prrte.tar.bz2 --location https://github.com/openpmix/prrte/releases/download/v3.0.8/prrte-3.0.8.tar.bz2
+            sha256sum prrte.tar.bz2
+            (echo "e798192fa0ab38172818a109a6c89bcc37e4b1123ca150d8c115dee5231750de prrte.tar.bz2" | sha256sum --check)
+            tar xvf prrte.tar.bz2
+            cd prrte-3.0.8
+            CC="ccache cc" ./configure
+            make -j$(nproc)
+            make install
+            ldconfig
       - name: Configure
         shell: bash
         run: |
@@ -48,9 +67,11 @@ jobs:
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=ON \
+                -DMPIEXEC_EXECUTABLE=$(command -v prterun) \
+                -DMPIEXEC_PREFLAGS=--allow-run-as-root \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
@@ -60,7 +81,6 @@ jobs:
                 -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
                 -DPIKA_WITH_SANITIZERS=On \
                 -DCMAKE_CXX_FLAGS="-fsanitize=thread -fno-omit-frame-pointer -Wno-error=ignored-optimization-argument" \
-                -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         if: always()
@@ -72,6 +92,18 @@ jobs:
         if: always()
         shell: bash
         run: |
+            # Don't use the gds/shmem component with thread sanitizer. Without the following,
+            # PMIX will report:
+            #
+            # The gds/shmem component attempted to attach to a shared-memory segment at a
+            # particular base address, but was given a different one. Your job will now likely
+            # abort.
+            #   Requested Address: 0x2aba44000000
+            #   Acquired Address:  0x7fed0431c000
+            # If this problem persists, please consider disabling the gds/shmem component by
+            # setting in your environment the following: PMIX_MCA_gds=hash
+            export PMIX_MCA_gds=hash
+
             # Newer GitHub actions runners increased the number of bits used for address space
             # layout randomization to a higher number such that thread sanitizer breaks. Newer
             # versions of LLVM (17 and newer) should fix this again.
@@ -91,6 +123,7 @@ jobs:
         shell: bash
         run: |
             # See above.
+            export PMIX_MCA_gds=hash
             sysctl --write vm.mmap_rnd_bits=28
 
             export TSAN_OPTIONS=suppressions=$PWD/tools/tsan.supp

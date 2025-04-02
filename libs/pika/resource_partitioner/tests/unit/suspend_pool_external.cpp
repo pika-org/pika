@@ -30,6 +30,12 @@
 
 namespace ex = pika::execution::experimental;
 
+#if defined(PIKA_HAVE_VERIFY_LOCKS) || defined(PIKA_HAVE_VALGRIND)
+inline constexpr std::size_t num_tasks_per_worker_thread = 100;
+#else
+inline constexpr std::size_t num_tasks_per_worker_thread = 10000;
+#endif
+
 void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy scheduler)
 {
     fmt::print(std::cerr, "Testing scheduler: {}\n", scheduler);
@@ -53,7 +59,7 @@ void test_scheduler(int argc, char* argv[], pika::resource::scheduling_policy sc
 
     while (t.elapsed() < 2)
     {
-        for (std::size_t i = 0; i < default_pool_threads * 10000; ++i)
+        for (std::size_t i = 0; i < default_pool_threads * num_tasks_per_worker_thread; ++i)
         {
             ex::execute(ex::thread_pool_scheduler{&default_pool}, [] {});
         }

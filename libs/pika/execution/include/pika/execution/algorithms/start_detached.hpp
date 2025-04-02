@@ -50,7 +50,7 @@ namespace pika::start_detached_detail {
 
                 if constexpr (std::is_same_v<std::decay_t<Error>, std::exception_ptr>)
                 {
-                    std::rethrow_exception(PIKA_MOVE(error));
+                    std::rethrow_exception(std::move(error));
                 }
 
                 PIKA_ASSERT_MSG(false,
@@ -69,7 +69,7 @@ namespace pika::start_detached_detail {
             template <typename... Ts>
             void set_value(Ts&&...) && noexcept
             {
-                auto r = PIKA_MOVE(*this);
+                auto r = std::move(*this);
                 r.op_state.release();
             }
         };
@@ -90,7 +90,7 @@ namespace pika::start_detached_detail {
         explicit operation_state_holder(Sender_&& sender, allocator_type const& alloc)
           : alloc(alloc)
           , op_state(pika::execution::experimental::connect(
-                PIKA_FORWARD(Sender_, sender), start_detached_receiver{*this}))
+                std::forward<Sender_>(sender), start_detached_receiver{*this}))
         {
             pika::execution::experimental::start(op_state);
         }
@@ -133,7 +133,7 @@ namespace pika::execution::experimental {
             unique_ptr p(allocator_traits::allocate(alloc, 1),
                 pika::detail::allocator_deleter<other_allocator>{alloc});
 
-            new (p.get()) operation_state_type{PIKA_FORWARD(Sender, sender), alloc};
+            new (p.get()) operation_state_type{std::forward<Sender>(sender), alloc};
             PIKA_UNUSED(p.release());
         }
     } start_detached{};

@@ -64,35 +64,22 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::boost :
                 execution::thread_priority::normal;
 
-            auto completion_snd = [=](MPI_Request request) -> unique_any_sender<> {
-                if (!completions_inline)    // not inline : a transfer is required
-                {
-                    if (request == MPI_REQUEST_NULL)
-                    {
-                        return ex::schedule(default_pool_scheduler(p));
-                    }
-                    return just(request) | trigger_mpi(mode) |
-                        ex::continues_on(default_pool_scheduler(p));
-                }
-                if (request == MPI_REQUEST_NULL) { return just(); }
-                return just(request) | trigger_mpi(mode);
+            auto f_completion = [f = std::forward<F>(f), mode, completions_inline, p](
+                                    auto&... args) mutable -> unique_any_sender<> {
+                unique_any_sender<> s = just(std::forward_as_tuple(args...)) | unpack() |
+                    dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                if (completions_inline) { return s; }
+                else { return std::move(s) | continues_on(default_pool_scheduler(p)); }
             };
 
             if (requests_inline)
             {
-                return std::forward<Sender>(sender) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                            dispatch_mpi(std::move(f)) | let_value(completion_snd);
-                    });
+                return std::forward<Sender>(sender) | let_value(std::move(f_completion));
             }
             else
             {
                 return std::forward<Sender>(sender) | continues_on(mpi_pool_scheduler(p)) |
-                    let_value([=, f = std::forward<F>(f)](auto&... args) mutable {
-                        return just(std::forward_as_tuple(args...)) | ex::unpack() |
-                            dispatch_mpi(std::move(f)) | let_value(completion_snd);
-                    });
+                    let_value(std::move(f_completion));
             }
         }
 
@@ -103,7 +90,7 @@ namespace pika::mpi::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(transform_mpi_t, F&& f)
         {
             return pika::execution::experimental::detail::partial_algorithm<transform_mpi_t, F>{
-                PIKA_FORWARD(F, f)};
+                std::forward<F>(f)};
         }
 
     } transform_mpi{};

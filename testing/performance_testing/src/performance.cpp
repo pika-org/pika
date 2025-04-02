@@ -31,7 +31,7 @@ namespace pika::util {
     }    // namespace detail
 
     void perftests_report(
-        std::string const& name, const std::size_t steps, detail::function<void(void)>&& test)
+        std::string const& name, std::size_t const steps, detail::function<void(void)>&& test)
     {
         if (steps == 0) return;
         // First iteration to cache the data

@@ -24,8 +24,8 @@ namespace pika::util {
         iterator_range() = default;
 
         PIKA_HOST_DEVICE iterator_range(Iterator iterator, Sentinel sentinel)
-          : _iterator(PIKA_MOVE(iterator))
-          , _sentinel(PIKA_MOVE(sentinel))
+          : _iterator(std::move(iterator))
+          , _sentinel(std::move(sentinel))
         {
         }
 

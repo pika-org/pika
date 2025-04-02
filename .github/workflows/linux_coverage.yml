@@ -19,7 +19,7 @@ jobs:
   build:
     name: github/linux/coverage
     runs-on: ubuntu-24.04
-    container: pikaorg/pika-ci-base:28
+    container: pikaorg/pika-ci-base:29
 
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +62,9 @@ jobs:
             # only user available in the container. Mistakes will only affect the current step.
             export OMPI_ALLOW_RUN_AS_ROOT=1
             export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+            export PIKA_INSTALL_SIGNAL_HANDLERS=1
+            export PIKA_USE_GUARD_PAGES=1
 
             ctest -j2 --timeout 120 --output-on-failure
       - name: Generate coverage report

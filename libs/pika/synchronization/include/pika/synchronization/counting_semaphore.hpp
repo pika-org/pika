@@ -88,7 +88,7 @@ namespace pika {
         void release(std::ptrdiff_t update = 1)
         {
             std::unique_lock<mutex_type> l(mtx_);
-            sem_.signal(PIKA_MOVE(l), update);
+            sem_.signal(std::move(l), update);
         }
 
         // Effects:         Attempts to atomically decrement counter if it is

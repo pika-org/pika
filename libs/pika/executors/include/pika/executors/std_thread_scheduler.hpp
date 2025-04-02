@@ -16,6 +16,7 @@
 #include <exception>
 #include <thread>
 #include <type_traits>
+#include <utility>
 
 namespace pika::execution::experimental {
     struct std_thread_scheduler
@@ -30,7 +31,7 @@ namespace pika::execution::experimental {
         template <typename F>
         friend void tag_invoke(execute_t, std_thread_scheduler const&, F&& f)
         {
-            std::thread t{PIKA_FORWARD(F, f)};
+            std::thread t{std::forward<F>(f)};
             t.detach();
         }
 
@@ -43,7 +44,7 @@ namespace pika::execution::experimental {
                 typename = std::enable_if_t<
                     std::is_same_v<std::decay_t<Receiver_>, std::decay_t<Receiver>>>>
             operation_state(Receiver_&& receiver)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
             {
             }
             operation_state(operation_state&&) = delete;
@@ -51,18 +52,18 @@ namespace pika::execution::experimental {
             operation_state& operator=(operation_state&&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        std::thread t{[&os]() mutable {
-                            pika::execution::experimental::set_value(PIKA_MOVE(os.receiver));
+                        std::thread t{[&]() mutable {
+                            pika::execution::experimental::set_value(std::move(receiver));
                         }};
                         t.detach();
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            PIKA_MOVE(os.receiver), PIKA_MOVE(ep));
+                            std::move(receiver), std::move(ep));
                     });
             }
         };
@@ -84,10 +85,9 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Receiver>
-            tag_invoke(connect_t, sender const&, Receiver&& receiver)
+            operation_state<Receiver> connect(Receiver&& receiver) const&
             {
-                return {PIKA_FORWARD(Receiver, receiver)};
+                return {std::forward<Receiver>(receiver)};
             }
 
             struct env
@@ -101,11 +101,7 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend constexpr env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const&) noexcept
-            {
-                return {};
-            }
+            constexpr env get_env() const& noexcept { return {}; }
         };
 
         friend sender tag_invoke(schedule_t, std_thread_scheduler const&) { return {}; }

@@ -10,7 +10,8 @@ include:
 
 .variables_clang13_config:
   variables:
-    SPACK_ARCH: linux-ubuntu22.04-zen2
+    SPACK_ARCH: linux-ubuntu24.04-zen2
+    BASE_COMPILER: gcc@10
     COMPILER: clang@13.0.1
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} cxxflags=-stdlib=libc++ malloc=system \
@@ -23,19 +24,19 @@ include:
 clang13_spack_compiler_image:
   extends:
     - .variables_clang13_config
-    - .compiler_image_template_rosa
+    - .compiler_image_template_zen2
 
 clang13_spack_image:
   needs: [clang13_spack_compiler_image]
   extends:
     - .variables_clang13_config
-    - .dependencies_image_template_rosa
+    - .dependencies_image_template_zen2
 
 clang13_build:
   needs: [clang13_spack_image]
   extends:
     - .variables_clang13_config
-    - .build_template_rosa
+    - .build_template_zen2
 
 .clang13_test_common:
   needs: [clang13_build]

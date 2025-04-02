@@ -63,7 +63,7 @@ namespace pika::when_all_impl {
             {
                 try
                 {
-                    r.op_state.error = PIKA_FORWARD(Error, error);
+                    r.op_state.error = std::forward<Error>(error);
                 }
                 catch (...)
                 {
@@ -86,7 +86,7 @@ namespace pika::when_all_impl {
         auto set_value_helper(pika::util::detail::index_pack<Is...>, Ts&&... ts)
             -> decltype((std::declval<typename OperationState::value_types_storage_type>()
                                 .template get<OperationState::i_storage_offset + Is>()
-                                .emplace(PIKA_FORWARD(Ts, ts)),
+                                .emplace(std::forward<Ts>(ts)),
                             ...),
                 void())
         {
@@ -94,7 +94,7 @@ namespace pika::when_all_impl {
             // emplace the values using the offset calculated while
             // constructing the operation state.
             (op_state.ts.template get<OperationState::i_storage_offset + Is>().emplace(
-                 PIKA_FORWARD(Ts, ts)),
+                 std::forward<Ts>(ts)),
                 ...);
         }
 
@@ -103,7 +103,7 @@ namespace pika::when_all_impl {
 
         template <typename... Ts>
         auto set_value(Ts&&... ts) && noexcept
-            -> decltype(set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...), void())
+            -> decltype(set_value_helper(index_pack_type{}, std::forward<Ts>(ts)...), void())
         {
             auto r = std::move(*this);
             if constexpr (OperationState::sender_pack_size > 0)
@@ -112,7 +112,7 @@ namespace pika::when_all_impl {
                 {
                     try
                     {
-                        r.set_value_helper(index_pack_type{}, PIKA_FORWARD(Ts, ts)...);
+                        r.set_value_helper(index_pack_type{}, std::forward<Ts>(ts)...);
                     }
                     catch (...)
                     {
@@ -130,23 +130,14 @@ namespace pika::when_all_impl {
     };
 
     template <typename... Senders>
-    struct when_all_sender_impl
-    {
-        struct when_all_sender_type;
-    };
-
-    template <typename... Senders>
-    using when_all_sender = typename when_all_sender_impl<Senders...>::when_all_sender_type;
-
-    template <typename... Senders>
-    struct when_all_sender_impl<Senders...>::when_all_sender_type
+    struct when_all_sender
     {
         using senders_type = pika::util::detail::member_pack_for<std::decay_t<Senders>...>;
         senders_type senders;
 
         template <typename... Senders_>
-        explicit constexpr when_all_sender_type(Senders_&&... senders)
-          : senders(std::piecewise_construct, PIKA_FORWARD(Senders_, senders)...)
+        explicit constexpr when_all_sender(Senders_&&... senders)
+          : senders(std::piecewise_construct, std::forward<Senders_>(senders)...)
         {
         }
 
@@ -242,12 +233,12 @@ namespace pika::when_all_impl {
 
             template <typename Receiver_, typename Senders_>
             operation_state(Receiver_&& receiver, Senders_&& senders)
-              : receiver(PIKA_FORWARD(Receiver_, receiver))
+              : receiver(std::forward<Receiver_>(receiver))
               , op_state(pika::execution::experimental::connect(
 # if defined(PIKA_CUDA_VERSION)
                     std::forward<Senders_>(senders).template get<i>(),
 # else
-                    PIKA_FORWARD(Senders_, senders).template get<i>(),
+                    std::forward<Senders_>(senders).template get<i>(),
 # endif
                     when_all_receiver<operation_state>(*this)))
             {
@@ -265,7 +256,7 @@ namespace pika::when_all_impl {
                 pika::util::detail::member_pack<pika::util::detail::index_pack<Is...>, Ts...>& ts)
             {
                 pika::execution::experimental::set_value(
-                    PIKA_MOVE(receiver), PIKA_MOVE(*(ts.template get<Is>()))...);
+                    std::move(receiver), std::move(*(ts.template get<Is>()))...);
             }
 
             void finish() noexcept
@@ -278,11 +269,11 @@ namespace pika::when_all_impl {
                         pika::detail::visit(
                             [this](auto&& error) {
                                 pika::execution::experimental::set_error(
-                                    PIKA_MOVE(receiver), PIKA_FORWARD(decltype(error), error));
+                                    std::move(receiver), std::forward<decltype(error)>(error));
                             },
-                            PIKA_MOVE(*error));
+                            std::move(*error));
                     }
-                    else { pika::execution::experimental::set_stopped(PIKA_MOVE(receiver)); }
+                    else { pika::execution::experimental::set_stopped(std::move(receiver)); }
                 }
             }
         };
@@ -310,12 +301,12 @@ namespace pika::when_all_impl {
 
             template <typename Receiver_, typename SendersPack_>
             operation_state(Receiver_&& receiver, SendersPack_&& senders)
-              : base_type(PIKA_FORWARD(Receiver_, receiver), PIKA_FORWARD(SendersPack_, senders))
+              : base_type(std::forward<Receiver_>(receiver), std::forward<SendersPack_>(senders))
               , op_state(pika::execution::experimental::connect(
 # if defined(PIKA_CUDA_VERSION)
                     std::forward<SendersPack_>(senders).template get<i>(),
 # else
-                    PIKA_FORWARD(SendersPack_, senders).template get<i>(),
+                    std::forward<SendersPack_>(senders).template get<i>(),
 # endif
                     when_all_receiver<operation_state>(*this)))
             {
@@ -333,27 +324,18 @@ namespace pika::when_all_impl {
             }
         };
 
-        template <typename Receiver, typename SendersPack>
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state<Receiver, SendersPack, num_predecessors - 1>& os) noexcept
-        {
-            os.start();
-        }
-
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
             return operation_state<Receiver, senders_type&&, num_predecessors - 1>(
-                PIKA_FORWARD(Receiver, receiver), PIKA_MOVE(s.senders));
+                std::forward<Receiver>(receiver), std::move(senders));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_sender_type const& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return operation_state<Receiver, senders_type&, num_predecessors - 1>(
-                PIKA_FORWARD(Receiver, receiver), s.senders);
+                std::forward<Receiver>(receiver), senders);
         }
     };
 }    // namespace pika::when_all_impl
@@ -371,7 +353,7 @@ namespace pika::execution::experimental {
         friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(when_all_t, Senders&&... senders)
         {
             return pika::when_all_impl::when_all_sender<Senders...>{
-                PIKA_FORWARD(Senders, senders)...};
+                std::forward<Senders>(senders)...};
         }
     } when_all{};
 }    // namespace pika::execution::experimental

@@ -432,11 +432,6 @@ function(pika_check_for_cxx20_trivial_virtual_destructor_gpu)
       set(trivial_virtual_destructor_test_extension "hip")
     endif()
 
-    set(extra_cxxflags)
-    if(PIKA_WITH_CUDA AND CMAKE_CXX_COMPILER_ID STREQUAL "NVHPC")
-      set(extra_cxxflags "-x cu")
-    endif()
-
     pika_add_config_test(
       PIKA_WITH_CXX20_TRIVIAL_VIRTUAL_DESTRUCTOR_GPU
       SOURCE
@@ -506,6 +501,7 @@ function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS
     SOURCE cmake/tests/check_openmpi_continuations.cpp
+    INCLUDE_DIRECTORIES ${MPI_CXX_INCLUDE_DIRS}
     FILE ${ARGN}
   )
 endfunction()
