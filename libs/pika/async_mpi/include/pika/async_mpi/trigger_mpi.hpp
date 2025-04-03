@@ -80,7 +80,7 @@ namespace pika::trigger_mpi_detail {
                 if (mpi::detail::poll_request(request))
                 {
 #ifdef PIKA_HAVE_APEX
-                    apex::scoped_timer apex_ invoke("pika::mpi::trigger");
+                    apex::scoped_timer apex_invoke("pika::mpi::trigger");
 #endif
                     PIKA_DETAIL_DP(mpi::detail::mpi_tran<7>,
                         debug(str<>("trigger_mpi_recv"), "eager poll ok", ptr(request)));
