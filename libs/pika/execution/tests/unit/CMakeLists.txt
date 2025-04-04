@@ -6,6 +6,7 @@
 
 set(tests
     algorithm_bulk
+    algorithm_continues_on
     algorithm_drop_operation_state
     algorithm_drop_value
     algorithm_ensure_started
@@ -20,7 +21,6 @@ set(tests
     algorithm_start_detached
     algorithm_sync_wait
     algorithm_then
-    algorithm_transfer
     algorithm_transfer_just
     algorithm_unpack
     algorithm_when_all
