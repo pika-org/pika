@@ -19,6 +19,7 @@
 #pragma once
 
 #include <pika/config.hpp>
+#include <pika/concurrency/cache_line_data.hpp>
 #include <pika/concurrency/detail/freelist.hpp>
 #include <pika/concurrency/detail/tagged_ptr_pair.hpp>
 
@@ -178,7 +179,7 @@ namespace pika::concurrency::detail {
         pool pool_;
 
         static constexpr std::size_t padding_size =
-            BOOST_LOCKFREE_CACHELINE_BYTES - sizeof(anchor);    //-V103
+            pika::concurrency::detail::get_cache_line_size() - sizeof(anchor);    //-V103
         char padding[padding_size];
 
         node* alloc_node(node* lptr, node* rptr, T const& v, tag_t ltag = 0, tag_t rtag = 0)
