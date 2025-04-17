@@ -895,9 +895,13 @@ namespace pika::detail {
                 PIKA_LOG(warn,
                     "The pika runtime will be started with only one worker thread because the "
                     "process mask has restricted the available resources to only one thread. If "
-                    "this is unintentional make sure the process mask contains the resources "
-                    "you need or use --pika:ignore-process-mask to use all resources. Use "
-                    "--pika:print-bind to print the thread bindings used by pika.");
+                    "this is unintentional make sure the process mask contains the resources you "
+                    "need or use the environment variable PIKA_IGNORE_PROCESS_MASK=1 to use all "
+                    "resources. Set PIKA_PRINT_BIND to any value to print the thread bindings used "
+                    "by pika. See "
+                    "https://pikacpp.org/"
+                    "usage.html#controlling-the-number-of-threads-and-thread-bindings for more "
+                    "information.");
             }
             else if (num_cores_ == 1 && get_number_of_default_cores(false) != 1 &&
                 !command_line_arguments_given)
@@ -906,8 +910,12 @@ namespace pika::detail {
                     "The pika runtime will be started on only one core with {} worker threads "
                     "because the process mask has restricted the available resources to only one "
                     "core. If this is unintentional make sure the process mask contains the "
-                    "resources you need or use --pika:ignore-process-mask to use all resources. "
-                    "Use --pika:print-bind to print the thread bindings used by pika.",
+                    "resources you need or use the environment variable PIKA_IGNORE_PROCESS_MASK=1 "
+                    "to use all resources. Set PIKA_PRINT_BIND to any value to print the thread "
+                    "bindings used by pika. See "
+                    "https://pikacpp.org/"
+                    "usage.html#controlling-the-number-of-threads-and-thread-bindings for more "
+                    "information.",
                     num_threads_);
             }
         }
