@@ -12,7 +12,6 @@
 #include <pika/assert.hpp>
 #include <pika/async_mpi/dispatch_mpi.hpp>
 #include <pika/async_mpi/mpi_polling.hpp>
-#include <pika/async_mpi/trigger_mpi.hpp>
 #include <pika/concepts/concepts.hpp>
 #include <pika/debugging/print.hpp>
 #include <pika/execution/algorithms/continues_on.hpp>
@@ -67,7 +66,7 @@ namespace pika::mpi::experimental {
             auto f_completion = [f = std::forward<F>(f), mode, completions_inline, p](
                                     auto&... args) mutable -> unique_any_sender<> {
                 unique_any_sender<> s = just(std::forward_as_tuple(args...)) | unpack() |
-                    dispatch_mpi(std::move(f)) | trigger_mpi(mode);
+                    dispatch_mpi(std::move(f), mode);
                 if (completions_inline) { return s; }
                 else { return std::move(s) | continues_on(default_pool_scheduler(p)); }
             };
