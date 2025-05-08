@@ -102,6 +102,7 @@ namespace pika::mpi::experimental::detail {
             [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(
                     mpi_tran<5>, debug(str<>("callback_void_suspend_resume"), "status", status));
+                op_state.ts = {};
                 // wake up the suspended thread
                 {
                     std::lock_guard lk(op_state.mutex);
@@ -123,6 +124,7 @@ namespace pika::mpi::experimental::detail {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("schedule_task_callback")));
+                op_state.ts = {};
                 if (status != MPI_SUCCESS)
                 {
                     ex::set_error(std::move(op_state.r),
@@ -156,6 +158,7 @@ namespace pika::mpi::experimental::detail {
         detail::add_request_callback(
             [&op_state](int status) mutable {
                 PIKA_DETAIL_DP(mpi_tran<5>, debug(str<>("callback_void")));
+                op_state.ts = {};
                 set_value_error_helper(status, std::move(op_state.r));
             },
             op_state.request);
