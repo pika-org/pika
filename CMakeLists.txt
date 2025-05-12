@@ -1152,13 +1152,6 @@ else()
     pika_add_compile_flag_if_available(-Wno-delete-non-virtual-dtor)
   endif()
 
-  # Check if our libraries have unresolved symbols
-  if(NOT APPLE
-     AND NOT WIN32
-     AND NOT PIKA_WITH_SANITIZERS
-  )
-    pika_add_link_flag_if_available(-Wl,-z,defs)
-  endif()
   if(WIN32)
     target_link_libraries(pika_base_libraries INTERFACE psapi WS2_32 mswsock)
   endif()
