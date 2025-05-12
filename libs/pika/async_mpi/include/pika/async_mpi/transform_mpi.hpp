@@ -46,7 +46,7 @@ namespace pika::transform_mpi_detail {
         PIKA_NO_UNIQUE_ADDRESS F f;
 
         std::size_t mode_flags;
-        int status;
+        int status{MPI_SUCCESS};
 
         // these vars are needed by suspend/resume mode
         bool completed{false};
@@ -110,7 +110,6 @@ namespace pika::transform_mpi_detail {
 #ifdef PIKA_HAVE_APEX
                 apex::scoped_timer apex_post("pika::mpi::post");
 #endif
-                int status = MPI_SUCCESS;
                 // execute the mpi function call, passing in the request object
                 if constexpr (std::is_void_v<invoke_result_type>)
                 {
@@ -123,7 +122,7 @@ namespace pika::transform_mpi_detail {
                 else
                 {
                     static_assert(std::is_same_v<invoke_result_type, int>);
-                    status = std::apply(
+                    r.op_state.status = std::apply(
                         [&](auto&... ts) mutable {
                             return PIKA_INVOKE(std::move(r.op_state.f), ts..., &r.op_state.request);
                         },
@@ -135,13 +134,14 @@ namespace pika::transform_mpi_detail {
                 PIKA_ASSERT_MSG(r.op_state.request != MPI_REQUEST_NULL,
                     "MPI_REQUEST_NULL returned from mpi invocation");
 
-                if (status != MPI_SUCCESS)
+                if (r.op_state.status != MPI_SUCCESS)
                 {
                     PIKA_DETAIL_DP(mpi::detail::mpi_tran<5>,
                         debug(str<>("set_error"), "status != MPI_SUCCESS",
-                            pika::mpi::detail::error_message(status)));
+                            pika::mpi::detail::error_message(r.op_state.status)));
                     ex::set_error(std::move(r.op_state.r),
-                        std::make_exception_ptr(pika::mpi::exception(status, "dispatch mpi")));
+                        std::make_exception_ptr(
+                            pika::mpi::exception(r.op_state.status, "dispatch mpi")));
                     return;
                 }
             }
