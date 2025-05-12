@@ -27,6 +27,7 @@
 #include <pika/mpi_base/mpi_exception.hpp>
 #include <pika/synchronization/condition_variable.hpp>
 
+#include <cstddef>
 #include <exception>
 #include <tuple>
 #include <type_traits>
@@ -44,7 +45,7 @@ namespace pika::transform_mpi_detail {
         PIKA_NO_UNIQUE_ADDRESS Receiver r;
         PIKA_NO_UNIQUE_ADDRESS F f;
 
-        int mode_flags;
+        std::size_t mode_flags;
         int status;
 
         // these vars are needed by suspend/resume mode
@@ -275,7 +276,7 @@ namespace pika::transform_mpi_detail {
         operation_state_type op_state;
 
         template <typename Receiver_, typename F_, typename Sender_>
-        operation_state(Receiver_&& r, F_&& f, int flags, Sender_&& sender)
+        operation_state(Receiver_&& r, F_&& f, std::size_t flags, Sender_&& sender)
           : r(std::forward<Receiver_>(r))
           , f(std::forward<F_>(f))
           , mode_flags{flags}
@@ -296,7 +297,7 @@ namespace pika::transform_mpi_detail {
 
         PIKA_NO_UNIQUE_ADDRESS Sender sender;
         PIKA_NO_UNIQUE_ADDRESS F f;
-        int completion_mode_flags;
+        std::size_t completion_mode_flags;
 
 #if defined(PIKA_HAVE_STDEXEC)
         template <typename...>
@@ -359,7 +360,7 @@ namespace pika::mpi::experimental {
             using pika::execution::experimental::unique_any_sender;
 
             // get mpi completion mode settings
-            auto mode = get_completion_mode();
+            std::size_t mode = get_completion_mode();
             bool completions_inline = use_inline_completion(mode);
             bool requests_inline = use_inline_request(mode);
 
