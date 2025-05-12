@@ -4,8 +4,6 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-/// \file parallel/algorithms/transform_xxx.hpp
-
 #pragma once
 
 #include <pika/config.hpp>
@@ -34,7 +32,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace pika::dispatch_mpi_detail {
+namespace pika::transform_mpi_detail {
     namespace ex = execution::experimental;
     namespace mpi = pika::mpi::experimental;
 
@@ -337,32 +335,9 @@ namespace pika::dispatch_mpi_detail {
         }
     };
 
-}    // namespace pika::dispatch_mpi_detail
+}    // namespace pika::transform_mpi_detail
 
 namespace pika::mpi::experimental {
-    inline constexpr struct dispatch_mpi_t final
-      : pika::functional::detail::tag_fallback<dispatch_mpi_t>
-    {
-    private:
-        template <typename Sender, typename F,
-            PIKA_CONCEPT_REQUIRES_(
-                pika::execution::experimental::is_sender_v<std::decay_t<Sender>>)>
-        friend constexpr PIKA_FORCEINLINE auto
-        tag_fallback_invoke(dispatch_mpi_t, Sender&& sender, F&& f, int flags)
-        {
-            return dispatch_mpi_detail::sender<std::decay_t<Sender>, std::decay_t<F>>{
-                std::forward<Sender>(sender), std::forward<F>(f), flags};
-        }
-
-        // TODO: flags -> mode, int -> std::size_t
-        template <typename F>
-        friend constexpr PIKA_FORCEINLINE auto tag_fallback_invoke(dispatch_mpi_t, F&& f, int flags)
-        {
-            return pika::execution::experimental::detail::partial_algorithm<dispatch_mpi_t, F, int>{
-                std::forward<F>(f), flags};
-        }
-    } dispatch_mpi{};
-
     inline constexpr struct transform_mpi_t final
       : pika::functional::detail::tag_fallback<transform_mpi_t>
     {
@@ -390,8 +365,9 @@ namespace pika::mpi::experimental {
                 execution::thread_priority::normal;
 
             auto f_completion = [&](auto&& sender) mutable -> unique_any_sender<> {
-                unique_any_sender<> s =
-                    std::forward<decltype(sender)>(sender) | dispatch_mpi(std::move(f), mode);
+                unique_any_sender<> s{
+                    transform_mpi_detail::sender<std::decay_t<decltype(sender)>, std::decay_t<F>>{
+                        std::forward<decltype(sender)>(sender), std::forward<F>(f), mode}};
                 if (completions_inline) { return s; }
                 else { return std::move(s) | continues_on(default_pool_scheduler(p)); }
             };
