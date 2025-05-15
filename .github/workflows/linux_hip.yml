@@ -37,6 +37,7 @@ jobs:
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,defs" \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_HIP=ON \
