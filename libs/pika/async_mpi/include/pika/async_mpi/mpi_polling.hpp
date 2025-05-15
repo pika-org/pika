@@ -133,23 +133,23 @@ namespace pika::mpi::experimental {
         }
 
         /// 1 bit defines high priority boost mode for pool transfers
-        inline bool use_priority_boost(int mode)
+        inline bool use_priority_boost(std::size_t mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::high_priority)) != 0;
         }
         /// 1 bit defines inline or transfer completion
-        inline bool use_inline_completion(int mode)
+        inline bool use_inline_completion(std::size_t mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::completion_inline)) != 0;
         }
         /// 1 bit defines inline or transfer mpi invocation
-        inline bool use_inline_request(int mode)
+        inline bool use_inline_request(std::size_t mode)
         {
             return (mode & pika::detail::to_underlying(handler_method::request_inline)) != 0;
         }
 
         /// used for debugging to show mode type in messages, should be removed
-        inline char const* mode_string(int flags)
+        inline char const* mode_string(std::size_t flags)
         {
             switch (get_handler_method(flags))
             {
