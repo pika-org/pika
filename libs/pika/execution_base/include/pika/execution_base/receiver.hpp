@@ -73,8 +73,6 @@ namespace pika::execution::experimental {
     ///       overload resolution performed in a context that include the declaration
     ///       `void set_error();`
     ///     * Otherwise, the expression is ill-formed.
-    ///
-    /// The customization is implemented in terms of `pika::functional::detail::tag_invoke`.
     template <typename R, typename E>
     void set_error(R&& r, E&& e);
 # endif
@@ -135,8 +133,18 @@ namespace pika::execution::experimental {
     } set_value{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_error_t : pika::functional::detail::tag_noexcept<set_error_t>
+    struct set_error_t
     {
+        template <typename Receiver, typename Error>
+        PIKA_FORCEINLINE constexpr auto
+        PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver, Error&& error) noexcept
+            -> decltype(std::forward<Receiver>(receiver).set_error(std::forward<Error>(error)))
+        {
+            static_assert(
+                noexcept(std::forward<Receiver>(receiver).set_error(std::forward<Error>(error))),
+                "std::execution receiver set_error member function must be noexcept");
+            return std::forward<Receiver>(receiver).set_error(std::forward<Error>(error));
+        }
     } set_error{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
@@ -200,31 +208,6 @@ namespace pika::execution::experimental {
     inline constexpr bool is_receiver_of_v = is_receiver_of<T, As...>::value;
 }    // namespace pika::execution::experimental
 #endif
-
-namespace pika::execution::experimental::detail {
-    template <typename CPO>
-    struct is_receiver_cpo : std::false_type
-    {
-    };
-
-    template <>
-    struct is_receiver_cpo<set_value_t> : std::true_type
-    {
-    };
-
-    template <>
-    struct is_receiver_cpo<set_error_t> : std::true_type
-    {
-    };
-
-    template <>
-    struct is_receiver_cpo<set_stopped_t> : std::true_type
-    {
-    };
-
-    template <typename CPO>
-    inline constexpr bool is_receiver_cpo_v = is_receiver_cpo<CPO>::value;
-}    // namespace pika::execution::experimental::detail
 
 #if !defined(PIKA_STDEXEC_RECEIVER_CONCEPT)
 # define PIKA_STDEXEC_RECEIVER_CONCEPT using is_receiver = void;

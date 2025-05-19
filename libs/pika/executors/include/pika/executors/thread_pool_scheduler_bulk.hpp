@@ -82,9 +82,9 @@ namespace pika::thread_pool_bulk_detail {
             operation_state* op_state;
 
             template <typename E>
-            friend void tag_invoke(
-                pika::execution::experimental::set_error_t, bulk_receiver&& r, E&& e) noexcept
+            void set_error(E&& e) && noexcept
             {
+                auto r = std::move(*this);
                 pika::execution::experimental::set_error(
                     std::move(r.op_state->receiver), std::forward<E>(e));
             }

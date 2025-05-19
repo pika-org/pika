@@ -104,9 +104,9 @@ namespace pika {
             OpState* op_state = nullptr;
 
             template <typename Error>
-            friend void tag_invoke(pika::execution::experimental::set_error_t,
-                require_started_receiver_type r, Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
+                auto r = std::move(*this);
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_error(
                     std::move(r.op_state->receiver), std::forward<Error>(error));

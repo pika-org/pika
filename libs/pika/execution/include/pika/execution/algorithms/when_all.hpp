@@ -56,9 +56,9 @@ namespace pika::when_all_impl {
         }
 
         template <typename Error>
-        friend void tag_invoke(pika::execution::experimental::set_error_t,
-            when_all_receiver_type&& r, Error&& error) noexcept
+        void set_error(Error&& error) && noexcept
         {
+            auto r = std::move(*this);
             if (!r.op_state.set_stopped_error_called.exchange(true))
             {
                 try

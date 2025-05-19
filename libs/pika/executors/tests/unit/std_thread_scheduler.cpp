@@ -57,7 +57,7 @@ struct check_context_receiver
     bool& executed;
 
     template <typename E>
-    friend void tag_invoke(ex::set_error_t, check_context_receiver&&, E&&) noexcept
+    void constexpr set_error(E&&) noexcept
     {
         PIKA_TEST(false);
     }
@@ -214,7 +214,7 @@ struct callback_receiver
     bool& executed;
 
     template <typename E>
-    friend void tag_invoke(ex::set_error_t, callback_receiver&&, E&&) noexcept
+    void constexpr set_error(E&&) noexcept
     {
         PIKA_TEST(false);
     }

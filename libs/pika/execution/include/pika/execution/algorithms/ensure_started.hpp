@@ -186,9 +186,9 @@ namespace pika::ensure_started_detail {
                 pika::intrusive_ptr<shared_state> state;
 
                 template <typename Error>
-                friend void tag_invoke(pika::execution::experimental::set_error_t,
-                    ensure_started_receiver r, Error&& error) noexcept
+                void set_error(Error&& error) && noexcept
                 {
+                    auto r = std::move(*this);
                     r.state->v.template emplace<error_type>(error_type(std::forward<Error>(error)));
                     r.state->set_predecessor_done();
                 }

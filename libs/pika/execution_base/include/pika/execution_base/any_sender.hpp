@@ -474,11 +474,7 @@ namespace pika::execution::experimental::detail {
             }
         }
 
-        friend void tag_invoke(pika::execution::experimental::set_error_t, any_receiver r,
-            std::exception_ptr ep) noexcept
-        {
-            r.receiver->set_error(std::move(ep));
-        }
+        void set_error(std::exception_ptr ep) && noexcept { receiver->set_error(std::move(ep)); }
 
         friend void tag_invoke(
             pika::execution::experimental::set_stopped_t, any_receiver r) noexcept
