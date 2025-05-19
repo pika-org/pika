@@ -50,7 +50,7 @@ namespace pika::start_detached_detail {
 
                 if constexpr (std::is_same_v<std::decay_t<Error>, std::exception_ptr>)
                 {
-                    std::rethrow_exception(std::move(error));
+                    std::rethrow_exception(std::forward<Error>(error));
                 }
 
                 PIKA_ASSERT_MSG(false,

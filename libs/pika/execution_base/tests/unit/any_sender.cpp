@@ -214,7 +214,6 @@ struct error_receiver
 
     std::atomic<bool>& set_error_called;
 
-    // Note: constexpr with try catch block only available from C++20
     void set_error(std::exception_ptr&& e) && noexcept
     {
         auto r = std::move(*this);
