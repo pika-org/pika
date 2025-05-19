@@ -39,7 +39,7 @@ int main()
         auto f = [](int x) { PIKA_TEST_EQ(x, 42); };
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
         auto os = ex::connect(std::move(s), std::move(r));
-        tag_invoke(ex::start, os);
+        ex::start(os);
         PIKA_TEST(set_value_called);
     }
 
@@ -247,8 +247,6 @@ int main()
         ex::start(os);
         PIKA_TEST(set_error_called);
     }
-
-    test_adl_isolation(ex::when_all(my_namespace::my_sender{}));
 
     return 0;
 }

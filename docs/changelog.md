@@ -6,6 +6,36 @@
 
 # Changelog
 
+## 0.33.0 (2025-04-02)
+
+### New features
+
+- The signal handlers were refactored and documented. There is now only one environment variable to enable pika's signal handlers (`PIKA_INSTALL_SIGNAL_HANDLERS`) and they are always available to enable at runtime. ([#1411](https://github.com/pika-org/pika/pull/1411), [#1412](https://github.com/pika-org/pika/pull/1412))
+- `async_rw_mutex` has been significantly refactored to avoid locking and unnecessary yielding. Some use cases may see better performance. Move and copy semantics of senders from `async_rw_mutex` have also been fixed. ([#1379](https://github.com/pika-org/pika/pull/1379))
+
+### Breaking changes
+
+### Bugfixes
+
+- Fix compilation of a few source files with unity builds disabled. ([#1403](https://github.com/pika-org/pika/pull/1403))
+- Fix detection of MPI Continuations support in OpenMPI. ([#1417](https://github.com/pika-org/pika/pull/1417))
+- Fix a broken `connect` overload in `transform_mpi`. ([#1421](https://github.com/pika-org/pika/pull/1421))
+
+## 0.32.0 (2025-02-05)
+
+### New features
+
+- More configuration options are now exposed as environment variables, such as `PIKA_THREADS`, `PIKA_BIND`, and `PIKA_IGNORE_PROCESS_MASK`. ([#1380](https://github.com/pika-org/pika/pull/1380), [#1387](https://github.com/pika-org/pika/pull/1387))
+
+### Breaking changes
+
+- The `start`, `connect`, and `get_env` CPOs now use member functions instead of `tag_invoke` to better align with P2300. ([#1392](https://github.com/pika-org/pika/pull/1392), [#1393](https://github.com/pika-org/pika/pull/1393), [#1394](https://github.com/pika-org/pika/pull/1394))
+- Official support for GCC 9, 10, and CUDA 11 has been removed. Use of these versions is not disallowed but no attempt will be made to fix issues for them. ([#1397](https://github.com/pika-org/pika/pull/1397))
+
+### Bugfixes
+
+- Together with the sender CPO changes, further changes have been made to reduce debug symbol bloat in sender implementations. ([#1390](https://github.com/pika-org/pika/pull/1390), [#1395](https://github.com/pika-org/pika/pull/1395))
+
 ## 0.31.0 (2024-12-18)
 
 ### New features

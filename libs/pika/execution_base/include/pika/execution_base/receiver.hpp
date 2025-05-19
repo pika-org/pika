@@ -138,6 +138,7 @@ namespace pika::execution::experimental {
         template <typename Receiver, typename Error>
         PIKA_FORCEINLINE constexpr auto
         PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver, Error&& error) noexcept
+            -> decltype(std::forward<Receiver>(receiver).set_error(std::forward<Error>(error)))
         {
             static_assert(
                 noexcept(std::forward<Receiver>(receiver).set_error(std::forward<Error>(error))),

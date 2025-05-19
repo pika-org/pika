@@ -151,13 +151,6 @@ void test_failure()
     }
 }
 
-void test_adl()
-{
-    auto s = ex::require_started(my_namespace::my_sender{});
-    test_adl_isolation(s);
-    tt::sync_wait(std::move(s));
-}
-
 enum class expect_exception
 {
     no,
@@ -352,7 +345,6 @@ int main()
     test_basics();
     test_pipe_operator();
     test_failure();
-    test_adl();
     test_no_exception();
     test_exception(exception_test_mode::no_discard);
     test_exception(exception_test_mode::discard);

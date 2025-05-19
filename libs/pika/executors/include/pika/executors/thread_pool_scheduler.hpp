@@ -159,19 +159,19 @@ namespace pika::execution::experimental {
             operation_state& operator=(operation_state&&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        os.scheduler.execute(
-                            [&os]() mutable {
-                                pika::execution::experimental::set_value(std::move(os.receiver));
+                        scheduler.execute(
+                            [&]() mutable {
+                                pika::execution::experimental::set_value(std::move(receiver));
                             },
-                            os.fallback_annotation);
+                            fallback_annotation);
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            std::move(os.receiver), std::move(ep));
+                            std::move(receiver), std::move(ep));
                     });
             }
         };
@@ -202,18 +202,16 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Scheduler, Receiver>
-            tag_invoke(connect_t, sender&& s, Receiver&& receiver)
+            operation_state<Scheduler, Receiver> connect(Receiver&& receiver) &&
             {
-                return {std::move(s.scheduler), std::forward<Receiver>(receiver),
-                    s.fallback_annotation};
+                return {
+                    std::move(scheduler), std::forward<Receiver>(receiver), fallback_annotation};
             }
 
             template <typename Receiver>
-            friend operation_state<Scheduler, Receiver>
-            tag_invoke(connect_t, sender const& s, Receiver&& receiver)
+            operation_state<Scheduler, Receiver> connect(Receiver&& receiver) const&
             {
-                return {s.scheduler, std::forward<Receiver>(receiver), s.fallback_annotation};
+                return {scheduler, std::forward<Receiver>(receiver), fallback_annotation};
             }
 
             struct env
@@ -229,11 +227,7 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const& s) noexcept
-            {
-                return {s.scheduler};
-            }
+            env get_env() const& noexcept { return {scheduler}; }
         };
 
         friend sender<thread_pool_scheduler> tag_invoke(schedule_t, thread_pool_scheduler&& sched)
@@ -270,8 +264,8 @@ namespace pika::execution::experimental {
         friend auto
         tag_invoke(schedule_from_t, thread_pool_scheduler&& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
-                std::forward<Sender>(predecessor_sender),
+            return schedule_from_detail::schedule_from_sender<std::decay_t<Sender>,
+                thread_pool_scheduler>{std::forward<Sender>(predecessor_sender),
                 with_annotation(std::move(scheduler), scheduler.get_fallback_annotation())};
         }
 
@@ -279,8 +273,8 @@ namespace pika::execution::experimental {
         friend auto tag_invoke(
             schedule_from_t, thread_pool_scheduler const& scheduler, Sender&& predecessor_sender)
         {
-            return schedule_from_detail::schedule_from_sender<Sender, thread_pool_scheduler>{
-                std::forward<Sender>(predecessor_sender),
+            return schedule_from_detail::schedule_from_sender<std::decay_t<Sender>,
+                thread_pool_scheduler>{std::forward<Sender>(predecessor_sender),
                 with_annotation(scheduler, scheduler.get_fallback_annotation())};
         }
 #endif

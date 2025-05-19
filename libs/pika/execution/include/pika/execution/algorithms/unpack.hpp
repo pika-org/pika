@@ -64,11 +64,7 @@ namespace pika::unpack_detail {
                 std::forward<Ts>(ts));
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, unpack_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
 #if defined(PIKA_HAVE_STDEXEC)
@@ -137,16 +133,7 @@ namespace pika::unpack_detail {
 #endif
 
     template <typename Sender>
-    struct unpack_sender_impl
-    {
-        struct unpack_sender_type;
-    };
-
-    template <typename Sender>
-    using unpack_sender = typename unpack_sender_impl<Sender>::unpack_sender_type;
-
-    template <typename Sender>
-    struct unpack_sender_impl<Sender>::unpack_sender_type
+    struct unpack_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -174,25 +161,22 @@ namespace pika::unpack_detail {
 #endif
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, unpack_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
             return pika::execution::experimental::connect(
-                std::move(s.sender), unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
+                std::move(sender), unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            unpack_sender_type const& r, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
+                sender, unpack_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, unpack_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::unpack_detail

@@ -59,24 +59,11 @@ namespace pika::drop_value_detail {
             pika::execution::experimental::set_value(std::move(r.receiver));
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, drop_value_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender>
-    struct drop_value_sender_impl
-    {
-        struct drop_value_sender_type;
-    };
-
-    template <typename Sender>
-    using drop_value_sender = typename drop_value_sender_impl<Sender>::drop_value_sender_type;
-
-    template <typename Sender>
-    struct drop_value_sender_impl<Sender>::drop_value_sender_type
+    struct drop_value_sender
     {
         PIKA_STDEXEC_SENDER_CONCEPT
 
@@ -105,25 +92,22 @@ namespace pika::drop_value_detail {
 #endif
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, drop_value_sender_type&& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(std::move(s.sender),
-                drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
+            return pika::execution::experimental::connect(
+                std::move(sender), drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            drop_value_sender_type const& r, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
+                sender, drop_value_receiver<Receiver>{std::forward<Receiver>(receiver)});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, drop_value_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::drop_value_detail

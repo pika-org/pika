@@ -21,65 +21,26 @@ namespace mylib {
 
     struct state_2
     {
-        friend void tag_invoke(pika::execution::experimental::start_t, state_2&) {}
+        void start() & {}
     };
 
     struct state_3
     {
-        friend void tag_invoke(pika::execution::experimental::start_t, state_3&) noexcept
-        {
-            start_called = true;
-        }
+        void start() & noexcept { start_called = true; }
     };
-
-    struct state_4
-    {
-    };
-
-    void tag_invoke(pika::execution::experimental::start_t, state_4&) {}
-
-    struct state_5
-    {
-    };
-
-    void tag_invoke(pika::execution::experimental::start_t, state_5&) noexcept
-    {
-        start_called = true;
-    }
 }    // namespace mylib
 
 int main()
 {
     static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_1>,
         "mylib::state_1 is not an operation state");
-#if defined(PIKA_HAVE_STDEXEC)
     static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_2>,
         "mylib::state_2 is an operation state");
-#else
-    static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_2>,
-        "mylib::state_2 is not an operation state");
-#endif
     static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_3>,
         "mylib::state_3 is an operation state");
-#if defined(PIKA_HAVE_STDEXEC)
-    static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_4>,
-        "mylib::state_4 is an operation state");
-#else
-    static_assert(!pika::execution::experimental::is_operation_state_v<mylib::state_4>,
-        "mylib::state_4 is not an operation state");
-#endif
-    static_assert(pika::execution::experimental::is_operation_state_v<mylib::state_5>,
-        "mylib::state_5 is an operation state");
 
     {
         mylib::state_3 state;
-
-        pika::execution::experimental::start(state);
-        PIKA_TEST(start_called);
-        start_called = false;
-    }
-    {
-        mylib::state_5 state;
 
         pika::execution::experimental::start(state);
         PIKA_TEST(start_called);

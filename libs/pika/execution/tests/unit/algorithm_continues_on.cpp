@@ -58,15 +58,11 @@ struct scheduler_schedule_from
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -92,9 +88,9 @@ struct scheduler_schedule_from
             }
         };
 
-        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -117,15 +113,16 @@ auto tag_invoke(ex::schedule_from_t, scheduler_schedule_from sched, Sender&&)
         sched.schedule_called, sched.execute_called, sched.tag_invoke_overload_called};
 }
 
-// transfer customization
-struct scheduler_transfer
+// continues_on customization
+struct scheduler_continues_on
 {
     std::reference_wrapper<std::atomic<bool>> schedule_called;
     std::reference_wrapper<std::atomic<bool>> execute_called;
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
     template <typename F>
-    friend void tag_invoke(pika::execution::experimental::execute_t, scheduler_transfer s, F&& f)
+    friend void
+    tag_invoke(pika::execution::experimental::execute_t, scheduler_continues_on s, F&& f)
     {
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
@@ -155,20 +152,16 @@ struct scheduler_transfer
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
 
-        friend scheduler_transfer tag_invoke(
+        friend scheduler_continues_on tag_invoke(
             pika::execution::experimental::get_completion_scheduler_t<
                 pika::execution::experimental::set_value_t>,
             sender const& s) noexcept
@@ -182,33 +175,33 @@ struct scheduler_transfer
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
-            friend scheduler_transfer tag_invoke(
+            friend scheduler_continues_on tag_invoke(
                 ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
             {
                 return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
             }
         };
 
-        friend env tag_invoke(ex::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
-    friend sender tag_invoke(pika::execution::experimental::schedule_t, scheduler_transfer s)
+    friend sender tag_invoke(pika::execution::experimental::schedule_t, scheduler_continues_on s)
     {
         s.schedule_called.get() = true;
         return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
     }
 
-    bool operator==(scheduler_transfer const&) const noexcept { return true; }
+    bool operator==(scheduler_continues_on const&) const noexcept { return true; }
 
-    bool operator!=(scheduler_transfer const&) const noexcept { return false; }
+    bool operator!=(scheduler_continues_on const&) const noexcept { return false; }
 };
 
 template <typename Sender, typename Scheduler>
-decltype(auto)
-tag_invoke(ex::transfer_t, scheduler_transfer completion_sched, Sender&& sender, Scheduler&& sched)
+decltype(auto) tag_invoke(
+    ex::continues_on_t, scheduler_continues_on completion_sched, Sender&& sender, Scheduler&& sched)
 {
     completion_sched.tag_invoke_overload_called.get() = true;
     return ex::schedule_from(std::forward<Scheduler>(sched), std::forward<Sender>(sender));
@@ -216,28 +209,25 @@ tag_invoke(ex::transfer_t, scheduler_transfer completion_sched, Sender&& sender,
 
 struct sender_with_completion_scheduler : void_sender
 {
-    scheduler_transfer sched;
+    scheduler_continues_on sched;
 
-    explicit sender_with_completion_scheduler(scheduler_transfer sched)
+    explicit sender_with_completion_scheduler(scheduler_continues_on sched)
       : sched(std::move(sched))
     {
     }
 
     struct env
     {
-        scheduler_transfer scheduler;
+        scheduler_continues_on scheduler;
 
-        friend scheduler_transfer tag_invoke(
+        friend scheduler_continues_on tag_invoke(
             ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
         {
             return e.scheduler;
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender_with_completion_scheduler const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 int main()
@@ -248,7 +238,7 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer(ex::just(),
+        auto s = ex::continues_on(ex::just(),
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [] {};
@@ -266,7 +256,7 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer(ex::just(3),
+        auto s = ex::continues_on(ex::just(3),
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
@@ -285,7 +275,7 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         int x = 3;
-        auto s = ex::transfer(const_reference_sender<decltype(x)>{x},
+        auto s = ex::continues_on(const_reference_sender<decltype(x)>{x},
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
@@ -303,7 +293,7 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer(ex::just(custom_type_non_default_constructible{42}),
+        auto s = ex::continues_on(ex::just(custom_type_non_default_constructible{42}),
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
@@ -321,7 +311,7 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer(ex::just(custom_type_non_default_constructible_non_copyable{42}),
+        auto s = ex::continues_on(ex::just(custom_type_non_default_constructible_non_copyable{42}),
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](auto x) { PIKA_TEST_EQ(x.x, 42); };
@@ -339,7 +329,7 @@ int main()
         std::atomic<bool> scheduler_execute_called{false};
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
-        auto s = ex::transfer(ex::just(std::string("hello"), 3),
+        auto s = ex::continues_on(ex::just(std::string("hello"), 3),
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](std::string s, int x) {
@@ -361,7 +351,7 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         int x = 3;
-        auto s = ex::transfer(const_reference_sender<int>{x},
+        auto s = ex::continues_on(const_reference_sender<int>{x},
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](int x) { PIKA_TEST_EQ(x, 3); };
@@ -381,7 +371,7 @@ int main()
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
         auto s = ex::just(std::string("hello"), 3) |
-            ex::transfer(scheduler{
+            ex::continues_on(scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [](std::string s, int x) {
             PIKA_TEST_EQ(s, std::string("hello"));
@@ -402,7 +392,7 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
-        auto s = ex::transfer(ex::just(),
+        auto s = ex::continues_on(ex::just(),
             scheduler_schedule_from{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto f = [] {};
@@ -424,13 +414,13 @@ int main()
         std::atomic<bool> destination_scheduler_schedule_called{false};
         std::atomic<bool> destination_scheduler_execute_called{false};
 
-        scheduler_transfer source_scheduler{source_scheduler_schedule_called,
+        scheduler_continues_on source_scheduler{source_scheduler_schedule_called,
             source_scheduler_execute_called, source_scheduler_tag_invoke_overload_called};
         scheduler destination_scheduler{
             scheduler{destination_scheduler_schedule_called, destination_scheduler_execute_called,
                 destination_scheduler_tag_invoke_overload_called}};
 
-        auto s = ex::transfer(
+        auto s = ex::continues_on(
             sender_with_completion_scheduler{std::move(source_scheduler)}, destination_scheduler);
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -454,12 +444,12 @@ int main()
         std::atomic<bool> destination_scheduler_schedule_called{false};
         std::atomic<bool> destination_scheduler_execute_called{false};
 
-        scheduler_transfer source_scheduler{source_scheduler_schedule_called,
+        scheduler_continues_on source_scheduler{source_scheduler_schedule_called,
             source_scheduler_execute_called, source_scheduler_tag_invoke_overload_called};
         scheduler_schedule_from destination_scheduler{destination_scheduler_schedule_called,
             destination_scheduler_execute_called, destination_scheduler_tag_invoke_overload_called};
 
-        auto s = ex::transfer(
+        auto s = ex::continues_on(
             sender_with_completion_scheduler{std::move(source_scheduler)}, destination_scheduler);
         auto f = [] {};
         auto r = callback_receiver<decltype(f)>{f, set_value_called};
@@ -480,7 +470,7 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
-        auto s = ex::transfer(error_sender{},
+        auto s = ex::continues_on(error_sender{},
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
@@ -489,12 +479,11 @@ int main()
         ex::start(os);
         PIKA_TEST(set_error_called);
         PIKA_TEST(!tag_invoke_overload_called);
-        // The reference implementation transfers to the given scheduler no
-        // matter the signal from the predecessor sender. Our implementation
-        // only transfers on set_value. In this particular case the reference
-        // implementation puts in more effort call set_error on the scheduler's
-        // context, but it can't be guaranteed in all cases which is why
-        // transfer doesn't provide a completion scheduler for set_error.
+        // The reference implementation transfers to the given scheduler no matter the signal from
+        // the predecessor sender. Our implementation only transfers on set_value. In this
+        // particular case the reference implementation puts in more effort call set_error on the
+        // scheduler's context, but it can't be guaranteed in all cases which is why continues_on
+        // doesn't provide a completion scheduler for set_error.
 #if defined(PIKA_HAVE_STDEXEC)
         PIKA_TEST(scheduler_schedule_called);
 #else
@@ -508,7 +497,7 @@ int main()
         std::atomic<bool> tag_invoke_overload_called{false};
         std::atomic<bool> scheduler_schedule_called{false};
         std::atomic<bool> scheduler_execute_called{false};
-        auto s = ex::transfer(const_reference_error_sender{},
+        auto s = ex::continues_on(const_reference_error_sender{},
             scheduler{
                 scheduler_schedule_called, scheduler_execute_called, tag_invoke_overload_called});
         auto r = error_callback_receiver<decltype(check_exception_ptr)>{
@@ -517,12 +506,12 @@ int main()
         ex::start(os);
         PIKA_TEST(set_error_called);
         PIKA_TEST(!tag_invoke_overload_called);
-        // The reference implementation transfers to the given scheduler no
+        // The reference implementation continues_on to the given scheduler no
         // matter the signal from the predecessor sender. Our implementation
-        // only transfers on set_value. In this particular case the reference
+        // only continues_on on set_value. In this particular case the reference
         // implementation puts in more effort call set_error on the scheduler's
         // context, but it can't be guaranteed in all cases which is why
-        // transfer doesn't provide a completion scheduler for set_error.
+        // continues_on doesn't provide a completion scheduler for set_error.
 #if defined(PIKA_HAVE_STDEXEC)
         PIKA_TEST(scheduler_schedule_called);
 #else
@@ -530,8 +519,6 @@ int main()
 #endif
         PIKA_TEST(!scheduler_execute_called);
     }
-
-    test_adl_isolation(ex::transfer(ex::just(), my_namespace::my_scheduler{}));
 
     return 0;
 }

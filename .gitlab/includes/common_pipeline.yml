@@ -18,7 +18,8 @@ variables:
                          -DPIKA_WITH_COMPILER_WARNINGS_AS_ERRORS=ON \
                          -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=ON \
                          -DPIKA_WITH_EXAMPLES=ON -DPIKA_WITH_TESTS=ON \
-                         -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON"
+                         -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
+                         -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,defs"
 .build_variables_common:
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build

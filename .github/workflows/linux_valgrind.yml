@@ -44,6 +44,7 @@ jobs:
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                 -DCMAKE_CXX_FLAGS="-gdwarf-4" \
+                -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,defs" \
                 -DPIKA_WITH_MALLOC=system \
                 -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
@@ -57,7 +58,6 @@ jobs:
                 -DPIKA_WITH_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND=ON \
                 -DPIKA_WITH_TESTS_VALGRIND_OPTIONS="--error-exitcode=1;--leak-check=full;--fair-sched=yes;--gen-suppressions=all;--suppressions=$PWD/tools/valgrind/memcheck.supp" \
-                -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         shell: bash
@@ -67,6 +67,18 @@ jobs:
       - name: Test
         shell: bash
         run: |
+            # Don't use the gds/shmem component with valgrind. Without the following, PMIX will
+            # report:
+            #
+            # The gds/shmem component attempted to attach to a shared-memory segment at a
+            # particular base address, but was given a different one. Your job will now likely
+            # abort.
+            #   Requested Address: 0x2aba44000000
+            #   Acquired Address:  0x7fed0431c000
+            # If this problem persists, please consider disabling the gds/shmem component by
+            # setting in your environment the following: PMIX_MCA_gds=hash
+            export PMIX_MCA_gds=hash
+
             # We are certain that we want to run mpiexec as root despite warnings as that is the
             # only user available in the container. Mistakes will only affect the current step.
             export OMPI_ALLOW_RUN_AS_ROOT=1

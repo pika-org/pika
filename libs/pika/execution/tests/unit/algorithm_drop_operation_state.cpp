@@ -177,7 +177,5 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
-    test_adl_isolation(ex::drop_operation_state(my_namespace::my_sender{}));
-
     return 0;
 }

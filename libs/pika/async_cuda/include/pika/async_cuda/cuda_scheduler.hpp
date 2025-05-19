@@ -113,13 +113,12 @@ namespace pika::cuda::experimental {
                 operation_state& operator=(operation_state&&) = delete;
                 operation_state& operator=(operation_state const&) = delete;
 
-                friend void tag_invoke(
-                    pika::execution::experimental::start_t, operation_state& os) noexcept
+                void start() & noexcept
                 {
                     // This currently only acts as an inline scheduler to signal
                     // downstream senders that they should use the
                     // cuda_scheduler.
-                    pika::execution::experimental::set_value(std::move(os.receiver));
+                    pika::execution::experimental::set_value(std::move(receiver));
                 }
             };
 
@@ -146,17 +145,15 @@ namespace pika::cuda::experimental {
 #endif
 
             template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-                cuda_scheduler_sender&& s, Receiver&& receiver)
+            operation_state<Receiver> connect(Receiver&& receiver) &&
             {
-                return {std::move(s.scheduler), std::forward<Receiver>(receiver)};
+                return {std::move(scheduler), std::forward<Receiver>(receiver)};
             }
 
             template <typename Receiver>
-            friend operation_state<Receiver> tag_invoke(pika::execution::experimental::connect_t,
-                cuda_scheduler_sender const& s, Receiver&& receiver)
+            operation_state<Receiver> connect(Receiver&& receiver) const&
             {
-                return {s.scheduler, std::forward<Receiver>(receiver)};
+                return {scheduler, std::forward<Receiver>(receiver)};
             }
 
             struct env
@@ -172,11 +169,7 @@ namespace pika::cuda::experimental {
                 }
             };
 
-            friend env tag_invoke(
-                pika::execution::experimental::get_env_t, cuda_scheduler_sender const& s) noexcept
-            {
-                return {s.scheduler};
-            }
+            env get_env() const& noexcept { return {scheduler}; }
         };
     }    // namespace detail
 

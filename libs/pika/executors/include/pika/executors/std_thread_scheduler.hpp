@@ -52,18 +52,18 @@ namespace pika::execution::experimental {
             operation_state& operator=(operation_state&&) = delete;
             operation_state& operator=(operation_state const&) = delete;
 
-            friend void tag_invoke(start_t, operation_state& os) noexcept
+            void start() & noexcept
             {
                 pika::detail::try_catch_exception_ptr(
                     [&]() {
-                        std::thread t{[&os]() mutable {
-                            pika::execution::experimental::set_value(std::move(os.receiver));
+                        std::thread t{[&]() mutable {
+                            pika::execution::experimental::set_value(std::move(receiver));
                         }};
                         t.detach();
                     },
                     [&](std::exception_ptr ep) {
                         pika::execution::experimental::set_error(
-                            std::move(os.receiver), std::move(ep));
+                            std::move(receiver), std::move(ep));
                     });
             }
         };
@@ -85,8 +85,7 @@ namespace pika::execution::experimental {
                 pika::execution::experimental::set_error_t(std::exception_ptr)>;
 
             template <typename Receiver>
-            friend operation_state<Receiver>
-            tag_invoke(connect_t, sender const&, Receiver&& receiver)
+            operation_state<Receiver> connect(Receiver&& receiver) const&
             {
                 return {std::forward<Receiver>(receiver)};
             }
@@ -102,11 +101,7 @@ namespace pika::execution::experimental {
                 }
             };
 
-            friend constexpr env tag_invoke(
-                pika::execution::experimental::get_env_t, sender const&) noexcept
-            {
-                return {};
-            }
+            constexpr env get_env() const& noexcept { return {}; }
         };
 
         friend sender tag_invoke(schedule_t, std_thread_scheduler const&) { return {}; }

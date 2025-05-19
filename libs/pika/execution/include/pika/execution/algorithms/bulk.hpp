@@ -32,16 +32,7 @@
 
 namespace pika::bulk_detail {
     template <typename Sender, typename Shape, typename F>
-    struct bulk_sender_impl
-    {
-        struct bulk_sender_type;
-    };
-
-    template <typename Sender, typename Shape, typename F>
-    using bulk_sender = typename bulk_sender_impl<Sender, Shape, F>::bulk_sender_type;
-
-    template <typename Sender, typename Shape, typename F>
-    struct bulk_sender_impl<Sender, Shape, F>::bulk_sender_type
+    struct bulk_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Shape> shape;
@@ -59,10 +50,9 @@ namespace pika::bulk_detail {
 
         static constexpr bool sends_done = false;
 
-        friend constexpr decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, bulk_sender_type const& s) noexcept
+        constexpr decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
 
         template <typename Receiver>
@@ -112,20 +102,18 @@ namespace pika::bulk_detail {
         };
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, bulk_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(std::move(s.sender),
+            return pika::execution::experimental::connect(std::move(sender),
                 bulk_receiver<Receiver>(
-                    std::forward<Receiver>(receiver), std::move(s.shape), std::move(s.f)));
+                    std::forward<Receiver>(receiver), std::move(shape), std::move(f)));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, bulk_sender_type const& s,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                s.sender, bulk_receiver<Receiver>(std::forward<Receiver>(receiver), s.shape, s.f));
+                sender, bulk_receiver<Receiver>(std::forward<Receiver>(receiver), shape, f));
         }
     };
 }    // namespace pika::bulk_detail

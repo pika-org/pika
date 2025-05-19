@@ -626,7 +626,8 @@ namespace pika::mpi::experimental {
         {
             // try to ensure that no (other) threads are still polling elsewhere
             // before we allow polling to commence on this/another pool
-            pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
+            pika::util::yield_while(
+                [&] { return detail::mpi_data_.all_in_flight_ > 0; }, "mpi::register_polling");
 
 #if defined(PIKA_DEBUG)
             ++get_register_polling_count();
@@ -975,7 +976,8 @@ namespace pika::mpi::experimental {
 
         // try to ensure that no (other) threads are still polling
         // before we exit and allow polling to commence on another pool
-        pika::util::yield_while([&] { return detail::mpi_data_.all_in_flight_ > 0; });
+        pika::util::yield_while(
+            [&] { return detail::mpi_data_.all_in_flight_ > 0; }, "mpi::stop_polling");
 
         // remove error handler if we installed it
         if (detail::mpi_data_.error_handler_initialized_)

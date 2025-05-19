@@ -17,5 +17,9 @@ namespace pika::execution::experimental {
     using continues_on_t = stdexec::continue_on_t;
     inline constexpr continues_on_t continues_on{};
 # endif
+
+# if defined(PIKA_HAVE_STDEXEC_ENV)
+    using empty_env = stdexec::env<>;
+# endif
 }    // namespace pika::execution::experimental
 #endif

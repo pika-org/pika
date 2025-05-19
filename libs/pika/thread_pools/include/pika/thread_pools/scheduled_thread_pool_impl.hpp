@@ -196,7 +196,7 @@ namespace pika::threads::detail {
     void scheduled_thread_pool<Scheduler>::wait()
     {
         pika::util::detail::yield_while_count(
-            [this]() { return is_busy(); }, shutdown_check_count_);
+            [this]() { return is_busy(); }, shutdown_check_count_, "scheduled_thread_pool::wait");
     }
 
     template <typename Scheduler>

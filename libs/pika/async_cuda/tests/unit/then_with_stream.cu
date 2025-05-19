@@ -53,17 +53,16 @@ struct const_reference_cuda_sender
         std::reference_wrapper<std::decay_t<T>> const x;
         std::decay_t<R> r;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
+            pika::execution::experimental::set_value(std::move(r), x.get());
         };
     };
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_cuda_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+        return operation_state<R>{std::move(x), std::forward<R>(r)};
     }
 
     struct env
@@ -79,11 +78,7 @@ struct const_reference_cuda_sender
         }
     };
 
-    friend env tag_invoke(
-        pika::execution::experimental::get_env_t, const_reference_cuda_sender const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 struct const_reference_error_cuda_sender
@@ -111,16 +106,15 @@ struct const_reference_error_cuda_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             auto const e = std::make_exception_ptr(std::runtime_error("error"));
-            pika::execution::experimental::set_error(std::move(os.r), e);
+            pika::execution::experimental::set_error(std::move(r), e);
         }
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_error_cuda_sender, R&& r)
+    operation_state<R> connect(R&& r)
     {
         return {std::forward<R>(r)};
     }
@@ -138,11 +132,7 @@ struct const_reference_error_cuda_sender
         }
     };
 
-    friend env tag_invoke(pika::execution::experimental::get_env_t,
-        const_reference_error_cuda_sender const& s) noexcept
-    {
-        return {s.sched};
-    }
+    env get_env() const& noexcept { return {sched}; }
 };
 
 struct dummy

@@ -270,8 +270,6 @@ int pika_main()
 #endif
     }
 
-    test_adl_isolation(mpi::transform_mpi(my_namespace::my_sender{}, [](MPI_Request*) {}));
-
     pika::finalize();
     return EXIT_SUCCESS;
 }

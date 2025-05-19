@@ -35,11 +35,11 @@ struct sender
 
     struct operation_state
     {
-        friend operation_state tag_invoke(ex::start_t, operation_state&) noexcept { return {}; }
+        void start() & noexcept {}
     };
 
     template <typename R>
-    friend operation_state tag_invoke(ex::connect_t, sender, R&&) noexcept
+    operation_state connect(R&&) noexcept
     {
         return {};
     }
@@ -53,7 +53,7 @@ struct sender
         }
     };
 
-    friend env tag_invoke(ex::get_env_t, sender const&) noexcept { return {}; }
+    env get_env() const& noexcept { return {}; }
 };
 
 struct non_scheduler_1

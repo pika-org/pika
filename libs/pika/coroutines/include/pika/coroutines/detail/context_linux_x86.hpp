@@ -30,22 +30,6 @@
 # include <stdexcept>
 # include <sys/param.h>
 
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION)
-
-#  include <cstring>
-#  include <signal.h>
-#  include <stdlib.h>
-#  include <strings.h>
-
-#  if !defined(SEGV_STACK_SIZE)
-#   define SEGV_STACK_SIZE MINSIGSTKSZ + 4096
-#  endif
-
-# endif
-
-# include <iomanip>
-# include <iostream>
-
 # if defined(PIKA_HAVE_VALGRIND)
 #  if defined(__GNUG__) && !defined(__INTEL_COMPILER)
 #   if defined(PIKA_GCC_DIAGNOSTIC_PRAGMA_CONTEXTS)
@@ -193,7 +177,7 @@ namespace pika::threads::coroutines {
         public:
             enum
             {
-                default_stack_size = 4 * EXEC_PAGESIZE
+                default_stack_size = 4 * PIKA_EXEC_PAGESIZE
             };
 
             using context_impl_base = x86_linux_context_impl_base;
@@ -212,19 +196,6 @@ namespace pika::threads::coroutines {
             void init()
             {
                 if (m_stack != nullptr) return;
-
-                if (0 != (m_stack_size % EXEC_PAGESIZE))
-                {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is not page aligned, page size is {}",
-                            m_stack_size, EXEC_PAGESIZE));
-                }
-
-                if (0 >= m_stack_size)
-                {
-                    throw std::runtime_error(
-                        fmt::format("stack size of {} is invalid", m_stack_size));
-                }
 
                 m_stack = posix::alloc_stack(static_cast<std::size_t>(m_stack_size));
                 if (m_stack == nullptr)
@@ -255,8 +226,6 @@ namespace pika::threads::coroutines {
                 asan_stack_size = m_stack_size;
                 asan_stack_bottom = const_cast<void const*>(m_stack);
 # endif
-
-                set_sigsegv_handler();
             }
 
             ~x86_linux_context_impl()
@@ -268,58 +237,7 @@ namespace pika::threads::coroutines {
 # endif
                     posix::free_stack(m_stack, static_cast<std::size_t>(m_stack_size));
                 }
-
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                free(segv_stack.ss_sp);
-# endif
             }
-
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-
-// heuristic value 1 kilobyte
-#  define COROUTINE_STACKOVERFLOW_ADDR_EPSILON 1000UL
-
-            static void check_coroutine_stack_overflow(siginfo_t* infoptr, void* ctxptr)
-            {
-                ucontext_t* uc_ctx = static_cast<ucontext_t*>(ctxptr);
-                char* sigsegv_ptr = static_cast<char*>(infoptr->si_addr);
-
-                // https://www.gnu.org/software/libc/manual/html_node/Signal-Stack.html
-                //
-                char* stk_ptr = static_cast<char*>(uc_ctx->uc_stack.ss_sp);
-
-                std::ptrdiff_t addr_delta =
-                    (sigsegv_ptr > stk_ptr) ? (sigsegv_ptr - stk_ptr) : (stk_ptr - sigsegv_ptr);
-
-                // check the stack addresses, if they're < 10 apart, terminate
-                // program should filter segmentation faults caused by
-                // coroutine stack overflows from 'genuine' stack overflows
-                //
-                if (static_cast<size_t>(addr_delta) < COROUTINE_STACKOVERFLOW_ADDR_EPSILON)
-                {
-                    std::cerr << "Stack overflow in coroutine at address " << std::internal
-                              << std::hex << std::setw(sizeof(sigsegv_ptr) * 2 + 2)
-                              << std::setfill('0') << sigsegv_ptr << ".\n\n";
-
-                    std::cerr
-                        << "Configure the pika runtime to allocate a larger coroutine stack "
-                           "size.\n Use the pika.stacks.small_size, pika.stacks.medium_size,\n "
-                           "pika.stacks.large_size, or pika.stacks.huge_size configuration\nflags "
-                           "to configure coroutine stack sizes.\n"
-                        << std::endl;
-                }
-            }
-
-            static void sigsegv_handler(int signum, siginfo_t* infoptr, void* ctxptr)
-            {
-                char* reason = strsignal(signum);
-                std::cerr << "{what}: " << (reason ? reason : "Unknown signal") << std::endl;
-
-                check_coroutine_stack_overflow(infoptr, ctxptr);
-
-                std::abort();
-            }
-# endif
 
             // Return the size of the reserved stack address space.
             std::ptrdiff_t get_stacksize() const { return m_stack_size; }
@@ -407,29 +325,6 @@ namespace pika::threads::coroutines {
                 x86_linux_context_impl_base const& to, yield_hint);
 
         private:
-            void set_sigsegv_handler()
-            {
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-                // concept inspired by the following links:
-                //
-                // https://rethinkdb.com/blog/handling-stack-overflow-on-custom-stacks/
-                // http://www.evanjones.ca/software/threading.html
-                //
-                segv_stack.ss_sp = valloc(SEGV_STACK_SIZE);
-                segv_stack.ss_flags = 0;
-                segv_stack.ss_size = SEGV_STACK_SIZE;
-
-                std::memset(&action, '\0', sizeof(action));
-                action.sa_flags = SA_SIGINFO | SA_ONSTACK;
-                action.sa_sigaction = &x86_linux_context_impl::sigsegv_handler;
-
-                sigaltstack(&segv_stack, nullptr);
-                sigemptyset(&action.sa_mask);
-                sigaddset(&action.sa_mask, SIGSEGV);
-                sigaction(SIGSEGV, &action, nullptr);
-# endif
-            }
-
 # if defined(__x86_64__)
             /** structure of context_data:
              * 11: additional alignment (or valgrind_id if enabled)
@@ -476,11 +371,6 @@ namespace pika::threads::coroutines {
 
             std::ptrdiff_t m_stack_size;
             void* m_stack;
-
-# if defined(PIKA_HAVE_STACKOVERFLOW_DETECTION) && !defined(PIKA_HAVE_ADDRESS_SANITIZER)
-            struct sigaction action;
-            stack_t segv_stack;
-# endif
         };
 
         /**

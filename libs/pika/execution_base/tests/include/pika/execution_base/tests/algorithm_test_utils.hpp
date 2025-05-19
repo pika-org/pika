@@ -37,15 +37,11 @@ struct void_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
-        {
-            pika::execution::experimental::set_value(std::move(os.r));
-        }
+        void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); }
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, void_sender, R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -72,7 +68,7 @@ struct error_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             try
             {
@@ -80,14 +76,13 @@ struct error_sender
             }
             catch (...)
             {
-                pika::execution::experimental::set_error(std::move(os.r), std::current_exception());
+                pika::execution::experimental::set_error(std::move(r), std::current_exception());
             }
         }
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, error_sender, R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -114,16 +109,15 @@ struct const_reference_error_sender
     struct operation_state
     {
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             auto const e = std::make_exception_ptr(std::runtime_error("error"));
-            pika::execution::experimental::set_error(std::move(os.r), e);
+            pika::execution::experimental::set_error(std::move(r), e);
         }
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_error_sender, R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -158,11 +152,7 @@ struct callback_receiver
         r.set_value_called = true;
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, callback_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <typename F>
@@ -195,11 +185,7 @@ struct error_callback_receiver
         PIKA_TEST(r.expect_set_value);
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, error_callback_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <typename F>
@@ -255,7 +241,7 @@ struct custom_sender_tag_invoke
     };
 
     template <typename R>
-    operation_state<R> connect(R&& r)
+    operation_state<R> connect(R&& r) const
     {
         return {std::forward<R>(r)};
     }
@@ -286,18 +272,18 @@ struct custom_sender
     {
         std::atomic<bool>& start_called;
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            os.start_called = true;
-            pika::execution::experimental::set_value(std::move(os.r));
+            start_called = true;
+            pika::execution::experimental::set_value(std::move(r));
         };
     };
 
     template <typename R>
-    friend auto tag_invoke(pika::execution::experimental::connect_t, custom_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        s.connect_called = true;
-        return operation_state<R>{s.start_called, std::forward<R>(r)};
+        connect_called = true;
+        return operation_state<R>{start_called, std::forward<R>(r)};
     }
 };
 
@@ -330,18 +316,18 @@ struct custom_typed_sender
         std::decay_t<T> x;
         std::atomic<bool>& start_called;
         std::decay_t<R> r;
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            os.start_called = true;
-            pika::execution::experimental::set_value(std::move(os.r), std::move(os.x));
+            start_called = true;
+            pika::execution::experimental::set_value(std::move(r), std::move(x));
         };
     };
 
     template <typename R>
-    friend auto tag_invoke(pika::execution::experimental::connect_t, custom_typed_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        s.connect_called = true;
-        return operation_state<R>{std::move(s.x), s.start_called, std::forward<R>(r)};
+        connect_called = true;
+        return operation_state<R>{std::move(x), start_called, std::forward<R>(r)};
     }
 };
 
@@ -378,24 +364,22 @@ struct const_reference_sender
         std::reference_wrapper<std::decay_t<T>> const x;
         std::decay_t<R> r;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
-            pika::execution::experimental::set_value(std::move(os.r), os.x.get());
+            pika::execution::experimental::set_value(std::move(r), x.get());
         };
     };
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_sender&& s, R&& r)
+    auto connect(R&& r) &&
     {
-        return operation_state<R>{std::move(s.x), std::forward<R>(r)};
+        return operation_state<R>{std::move(x), std::forward<R>(r)};
     }
 
     template <typename R>
-    friend auto
-    tag_invoke(pika::execution::experimental::connect_t, const_reference_sender const& s, R&& r)
+    auto connect(R&& r) const&
     {
-        return operation_state<R>{s.x, std::forward<R>(r)};
+        return operation_state<R>{x, std::forward<R>(r)};
     }
 };
 
@@ -473,15 +457,11 @@ struct scheduler
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -500,9 +480,9 @@ struct scheduler
             }
         };
 
-        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -554,15 +534,11 @@ struct scheduler2
         {
             std::decay_t<R> r;
 
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r));
-            };
+            void start() & noexcept { pika::execution::experimental::set_value(std::move(r)); };
         };
 
         template <typename R>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
+        auto connect(R&& r) &&
         {
             return operation_state<R>{std::forward<R>(r)};
         }
@@ -581,9 +557,9 @@ struct scheduler2
             }
         };
 
-        friend env tag_invoke(pika::execution::experimental::get_env_t, sender const& s) noexcept
+        env get_env() const& noexcept
         {
-            return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+            return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
 
@@ -597,173 +573,3 @@ struct scheduler2
 
     bool operator!=(scheduler2 const&) const noexcept { return false; }
 };
-
-namespace tag_namespace {
-    inline constexpr struct my_tag_t
-    {
-        template <typename Sender>
-        auto operator()(Sender&& sender) const
-        {
-            return pika::functional::detail::tag_invoke(*this, std::forward<Sender>(sender));
-        }
-
-        struct wrapper
-        {
-            wrapper(my_tag_t) {}
-        };
-
-        // This overload should be chosen by test_adl_isolation below. We make
-        // sure this is a worse match than the one in my_namespace by requiring
-        // a conversion.
-        template <typename Sender>
-        friend void tag_invoke(wrapper, Sender&&)
-        {
-        }
-    } my_tag{};
-}    // namespace tag_namespace
-
-namespace my_namespace {
-    // The below types should be used as a template arguments for the sender in
-    // test_adl_isolation.
-    struct my_type
-    {
-        void operator()() const {}
-        void operator()(int) const {}
-        void operator()(std::exception_ptr) const {}
-    };
-
-    struct my_let_value_type
-    {
-        auto operator()() const { return pika::execution::experimental::just(); }
-    };
-
-    struct my_let_error_type
-    {
-        auto operator()(std::exception_ptr) const { return pika::execution::experimental::just(); }
-    };
-
-    struct my_scheduler
-    {
-        struct sender
-        {
-            PIKA_STDEXEC_SENDER_CONCEPT
-
-            template <template <class...> class Tuple, template <class...> class Variant>
-            using value_types = Variant<Tuple<>>;
-
-            template <template <class...> class Variant>
-            using error_types = Variant<std::exception_ptr>;
-
-            static constexpr bool sends_done = false;
-
-            using completion_signatures = pika::execution::experimental::completion_signatures<
-                pika::execution::experimental::set_value_t()>;
-
-            template <typename R>
-            struct operation_state
-            {
-                std::decay_t<R> r;
-
-                friend void tag_invoke(
-                    pika::execution::experimental::start_t, operation_state& os) noexcept
-                {
-                    pika::execution::experimental::set_value(std::move(os.r));
-                };
-            };
-
-            template <typename R>
-            friend auto tag_invoke(pika::execution::experimental::connect_t, sender&&, R&& r)
-            {
-                return operation_state<R>{std::forward<R>(r)};
-            }
-
-            friend my_scheduler tag_invoke(
-                pika::execution::experimental::get_completion_scheduler_t<
-                    pika::execution::experimental::set_value_t>,
-                sender const&) noexcept
-            {
-                return {};
-            }
-
-            struct env
-            {
-                friend my_scheduler tag_invoke(
-                    pika::execution::experimental::get_completion_scheduler_t<
-                        pika::execution::experimental::set_value_t>,
-                    env const&) noexcept
-                {
-                    return {};
-                }
-            };
-
-            friend env tag_invoke(pika::execution::experimental::get_env_t, sender const&) noexcept
-            {
-                return {};
-            }
-        };
-
-        friend sender tag_invoke(pika::execution::experimental::schedule_t, my_scheduler)
-        {
-            return {};
-        }
-
-        bool operator==(my_scheduler const&) const noexcept { return true; }
-
-        bool operator!=(my_scheduler const&) const noexcept { return false; }
-    };
-
-    template <typename... Ts>
-    struct my_sender
-    {
-        PIKA_STDEXEC_SENDER_CONCEPT
-
-        template <template <typename...> class Tuple, template <typename...> class Variant>
-        using value_types = Variant<Tuple<Ts...>>;
-
-        template <template <typename...> class Variant>
-        using error_types = Variant<>;
-
-        static constexpr bool sends_done = false;
-
-        using completion_signatures = pika::execution::experimental::completion_signatures<
-            pika::execution::experimental::set_value_t(Ts...)>;
-
-        template <typename R>
-        struct operation_state
-        {
-            std::decay_t<R> r;
-            friend void tag_invoke(
-                pika::execution::experimental::start_t, operation_state& os) noexcept
-            {
-                pika::execution::experimental::set_value(std::move(os.r), Ts{}...);
-            }
-        };
-
-        template <typename R>
-        friend operation_state<R>
-        tag_invoke(pika::execution::experimental::connect_t, my_sender, R&& r)
-        {
-            return {std::forward<R>(r)};
-        }
-    };
-
-    // This overload should not be chosen by test_adl_isolation below. We make
-    // sure this is a better match than the one in tag_namespace so that if this
-    // one is visible it is chosen. It should not be visible.
-    template <typename Sender>
-    void tag_invoke(tag_namespace::my_tag_t, Sender&&)
-    {
-        static_assert(sizeof(Sender) == 0);
-    }
-}    // namespace my_namespace
-
-// This test function expects a type that has my_namespace::my_type as a
-// template argument. If template arguments are correctly hidden from ADL the
-// friend tag_invoke overload in my_tag_t will be chosen. If template arguments
-// are not hidden the unconstrained tag_invoke overload in my_namespace will be
-// chosen instead.
-template <typename Sender>
-void test_adl_isolation(Sender&& sender)
-{
-    tag_namespace::my_tag(std::forward<Sender>(sender));
-}

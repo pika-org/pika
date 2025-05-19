@@ -92,16 +92,7 @@ namespace pika::then_detail {
     };
 
     template <typename Sender, typename F>
-    struct then_sender_impl
-    {
-        struct then_sender_type;
-    };
-
-    template <typename Sender, typename F>
-    using then_sender = typename then_sender_impl<Sender, F>::then_sender_type;
-
-    template <typename Sender, typename F>
-    struct then_sender_impl<Sender, F>::then_sender_type
+    struct then_sender
     {
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<Sender> sender;
         PIKA_NO_UNIQUE_ADDRESS std::decay_t<F> f;
@@ -132,25 +123,22 @@ namespace pika::then_detail {
         static constexpr bool sends_done = false;
 
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, then_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
-            return pika::execution::experimental::connect(std::move(s.sender),
-                then_receiver<Receiver, F>{std::forward<Receiver>(receiver), std::move(s.f)});
+            return pika::execution::experimental::connect(std::move(sender),
+                then_receiver<Receiver, F>{std::forward<Receiver>(receiver), std::move(f)});
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t, then_sender_type const& r,
-            Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return pika::execution::experimental::connect(
-                r.sender, then_receiver<Receiver, F>{std::forward<Receiver>(receiver), r.f});
+                sender, then_receiver<Receiver, F>{std::forward<Receiver>(receiver), f});
         }
 
-        friend decltype(auto) tag_invoke(
-            pika::execution::experimental::get_env_t, then_sender_type const& s) noexcept
+        decltype(auto) get_env() const& noexcept
         {
-            return pika::execution::experimental::get_env(s.sender);
+            return pika::execution::experimental::get_env(sender);
         }
     };
 }    // namespace pika::then_detail

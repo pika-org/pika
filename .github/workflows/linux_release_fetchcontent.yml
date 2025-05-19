@@ -38,6 +38,7 @@ jobs:
                 -Bbuild \
                 -GNinja \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,defs" \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DPIKA_REPOSITORY="file:////$(pwd)" \
                 -DPIKA_TAG="$GITHUB_SHA" \

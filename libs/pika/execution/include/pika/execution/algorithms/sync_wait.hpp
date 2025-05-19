@@ -184,11 +184,7 @@ namespace pika::sync_wait_detail {
             r.signal_set_called();
         }
 
-        friend constexpr pika::execution::experimental::empty_env tag_invoke(
-            pika::execution::experimental::get_env_t, sync_wait_receiver_type const&) noexcept
-        {
-            return {};
-        }
+        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
     };
 }    // namespace pika::sync_wait_detail
 

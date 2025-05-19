@@ -130,22 +130,13 @@ namespace pika::when_all_impl {
     };
 
     template <typename... Senders>
-    struct when_all_sender_impl
-    {
-        struct when_all_sender_type;
-    };
-
-    template <typename... Senders>
-    using when_all_sender = typename when_all_sender_impl<Senders...>::when_all_sender_type;
-
-    template <typename... Senders>
-    struct when_all_sender_impl<Senders...>::when_all_sender_type
+    struct when_all_sender
     {
         using senders_type = pika::util::detail::member_pack_for<std::decay_t<Senders>...>;
         senders_type senders;
 
         template <typename... Senders_>
-        explicit constexpr when_all_sender_type(Senders_&&... senders)
+        explicit constexpr when_all_sender(Senders_&&... senders)
           : senders(std::piecewise_construct, std::forward<Senders_>(senders)...)
         {
         }
@@ -333,27 +324,18 @@ namespace pika::when_all_impl {
             }
         };
 
-        template <typename Receiver, typename SendersPack>
-        friend void tag_invoke(pika::execution::experimental::start_t,
-            operation_state<Receiver, SendersPack, num_predecessors - 1>& os) noexcept
-        {
-            os.start();
-        }
-
         template <typename Receiver>
-        friend auto tag_invoke(
-            pika::execution::experimental::connect_t, when_all_sender_type&& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) &&
         {
             return operation_state<Receiver, senders_type&&, num_predecessors - 1>(
-                std::forward<Receiver>(receiver), std::move(s.senders));
+                std::forward<Receiver>(receiver), std::move(senders));
         }
 
         template <typename Receiver>
-        friend auto tag_invoke(pika::execution::experimental::connect_t,
-            when_all_sender_type const& s, Receiver&& receiver)
+        auto connect(Receiver&& receiver) const&
         {
             return operation_state<Receiver, senders_type&, num_predecessors - 1>(
-                std::forward<Receiver>(receiver), s.senders);
+                std::forward<Receiver>(receiver), senders);
         }
     };
 }    // namespace pika::when_all_impl

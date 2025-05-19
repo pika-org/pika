@@ -44,6 +44,8 @@
  * Most of these utilities are really pure C++, but they are useful
  * only on posix systems.
  */
+# include <fmt/format.h>
+
 # include <cerrno>
 # include <cstddef>
 # include <cstdlib>
@@ -61,12 +63,16 @@
 
 # if defined(__FreeBSD__)
 #  include <sys/param.h>
-#  define EXEC_PAGESIZE PAGE_SIZE
+#  define PIKA_EXEC_PAGESIZE PAGE_SIZE
 # endif
 
 # if defined(__APPLE__)
 #  include <unistd.h>
-#  define EXEC_PAGESIZE static_cast<std::size_t>(sysconf(_SC_PAGESIZE))
+#  define PIKA_EXEC_PAGESIZE static_cast<std::size_t>(sysconf(_SC_PAGESIZE))
+# endif
+
+# if !defined(PIKA_EXEC_PAGESIZE)
+#  define PIKA_EXEC_PAGESIZE EXEC_PAGESIZE
 # endif
 
 /**
@@ -75,14 +81,30 @@
 namespace pika::threads::coroutines::detail::posix {
     PIKA_EXPORT extern bool use_guard_pages;
 
+    inline void check_stack_size(std::size_t size)
+    {
+        if (0 != (size % PIKA_EXEC_PAGESIZE))
+        {
+            throw std::runtime_error(fmt::format(
+                "stack size of {} is not page aligned, page size is {}", size, PIKA_EXEC_PAGESIZE));
+        }
+
+        if (0 >= size)
+        {
+            throw std::runtime_error(fmt::format("stack size of {} is invalid", size));
+        }
+    }
+
 # if defined(PIKA_HAVE_THREAD_STACK_MMAP) && defined(_POSIX_MAPPED_FILES) && _POSIX_MAPPED_FILES > 0
 
     inline void* to_stack_with_guard_page(void* stack)
     {
         if (use_guard_pages)
         {
-            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
-            return static_cast<void*>(static_cast<void**>(stack) - (EXEC_PAGESIZE / sizeof(void*)));
+            // NOLINTBEGIN(bugprone-multi-level-implicit-pointer-conversion)
+            return static_cast<void*>(
+                static_cast<void**>(stack) - (PIKA_EXEC_PAGESIZE / sizeof(void*)));
+            // NOLINTEND(bugprone-multi-level-implicit-pointer-conversion)
         }
 
         return stack;
@@ -92,8 +114,10 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
-            // NOLINTNEXTLINE(bugprone-multi-level-implicit-pointer-conversion)
-            return static_cast<void*>(static_cast<void**>(stack) + (EXEC_PAGESIZE / sizeof(void*)));
+            // NOLINTBEGIN(bugprone-multi-level-implicit-pointer-conversion)
+            return static_cast<void*>(
+                static_cast<void**>(stack) + (PIKA_EXEC_PAGESIZE / sizeof(void*)));
+            // NOLINTEND(bugprone-multi-level-implicit-pointer-conversion)
         }
 
         return stack;
@@ -103,7 +127,7 @@ namespace pika::threads::coroutines::detail::posix {
     {
         if (use_guard_pages)
         {
-            int r = ::mprotect(stack, EXEC_PAGESIZE, PROT_NONE);
+            int r = ::mprotect(stack, PIKA_EXEC_PAGESIZE, PROT_NONE);
             if (r != 0)
             {
                 std::string error_message = "mprotect on a stack allocation failed with errno " +
@@ -115,13 +139,15 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline std::size_t stack_size_with_guard_page(std::size_t size)
     {
-        if (use_guard_pages) { return size + EXEC_PAGESIZE; }
+        if (use_guard_pages) { return size + PIKA_EXEC_PAGESIZE; }
 
         return size;
     }
 
     inline void* alloc_stack(std::size_t size)
     {
+        check_stack_size(size);
+
         void* real_stack = ::mmap(nullptr, stack_size_with_guard_page(size), PROT_READ | PROT_WRITE,
 #  if defined(__APPLE__)
             MAP_PRIVATE | MAP_ANON | MAP_NORESERVE,
@@ -155,16 +181,18 @@ namespace pika::threads::coroutines::detail::posix {
 
     inline void watermark_stack(void* stack, std::size_t size)
     {
-        PIKA_ASSERT(size > EXEC_PAGESIZE);
+        PIKA_ASSERT(size >= PIKA_EXEC_PAGESIZE);
 
         // Fill the bottom 8 bytes of the first page with 1s.
-        void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
+        void** watermark =
+            static_cast<void**>(stack) + ((size - PIKA_EXEC_PAGESIZE) / sizeof(void*));
         *watermark = reinterpret_cast<void*>(0xDEAD'BEEF'DEAD'BEEFull);
     }
 
     inline bool reset_stack(void* stack, std::size_t size)
     {
-        void** watermark = static_cast<void**>(stack) + ((size - EXEC_PAGESIZE) / sizeof(void*));
+        void** watermark =
+            static_cast<void**>(stack) + ((size - PIKA_EXEC_PAGESIZE) / sizeof(void*));
 
         // If the watermark has been overwritten, then we've gone past the first
         // page.
@@ -172,7 +200,7 @@ namespace pika::threads::coroutines::detail::posix {
         {
             // We never free up the first page, as it's initialized only when the
             // stack is created.
-            int r = ::madvise(stack, size - EXEC_PAGESIZE, MADV_DONTNEED);
+            int r = ::madvise(stack, size - PIKA_EXEC_PAGESIZE, MADV_DONTNEED);
             if (r != 0)
             {
                 std::string error_message = "madvise on a stack allocation failed with errno " +
@@ -217,6 +245,8 @@ namespace pika::threads::coroutines::detail::posix {
      */
     inline void* alloc_stack(std::size_t size)
     {
+        check_stack_size(size);
+
         return new stack_aligner[size / sizeof(stack_aligner)];
     }
 

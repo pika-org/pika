@@ -80,19 +80,18 @@ struct non_copyable_sender
         std::decay_t<R> r;
         std::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, std::move(os.r)),
-                std::move(os.ts));
+                           pika::execution::experimental::set_value, std::move(r)),
+                std::move(ts));
         };
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, non_copyable_sender&& s, R&& r) noexcept
+    operation_state<R> connect(R&& r) && noexcept
     {
-        return {std::forward<R>(r), std::move(s.ts)};
+        return {std::forward<R>(r), std::move(ts)};
     }
 };
 
@@ -137,26 +136,24 @@ struct sender
         std::decay_t<R> r;
         std::tuple<std::decay_t<Ts>...> ts;
 
-        friend void tag_invoke(pika::execution::experimental::start_t, operation_state& os) noexcept
+        void start() & noexcept
         {
             std::apply(pika::util::detail::bind_front(
-                           pika::execution::experimental::set_value, std::move(os.r)),
-                std::move(os.ts));
+                           pika::execution::experimental::set_value, std::move(r)),
+                std::move(ts));
         };
     };
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender&& s, R&& r)
+    operation_state<R> connect(R&& r) &&
     {
-        return {std::forward<R>(r), std::move(s.ts)};
+        return {std::forward<R>(r), std::move(ts)};
     }
 
     template <typename R>
-    friend operation_state<R>
-    tag_invoke(pika::execution::experimental::connect_t, sender const& s, R&& r)
+    operation_state<R> connect(R&& r) const&
     {
-        return {std::forward<R>(r), s.ts};
+        return {std::forward<R>(r), ts};
     }
 };
 
@@ -247,11 +244,7 @@ struct error_receiver
         PIKA_TEST(false);
     }
 
-    friend constexpr pika::execution::experimental::empty_env tag_invoke(
-        pika::execution::experimental::get_env_t, error_receiver const&) noexcept
-    {
-        return {};
-    }
+    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
 };
 
 template <template <typename...> typename Sender, typename... Ts, typename F>

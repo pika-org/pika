@@ -547,7 +547,14 @@ namespace pika::program_options::detail {
         string const& tok = args[0];
         if (tok.size() >= 2 && tok[0] == '/')
         {
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wrestrict"
+#endif
             string name = "-" + tok.substr(1, 1);
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+# pragma GCC diagnostic pop
+#endif
             string adjacent = tok.substr(2);
 
             option opt;
@@ -573,7 +580,14 @@ namespace pika::program_options::detail {
                         is_style_active(allow_guessing), is_style_active(long_case_insensitive),
                         is_style_active(short_case_insensitive)))
                 {
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wrestrict"
+#endif
                     args[0].insert(0, "-");
+#if defined(PIKA_GCC_VERSION) && PIKA_GCC_VERSION >= 120000
+# pragma GCC diagnostic pop
+#endif
                     if (args[0][1] == '/') args[0][1] = '-';
                     return parse_long_option(args);
                 }

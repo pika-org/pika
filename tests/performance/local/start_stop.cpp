@@ -14,6 +14,8 @@
 #include <pika/testing/performance.hpp>
 #include <pika/thread.hpp>
 
+#include <fmt/format.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -29,18 +31,19 @@ int pika_main()
 
 int main(int argc, char** argv)
 {
-    pika::program_options::options_description desc_commandline;
-    desc_commandline.add_options()("repetitions",
-        pika::program_options::value<std::uint64_t>()->default_value(100), "Number of repetitions");
+    using namespace pika::program_options;
+    options_description desc_commandline;
+    // clang-format off
+    desc_commandline.add_options()
+        ("repetitions", value<std::uint64_t>()->default_value(100), "Number of repetitions")
+        ("perftest-json", bool_switch(), "Print average start-stop time in json format for use with performance CI");
+    // clang-format on
 
-    pika::program_options::variables_map vm;
-    pika::program_options::store(pika::program_options::command_line_parser(argc, argv)
-                                     .allow_unregistered()
-                                     .options(desc_commandline)
-                                     .run(),
-        vm);
+    variables_map vm;
+    store(command_line_parser(argc, argv).allow_unregistered().options(desc_commandline).run(), vm);
 
-    std::uint64_t repetitions = vm["repetitions"].as<std::uint64_t>();
+    auto const repetitions = vm["repetitions"].as<std::uint64_t>();
+    auto const perftest_json = vm["perftest-json"].as<bool>();
 
     pika::init_params init_args;
     init_args.desc_cmdline = desc_commandline;
@@ -49,9 +52,8 @@ int main(int argc, char** argv)
     std::uint64_t threads = pika::resource::get_num_threads("default");
     pika::stop();
 
-    std::cout << "threads, resume [s], execute [s], suspend [s]" << std::endl;
+    if (!perftest_json) { std::cout << "threads, start [s], stop [s]" << std::endl; }
 
-    double start_time = 0;
     double stop_time = 0;
     pika::chrono::detail::high_resolution_timer timer;
 
@@ -64,22 +66,21 @@ int main(int argc, char** argv)
 
         pika::start(pika_main, argc, argv, init_args);
         auto t_start = timer.elapsed();
-        start_time += t_start;
-
-        auto sched = ex::thread_pool_scheduler{};
-        for (std::size_t thread = 0; thread < threads; ++thread)
-        {
-            ex::execute(sched, [] {});
-        }
-
-        auto t_execute = timer.elapsed();
 
         pika::stop();
         auto t_stop = timer.elapsed();
         stop_time += t_stop;
 
-        std::cout << threads << ", " << t_start << ", " << t_execute << ", " << t_stop << std::endl;
+        if (!perftest_json)
+        {
+            std::cout << threads << ", " << t_start << ", " << t_stop << std::endl;
+        }
     }
-    pika::util::print_cdash_timing("StartTime", start_time);
-    pika::util::print_cdash_timing("StopTime", stop_time);
+
+    if (perftest_json)
+    {
+        pika::util::detail::json_perf_times t;
+        t.add(fmt::format("start_stop - {} threads", threads), stop_time / repetitions);
+        std::cout << t;
+    }
 }

@@ -44,9 +44,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Build all of pika
 # ##################################################################################################
 set(PIKA_VERSION_MAJOR 0)
-set(PIKA_VERSION_MINOR 31)
+set(PIKA_VERSION_MINOR 33)
 set(PIKA_VERSION_PATCH 0)
-set(PIKA_VERSION_DATE 20241218)
+set(PIKA_VERSION_DATE 20250402)
 set(PIKA_VERSION_TAG "-trunk")
 
 set(PIKA_VERSION "${PIKA_VERSION_MAJOR}.${PIKA_VERSION_MINOR}.${PIKA_VERSION_PATCH}")
@@ -147,22 +147,6 @@ if(PIKA_WITH_DEPRECATION_WARNINGS)
 endif()
 
 # Generic build options
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-  set(PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT OFF)
-  string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UC)
-  if("${CMAKE_BUILD_TYPE_UC}" STREQUAL "DEBUG")
-    set(PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT ON)
-  endif()
-  pika_option(
-    PIKA_WITH_STACKOVERFLOW_DETECTION BOOL
-    "Enable stackoverflow detection for pika threads/coroutines. (default: OFF, debug: ON)"
-    ${PIKA_WITH_STACKOVERFLOW_DETECTION_DEFAULT} ADVANCED
-  )
-  if(PIKA_WITH_STACKOVERFLOW_DETECTION)
-    pika_add_config_define(PIKA_HAVE_STACKOVERFLOW_DETECTION)
-  endif()
-endif()
-
 set(DEFAULT_MALLOC "mimalloc")
 pika_option(
   PIKA_WITH_MALLOC
@@ -1168,13 +1152,6 @@ else()
     pika_add_compile_flag_if_available(-Wno-delete-non-virtual-dtor)
   endif()
 
-  # Check if our libraries have unresolved symbols
-  if(NOT APPLE
-     AND NOT WIN32
-     AND NOT PIKA_WITH_SANITIZERS
-  )
-    pika_add_link_flag_if_available(-Wl,-z,defs)
-  endif()
   if(WIN32)
     target_link_libraries(pika_base_libraries INTERFACE psapi WS2_32 mswsock)
   endif()

@@ -48,7 +48,7 @@ jobs:
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_BUILD_TYPE= ${{ matrix.build_type }} \
                 -DPIKA_WITH_MALLOC=system \
-                -DPIKA_WITH_MPI=OFF \
+                -DPIKA_WITH_MPI=ON \
                 -DPIKA_WITH_EXAMPLES=ON \
                 -DPIKA_WITH_TESTS=ON \
                 -DPIKA_WITH_TESTS_EXAMPLES=ON \
@@ -59,7 +59,6 @@ jobs:
                 -DPIKA_WITH_SANITIZERS=On \
                 -DPIKA_WITH_VERIFY_LOCKS=Off \
                 -DCMAKE_CXX_FLAGS="-fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined -fno-omit-frame-pointer -Wno-error=ignored-optimization-argument" \
-                -DPIKA_WITH_STACKOVERFLOW_DETECTION=Off \
                 -DPIKA_WITH_CHECK_MODULE_DEPENDENCIES=On
       - name: Build
         if: always()
