@@ -66,6 +66,24 @@ namespace mylib {
         void set_value(int) noexcept { value_called = true; }
     };
 
+    struct non_receiver_2
+    {
+        friend void tag_invoke(ex::set_stopped_t, non_receiver_2&&) noexcept { done_called = true; }
+
+        void set_error(std::exception_ptr) & noexcept { error_called = true; }
+
+        void set_value(int) && noexcept { value_called = true; }
+    };
+
+    struct non_receiver_3
+    {
+        friend void tag_invoke(ex::set_stopped_t, non_receiver_3&) noexcept { done_called = true; }
+
+        void set_error(std::exception_ptr) & noexcept { error_called = true; }
+
+        void set_value(int) noexcept { value_called = true; }
+    };
+
     struct non_receiver_4
     {
         PIKA_STDEXEC_RECEIVER_CONCEPT
@@ -83,7 +101,20 @@ namespace mylib {
     {
         friend void tag_invoke(ex::set_stopped_t, non_receiver_5&&) { done_called = true; }
 
-        void set_error(std::exception_ptr) && noexcept { error_called = true; }
+        friend void tag_invoke(ex::set_error_t, non_receiver_5&&, std::exception_ptr) noexcept
+        {
+            error_called = true;
+        }
+    };
+
+    struct non_receiver_6
+    {
+        friend void tag_invoke(ex::set_stopped_t, non_receiver_6&&) { done_called = true; }
+
+        friend void tag_invoke(ex::set_error_t, non_receiver_6&&, std::exception_ptr)
+        {
+            error_called = true;
+        }
     };
 }    // namespace mylib
 
@@ -135,15 +166,14 @@ int main()
 #else
     // This implicitly checks if the receiver has a set_error std::exception_ptr
     // overload.
-    // TODO: Fix this test
-    //static_assert(!receiver_helper_v<mylib::receiver_2>,
-    //    "mylib::receiver_2 should not be a receiver of std::exception_ptr");
+    static_assert(!receiver_helper_v<mylib::receiver_2>,
+        "mylib::receiver_2 should not be a receiver of std::exception_ptr");
     static_assert(
         receiver_helper_v<mylib::receiver_2, int>, "mylib::receiver_2 should be a receiver");
 #endif
 #if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_STDEXEC)
-    //static_assert(!receiver_of_helper_v<mylib::receiver_2, int>,
-    //    "mylib::receiver_2 should not be a receiver of int");
+    static_assert(!receiver_of_helper_v<mylib::receiver_2, int>,
+        "mylib::receiver_2 should not be a receiver of int");
 #endif
 
     static_assert(ex::is_receiver_v<mylib::receiver_3>, "mylib::receiver_3 should be a receiver");
@@ -156,13 +186,13 @@ int main()
 
     static_assert(!ex::is_receiver_v<mylib::non_receiver_1>,
         "mylib::non_receiver_1 should not be a receiver");
-//    static_assert(!ex::is_receiver_v<mylib::non_receiver_2>,
-//        "mylib::non_receiver_2 should not be a receiver");
-//    static_assert(!ex::is_receiver_v<mylib::non_receiver_3>,
-//        "mylib::non_receiver_3 should not be a receiver");
+    static_assert(!ex::is_receiver_v<mylib::non_receiver_2>,
+        "mylib::non_receiver_2 should not be a receiver");
+    static_assert(!ex::is_receiver_v<mylib::non_receiver_3>,
+        "mylib::non_receiver_3 should not be a receiver");
 #if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_STDEXEC)
-    //    static_assert(!receiver_of_helper_v<mylib::non_receiver_3, int>,
-    //        "mylib::non_receiver_3 should not be a receiver of int");
+    static_assert(!receiver_of_helper_v<mylib::non_receiver_3, int>,
+        "mylib::non_receiver_3 should not be a receiver of int");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_4, int>,
         "mylib::non_receiver_4 should not be a receiver of int");
 #endif
@@ -170,18 +200,22 @@ int main()
         ex::is_receiver_v<mylib::non_receiver_4>, "mylib::non_receiver_4 should be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_5>,
         "mylib::non_receiver_5 should not be a receiver");
+    static_assert(!ex::is_receiver_v<mylib::non_receiver_6>,
+        "mylib::non_receiver_6 should not be a receiver");
 
 #if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_STDEXEC)
     static_assert(!receiver_of_helper_v<mylib::non_receiver_1, int>,
         "mylib::non_receiver_1 should not be a receiver of int");
-    //static_assert(!receiver_of_helper_v<mylib::non_receiver_2, int>,
-    //    "mylib::non_receiver_2 should not be a receiver of int");
-    //    static_assert(!receiver_of_helper_v<mylib::non_receiver_3, int>,
-    //        "mylib::non_receiver_3 should not be a receiver of int");
+    static_assert(!receiver_of_helper_v<mylib::non_receiver_2, int>,
+        "mylib::non_receiver_2 should not be a receiver of int");
+    static_assert(!receiver_of_helper_v<mylib::non_receiver_3, int>,
+        "mylib::non_receiver_3 should not be a receiver of int");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_4, int>,
         "mylib::non_receiver_4 should not be a receiver of int");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_5, int>,
         "mylib::non_receiver_5 should not be a receiver of int");
+    static_assert(!receiver_of_helper_v<mylib::non_receiver_6, int>,
+        "mylib::non_receiver_6 should not be a receiver of int");
 #endif
 
     {
