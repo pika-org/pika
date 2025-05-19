@@ -54,7 +54,7 @@ namespace pika::dispatch_mpi_detail {
             operation_state& op_state;
 
             template <typename Error>
-            constexpr void set_error(Error&& error) noexcept
+            constexpr void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 ex::set_error(std::move(r.op_state.r), std::forward<Error>(error));

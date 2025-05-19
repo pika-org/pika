@@ -100,7 +100,7 @@ namespace pika::schedule_from_detail {
             operation_state& op_state;
 
             template <typename Error>
-            void set_error(Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 r.op_state.set_error_predecessor_sender(std::forward<Error>(error));
@@ -181,7 +181,7 @@ namespace pika::schedule_from_detail {
             operation_state& op_state;
 
             template <typename Error>
-            void set_error(Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 r.op_state.set_error_scheduler_sender(std::forward<Error>(error));

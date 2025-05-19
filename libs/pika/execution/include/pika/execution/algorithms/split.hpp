@@ -119,7 +119,7 @@ namespace pika::split_detail {
             pika::intrusive_ptr<shared_state> state;
 
             template <typename Error>
-            void set_error(Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 r.state->v.template emplace<error_type>(error_type(std::forward<Error>(error)));

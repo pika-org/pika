@@ -82,7 +82,7 @@ namespace pika::thread_pool_bulk_detail {
             operation_state* op_state;
 
             template <typename E>
-            void set_error(E&& e) noexcept
+            void set_error(E&& e) && noexcept
             {
                 auto r = std::move(*this);
                 pika::execution::experimental::set_error(

@@ -167,7 +167,7 @@ namespace pika::let_value_detail {
             }
 
             template <typename Error>
-            void set_error(Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 pika::execution::experimental::set_error(

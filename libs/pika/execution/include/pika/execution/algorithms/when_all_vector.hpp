@@ -88,7 +88,7 @@ namespace pika::when_all_vector_detail {
             std::size_t const i;
 
             template <typename Error>
-            void set_error(Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 if (!r.op_state.set_stopped_error_called.exchange(true))

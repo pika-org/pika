@@ -129,7 +129,7 @@ namespace pika::let_error_detail {
             };
 
             template <typename Error>
-            void set_error(Error&& error) noexcept
+            void set_error(Error&& error) && noexcept
             {
                 auto r = std::move(*this);
                 pika::detail::try_catch_exception_ptr(
