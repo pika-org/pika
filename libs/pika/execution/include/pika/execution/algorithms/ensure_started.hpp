@@ -193,9 +193,9 @@ namespace pika::ensure_started_detail {
                     r.state->set_predecessor_done();
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                    ensure_started_receiver r) noexcept
+                void set_stopped() && noexcept
                 {
+                    auto r = std::move(*this);
                     r.state->v.template emplace<pika::execution::detail::stopped_type>();
                     r.state->set_predecessor_done();
                 };

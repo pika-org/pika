@@ -24,7 +24,7 @@ namespace mylib {
     {
         PIKA_STDEXEC_RECEIVER_CONCEPT
 
-        friend void tag_invoke(ex::set_stopped_t, receiver_1&&) noexcept { done_called = true; }
+        void set_stopped() && noexcept { done_called = true; }
 
         void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
@@ -37,7 +37,7 @@ namespace mylib {
     {
         PIKA_STDEXEC_RECEIVER_CONCEPT
 
-        friend void tag_invoke(ex::set_stopped_t, receiver_2&&) noexcept { done_called = true; }
+        void set_stopped() && noexcept { done_called = true; }
 
         void set_error(int) && noexcept { error_called = true; }
 
@@ -48,7 +48,7 @@ namespace mylib {
     {
         PIKA_STDEXEC_RECEIVER_CONCEPT
 
-        friend void tag_invoke(ex::set_stopped_t, receiver_3&&) noexcept { done_called = true; }
+        void set_stopped() && noexcept { done_called = true; }
 
         void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
@@ -59,7 +59,7 @@ namespace mylib {
 
     struct non_receiver_1
     {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_1&) noexcept { done_called = true; }
+        void set_stopped() & noexcept { done_called = true; }
 
         void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
@@ -68,7 +68,7 @@ namespace mylib {
 
     struct non_receiver_2
     {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_2&&) noexcept { done_called = true; }
+        void set_stopped() && noexcept { done_called = true; }
 
         void set_error(std::exception_ptr) & noexcept { error_called = true; }
 
@@ -77,7 +77,7 @@ namespace mylib {
 
     struct non_receiver_3
     {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_3&) noexcept { done_called = true; }
+        void set_stopped() & noexcept { done_called = true; }
 
         void set_error(std::exception_ptr) & noexcept { error_called = true; }
 
@@ -88,7 +88,7 @@ namespace mylib {
     {
         PIKA_STDEXEC_RECEIVER_CONCEPT
 
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_4&&) noexcept { done_called = true; }
+        void set_stopped() && noexcept { done_called = true; }
 
         void set_error(std::exception_ptr) && noexcept { error_called = true; }
 
@@ -99,19 +99,9 @@ namespace mylib {
 
     struct non_receiver_5
     {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_5&&) { done_called = true; }
+        void set_stopped() && noexcept { done_called = true; }
 
-        friend void tag_invoke(ex::set_error_t, non_receiver_5&&, std::exception_ptr) noexcept
-        {
-            error_called = true;
-        }
-    };
-
-    struct non_receiver_6
-    {
-        friend void tag_invoke(ex::set_stopped_t, non_receiver_6&&) { done_called = true; }
-
-        friend void tag_invoke(ex::set_error_t, non_receiver_6&&, std::exception_ptr)
+        friend void tag_invoke(ex::set_error_t, non_receiver_5&&, std::exception_ptr)
         {
             error_called = true;
         }
@@ -200,8 +190,6 @@ int main()
         ex::is_receiver_v<mylib::non_receiver_4>, "mylib::non_receiver_4 should be a receiver");
     static_assert(!ex::is_receiver_v<mylib::non_receiver_5>,
         "mylib::non_receiver_5 should not be a receiver");
-    static_assert(!ex::is_receiver_v<mylib::non_receiver_6>,
-        "mylib::non_receiver_6 should not be a receiver");
 
 #if !defined(PIKA_NVHPC_VERSION) || !defined(PIKA_HAVE_STDEXEC)
     static_assert(!receiver_of_helper_v<mylib::non_receiver_1, int>,
@@ -214,8 +202,6 @@ int main()
         "mylib::non_receiver_4 should not be a receiver of int");
     static_assert(!receiver_of_helper_v<mylib::non_receiver_5, int>,
         "mylib::non_receiver_5 should not be a receiver of int");
-    static_assert(!receiver_of_helper_v<mylib::non_receiver_6, int>,
-        "mylib::non_receiver_6 should not be a receiver of int");
 #endif
 
     {

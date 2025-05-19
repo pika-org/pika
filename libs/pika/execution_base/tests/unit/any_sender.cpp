@@ -232,10 +232,7 @@ struct error_receiver
         r.set_error_called = true;
     }
 
-    friend void tag_invoke(pika::execution::experimental::set_stopped_t, error_receiver&&) noexcept
-    {
-        PIKA_TEST(false);
-    };
+    void set_stopped() && noexcept { PIKA_TEST(false); };
 
     template <typename... Ts>
     void set_value(Ts&&...) && noexcept

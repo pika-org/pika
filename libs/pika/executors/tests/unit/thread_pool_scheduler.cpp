@@ -69,10 +69,7 @@ struct check_context_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(ex::set_stopped_t, check_context_receiver&&) noexcept
-    {
-        PIKA_TEST(false);
-    }
+    void set_stopped() && noexcept { PIKA_TEST(false); }
 
     template <typename... Ts>
     void set_value(Ts&&...) && noexcept
@@ -227,7 +224,7 @@ struct callback_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(ex::set_stopped_t, callback_receiver&&) noexcept { PIKA_TEST(false); }
+    void set_stopped() && noexcept { PIKA_TEST(false); }
 
     template <typename... Ts>
     void set_value(Ts&&...) && noexcept

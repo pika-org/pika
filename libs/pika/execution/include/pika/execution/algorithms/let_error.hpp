@@ -145,9 +145,9 @@ namespace pika::let_error_detail {
                     });
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                let_error_predecessor_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 pika::execution::experimental::set_stopped(std::move(r.op_state.receiver));
             };
 

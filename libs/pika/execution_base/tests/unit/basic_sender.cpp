@@ -70,11 +70,8 @@ struct receiver
     PIKA_STDEXEC_RECEIVER_CONCEPT
 
     void set_error(std::exception_ptr) && noexcept {}
-
-    friend void tag_invoke(ex::set_stopped_t, receiver&&) noexcept {}
-
+    void set_stopped() && noexcept {}
     void set_value(int v) && noexcept { i.get() = v; }
-
     constexpr ex::empty_env get_env() const& noexcept { return {}; }
 
     std::reference_wrapper<int> i;
@@ -115,11 +112,8 @@ struct void_receiver
     PIKA_STDEXEC_RECEIVER_CONCEPT
 
     void set_error(std::exception_ptr) && noexcept {}
-
-    friend void tag_invoke(ex::set_stopped_t, void_receiver&&) noexcept {}
-
+    void set_stopped() && noexcept {}
     void set_value() && noexcept { ++void_receiver_set_value_calls; }
-
     constexpr ex::empty_env get_env() const& noexcept { return {}; }
 };
 

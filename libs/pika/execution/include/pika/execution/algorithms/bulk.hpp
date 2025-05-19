@@ -78,9 +78,9 @@ namespace pika::bulk_detail {
                     std::move(r.receiver), std::forward<Error>(error));
             }
 
-            friend void tag_invoke(
-                pika::execution::experimental::set_stopped_t, bulk_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 pika::execution::experimental::set_stopped(std::move(r.receiver));
             }
 
