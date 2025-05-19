@@ -25,7 +25,6 @@ function(pika_add_config_test variable)
       ARGS
       DEFINITIONS
       REQUIRED
-      CXXFLAGS
   )
   cmake_parse_arguments(${variable} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -94,9 +93,8 @@ function(pika_add_config_test variable)
     get_property(
       PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL PROPERTY PIKA_TARGET_COMPILE_OPTIONS_PRIVATE
     )
-    set(PIKA_TARGET_COMPILE_OPTIONS_VAR
-        ${PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR} ${PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR}
-        ${${variable}_CXXFLAGS}
+    set(PIKA_TARGET_COMPILE_OPTIONS_VAR ${PIKA_TARGET_COMPILE_OPTIONS_PUBLIC_VAR}
+                                        ${PIKA_TARGET_COMPILE_OPTIONS_PRIVATE_VAR}
     )
     foreach(_flag ${PIKA_TARGET_COMPILE_OPTIONS_VAR})
       if(NOT "${_flag}" MATCHES "^\\$.*")
@@ -449,7 +447,7 @@ function(pika_check_for_cxx23_static_call_operator)
   pika_add_config_test(
     PIKA_WITH_CXX23_STATIC_CALL_OPERATOR
     SOURCE cmake/tests/cxx23_static_call_operator.cpp
-    FILE ${ARGN} CXXFLAGS -pedantic-errors
+    FILE ${ARGN}
   )
 endfunction()
 
