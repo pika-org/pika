@@ -60,9 +60,9 @@ namespace pika::start_detached_detail {
                 std::terminate();
             }
 
-            friend void tag_invoke(
-                pika::execution::experimental::set_stopped_t, start_detached_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 r.op_state.release();
             };
 

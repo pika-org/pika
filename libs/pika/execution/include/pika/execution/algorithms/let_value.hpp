@@ -174,9 +174,9 @@ namespace pika::let_value_detail {
                     std::move(r.op_state.receiver), std::forward<Error>(error));
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                let_value_predecessor_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 pika::execution::experimental::set_stopped(std::move(r.op_state.receiver));
             };
 

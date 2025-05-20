@@ -112,9 +112,9 @@ namespace pika {
                     std::move(r.op_state->receiver), std::forward<Error>(error));
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                require_started_receiver_type r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 PIKA_ASSERT(r.op_state != nullptr);
                 pika::execution::experimental::set_stopped(std::move(r.op_state->receiver));
             };

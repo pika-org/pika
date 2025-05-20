@@ -168,9 +168,9 @@ namespace pika::sync_wait_detail {
             r.signal_set_called();
         }
 
-        friend void tag_invoke(
-            pika::execution::experimental::set_stopped_t, sync_wait_receiver_type&& r) noexcept
+        void set_stopped() && noexcept
         {
+            auto r = std::move(*this);
             r.signal_set_called();
         }
 

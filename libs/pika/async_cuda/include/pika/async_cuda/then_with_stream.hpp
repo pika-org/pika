@@ -231,9 +231,9 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                         std::move(r.op_state.receiver), std::forward<Error>(error));
                 }
 
-                friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                    then_with_cuda_stream_receiver&& r) noexcept
+                void set_stopped() && noexcept
                 {
+                    auto r = std::move(*this);
                     pika::execution::experimental::set_stopped(std::move(r.op_state.receiver));
                 }
 

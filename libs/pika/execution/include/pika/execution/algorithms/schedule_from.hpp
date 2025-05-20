@@ -106,9 +106,9 @@ namespace pika::schedule_from_detail {
                 r.op_state.set_error_predecessor_sender(std::forward<Error>(error));
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                predecessor_sender_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 r.op_state.set_stopped_predecessor_sender();
             }
 
@@ -187,9 +187,9 @@ namespace pika::schedule_from_detail {
                 r.op_state.set_error_scheduler_sender(std::forward<Error>(error));
             }
 
-            friend void tag_invoke(pika::execution::experimental::set_stopped_t,
-                scheduler_sender_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 r.op_state.set_stopped_scheduler_sender();
             }
 

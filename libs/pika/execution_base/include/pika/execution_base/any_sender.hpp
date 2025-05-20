@@ -464,21 +464,22 @@ namespace pika::execution::experimental::detail {
         auto set_value(
             Ts_&&... ts) && noexcept -> decltype(receiver->set_value(std::forward<Ts_>(ts)...))
         {
+            auto r = std::move(*this);
             try
             {
-                receiver->set_value(std::forward<Ts_>(ts)...);
+                r.receiver->set_value(std::forward<Ts_>(ts)...);
             }
             catch (...)
             {
-                receiver->set_error(std::current_exception());
+                r.receiver->set_error(std::current_exception());
             }
         }
 
         void set_error(std::exception_ptr ep) && noexcept { receiver->set_error(std::move(ep)); }
 
-        friend void tag_invoke(
-            pika::execution::experimental::set_stopped_t, any_receiver r) noexcept
+        void set_stopped() && noexcept
         {
+            auto r = std::move(*this);
             r.receiver->set_stopped();
         }
 

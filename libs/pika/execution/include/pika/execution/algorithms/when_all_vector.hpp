@@ -107,9 +107,9 @@ namespace pika::when_all_vector_detail {
                 r.op_state.finish();
             }
 
-            friend void tag_invoke(
-                pika::execution::experimental::set_stopped_t, when_all_vector_receiver&& r) noexcept
+            void set_stopped() && noexcept
             {
+                auto r = std::move(*this);
                 r.op_state.set_stopped_error_called = true;
                 r.op_state.finish();
             };

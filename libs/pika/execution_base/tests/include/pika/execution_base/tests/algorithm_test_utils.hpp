@@ -137,9 +137,9 @@ struct callback_receiver
         PIKA_TEST(false);
     }
 
-    friend void tag_invoke(
-        pika::execution::experimental::set_stopped_t, callback_receiver&&) noexcept
+    void set_stopped() && noexcept
     {
+        [[maybe_unused]] auto r = std::move(*this);
         PIKA_TEST(false);
     };
 
@@ -172,9 +172,9 @@ struct error_callback_receiver
         r.set_error_called = true;
     }
 
-    friend void tag_invoke(
-        pika::execution::experimental::set_stopped_t, error_callback_receiver&&) noexcept
+    void set_stopped() && noexcept
     {
+        [[maybe_unused]] auto r = std::move(*this);
         PIKA_TEST(false);
     };
 

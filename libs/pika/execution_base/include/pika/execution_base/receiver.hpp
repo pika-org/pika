@@ -148,8 +148,16 @@ namespace pika::execution::experimental {
     } set_error{};
 
     PIKA_HOST_DEVICE_INLINE_CONSTEXPR_VARIABLE
-    struct set_stopped_t : pika::functional::detail::tag_noexcept<set_stopped_t>
+    struct set_stopped_t
     {
+        template <typename Receiver, typename... Ts>
+        PIKA_FORCEINLINE constexpr auto PIKA_STATIC_CALL_OPERATOR(Receiver&& receiver) noexcept
+            -> decltype(std::forward<Receiver>(receiver).set_stopped())
+        {
+            static_assert(noexcept(std::forward<Receiver>(receiver).set_stopped()),
+                "std::execution receiver set_stopped member function must be noexcept");
+            return std::forward<Receiver>(receiver).set_stopped();
+        }
     } set_stopped{};
 
     ///////////////////////////////////////////////////////////////////////
