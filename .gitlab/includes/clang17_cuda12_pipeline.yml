@@ -15,7 +15,7 @@ include:
     COMPILER: clang@17.0.4
     CXXSTD: 20
     GPU_TARGET: '80'
-    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} +cuda cuda_arch=${GPU_TARGET} malloc=system cxxstd=$CXXSTD \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH +cuda cuda_arch=${GPU_TARGET} malloc=system cxxstd=$CXXSTD %${COMPILER} \
                  ^cuda@12.4 ^boost@1.83.0 ^hwloc@2.9.1"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
                   -DPIKA_WITH_CUDA=ON -DCMAKE_CUDA_COMPILER=c++ -DCMAKE_CUDA_ARCHITECTURES=${GPU_TARGET} \
