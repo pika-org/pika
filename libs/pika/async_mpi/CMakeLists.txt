@@ -19,9 +19,8 @@ else()
 endif()
 
 # Default location is $PIKA_ROOT/libs/mpi/include
-set(async_mpi_headers
-    pika/async_mpi/mpi_helpers.hpp pika/async_mpi/mpi_polling.hpp pika/async_mpi/dispatch_mpi.hpp
-    pika/async_mpi/trigger_mpi.hpp pika/async_mpi/transform_mpi.hpp
+set(async_mpi_headers pika/async_mpi/mpi_helpers.hpp pika/async_mpi/mpi_polling.hpp
+                      pika/async_mpi/transform_mpi.hpp
 )
 
 # Default location is $PIKA_ROOT/libs/mpi/src
