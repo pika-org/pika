@@ -24,6 +24,7 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
     libtool \
+    libncurses-dev \
     locales \
     m4 \
     moreutils \
@@ -48,4 +49,4 @@ RUN mkdir -p $SPACK_ROOT \
 
 ENV PATH $SPACK_ROOT/bin:/root/.local/bin:$PATH
 
-RUN spack external find --exclude python --scope site && spack compiler find --scope site
+RUN spack external find --all --exclude python --scope site && spack compiler find --scope site
