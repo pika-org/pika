@@ -14,10 +14,10 @@ include:
     BASE_COMPILER: gcc@13
     COMPILER: clang@19.1.0
     CXXSTD: 23
-    SPACK_SPEC: "pika@main arch=$SPACK_ARCH %${COMPILER} \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH \
                  cxxflags=-stdlib=libc++ cxxflags=-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG \
                  malloc=system \
-                 cxxstd=$CXXSTD +stdexec ^boost@1.86.0 ^hwloc@2.11.1 \
+                 cxxstd=$CXXSTD +stdexec %${COMPILER} ^boost@1.86.0 ^hwloc@2.11.1 \
                  ^fmt cxxflags=-stdlib=libc++ cxxflags=-DLIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG \
                  ^spdlog cxxflags=-stdlib=libc++ cxxflags=-DLIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG \
                  ^stdexec@24.09"
