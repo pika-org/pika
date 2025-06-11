@@ -6,6 +6,22 @@
 
 # Changelog
 
+## 0.34.0 (2025-06-11)
+
+### New features
+
+- The `transform_mpi` sender adaptor has been simplified internally to reduce debug bloat. ([#1433](https://github.com/pika-org/pika/pull/1433))
+
+### Breaking changes
+
+- The `set_error` and `set_stopped` CPOs now use member functions instead of `tag_invoke` to better align with `std::execution`. ([#1369](https://github.com/pika-org/pika/pull/1369), [#1434](https://github.com/pika-org/pika/pull/1434))
+
+### Bugfixes
+
+- Compilation with APEX and MPI enabled at the same time has been fixed. ([#1424](https://github.com/pika-org/pika/pull/1424))
+- Compilation with Boost 1.88 has been fixed. ([#1428](https://github.com/pika-org/pika/pull/1428))
+- Removed unnecessary `-Wl,-z,-defs` flags that were exposed to consumers of pika. ([#1431](https://github.com/pika-org/pika/pull/1431))
+
 ## 0.33.0 (2025-04-02)
 
 ### New features
