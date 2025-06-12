@@ -42,10 +42,18 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
 ARG SPACK_REPO=https://github.com/spack/spack
 ARG SPACK_COMMIT
 ENV SPACK_ROOT=/opt/spack-$SPACK_COMMIT
+ARG SPACK_PACKAGES_REPO=https://github.com/spack/spack-packages
+ARG SPACK_PACKAGES_COMMIT
+ENV SPACK_PACKAGES_ROOT=/opt/spack-packages-$SPACK_PACKAGES_COMMIT
 RUN mkdir -p $SPACK_ROOT \
     && curl -OL $SPACK_REPO/archive/$SPACK_COMMIT.tar.gz \
-    && tar -xzvf $SPACK_COMMIT.tar.gz -C /opt && rm -f $SPACK_COMMIT.tar.gz
+    && tar -xzvf $SPACK_COMMIT.tar.gz -C /opt && rm -f $SPACK_COMMIT.tar.gz \
+    && mkdir -p $SPACK_PACKAGES_ROOT \
+    && curl -OL $SPACK_PACKAGES_REPO/archive/$SPACK_PACKAGES_COMMIT.tar.gz \
+    && tar -xzvf $SPACK_PACKAGES_COMMIT.tar.gz -C /opt && rm -f $SPACK_PACKAGES_COMMIT.tar.gz
 
 ENV PATH $SPACK_ROOT/bin:/root/.local/bin:$PATH
 
-RUN spack external find --exclude python --scope site && spack compiler find --scope site
+RUN spack repo set --destination $SPACK_PACKAGES_ROOT builtin \
+    && spack external find --scope site --exclude python \
+    && spack compiler find --scope site
