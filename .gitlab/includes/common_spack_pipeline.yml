@@ -8,14 +8,17 @@ include:
   - local: '.gitlab/includes/common_pipeline.yml'
 
 variables:
-  SPACK_COMMIT: develop-2025-01-19
+  SPACK_REPO: https://github.com/spack/spack
+  SPACK_COMMIT: a40b98368c75dc1af94b48799f14e7bee57fca68
+  SPACK_PACKAGES_REPO: https://github.com/spack/spack-packages
+  SPACK_PACKAGES_COMMIT: a92fc159b54d37fd0c55262e88e35fdbb1ca333c
 
 .base_spack_image:
   timeout: 1 hours
   before_script:
     - echo $DOCKERHUB_TOKEN | podman login docker.io -u $DOCKERHUB_USERNAME --password-stdin
     - export DOCKERFILE_SHA=`sha256sum $DOCKERFILE | head -c 16`
-    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT-$SPACK_REPO | sha256sum - | head -c 16`
+    - export CONFIG_TAG=`echo $DOCKERFILE_SHA-$BASE_IMAGE-$SPACK_COMMIT-$SPACK_PACKAGES_COMMIT-$SPACK_PACKAGES_REPO-$SPACK_REPO | sha256sum - | head -c 16`
     - export PERSIST_IMAGE_NAME=$CSCS_REGISTRY_PATH/$ARCH/pika-spack-base:$CONFIG_TAG
     - echo -e "CONFIG_TAG=$CONFIG_TAG" >> base.env
     - echo -e "ARCH=$ARCH" >> base.env
@@ -23,7 +26,7 @@ variables:
   variables:
     BASE_IMAGE: docker.io/ubuntu:24.04
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_base
-    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT","SPACK_REPO"]'
+    DOCKER_BUILD_ARGS: '["BASE_IMAGE","SPACK_COMMIT","SPACK_PACKAGES_COMMIT","SPACK_PACKAGES_REPO","SPACK_REPO"]'
   artifacts:
     reports:
       dotenv: base.env

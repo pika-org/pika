@@ -123,6 +123,9 @@ function create_metadata_file {
         CMAKE_COMMON_FLAGS \
         CMAKE_FLAGS \
         COMPILER \
+        SPACK_REPO \
         SPACK_COMMIT \
+        SPACK_PACKAGES_REPO \
+        SPACK_PACKAGES_COMMIT \
         SPACK_SPEC
 }
