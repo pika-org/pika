@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install utility packages
 RUN apt-get update && apt-get -yqq install --no-install-recommends \
+    bison \
     build-essential \
     bzip2 \
     ca-certificates \
@@ -13,6 +14,7 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     curl \
     diffutils \
     findutils \
+    flex \
     g++ \
     gcc \
     gdb \
@@ -20,16 +22,22 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     git \
     gnupg2 \
     jq \
+    libbz2-dev \
     libc6-dbg \
     libcurl4-openssl-dev \
+    liblzma-dev \
     libssl-dev \
     libtool \
     libncurses-dev \
     locales \
     m4 \
+    meson \
     moreutils \
+    ninja-build \
+    numactl \
     openssl \
     patch \
+    perl \
     pipx \
     pkgconf \
     tar \
