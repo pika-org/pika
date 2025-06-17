@@ -9,7 +9,7 @@ include:
 
 variables:
   SPACK_REPO: https://github.com/spack/spack
-  SPACK_COMMIT: a40b98368c75dc1af94b48799f14e7bee57fca68
+  SPACK_COMMIT: 2e7168b4cfe9222a94becf0c2c5b401f513181ec
   SPACK_PACKAGES_REPO: https://github.com/spack/spack-packages
   SPACK_PACKAGES_COMMIT: a92fc159b54d37fd0c55262e88e35fdbb1ca333c
 
