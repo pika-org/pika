@@ -404,6 +404,7 @@ namespace pika::execution::experimental::detail {
         any_receiver_ref_base& operator=(any_receiver_ref_base&&) noexcept = default;
         any_receiver_ref_base(any_receiver_ref_base const&) = delete;
         any_receiver_ref_base& operator=(any_receiver_ref_base const&) = delete;
+        virtual ~any_receiver_ref_base() = default;
 
         virtual void set_value(Ts...) noexcept = 0;
         virtual void set_error(std::exception_ptr) noexcept = 0;
