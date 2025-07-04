@@ -10,8 +10,8 @@ include:
 variables:
   SPACK_REPO: https://github.com/spack/spack
   SPACK_COMMIT: 2e7168b4cfe9222a94becf0c2c5b401f513181ec
-  SPACK_PACKAGES_REPO: https://github.com/msimberg/spack-packages
-  SPACK_PACKAGES_COMMIT: 59a197d942df749a49a9013ae0e8c5814a3461b3
+  SPACK_PACKAGES_REPO: https://github.com/spack/spack-packages
+  SPACK_PACKAGES_COMMIT: 42f50d090744f8131b237cb6eab5ebc9eaea36ce
 
 .base_spack_image:
   timeout: 1 hours
