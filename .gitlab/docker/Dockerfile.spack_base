@@ -64,5 +64,4 @@ RUN mkdir -p $SPACK_ROOT \
 ENV PATH $SPACK_ROOT/bin:/root/.local/bin:$PATH
 
 RUN spack repo add --scope site "$SPACK_PACKAGES_ROOT/repos/spack_repo/builtin" \
-    && spack external find --scope site --all --exclude python \
-    && spack compiler find --scope site
+    && spack external find --scope site --all --exclude python
