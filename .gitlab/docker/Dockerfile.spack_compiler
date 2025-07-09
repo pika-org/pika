@@ -48,9 +48,9 @@ RUN echo "spack arch: $(spack arch)"; \
     fi; \
     compiler_missing=0; \
     spack compiler info $COMPILER > /dev/null 2> /dev/null || compiler_missing=1; \
-    export spack_compiler=${COMPILER/clang/llvm}; \
+    export spack_compiler=${COMPILER}; \
     if [[ $spack_compiler =~ llvm ]]; then \
-        export spack_compiler="$spack_compiler~gold"; \
+        export spack_compiler="$spack_compiler~gold+flang"; \
     fi; \
     if [[ ! -z "$BASE_COMPILER" ]]; then \
         if [[ ! $BASE_COMPILER =~ gcc ]]; then \

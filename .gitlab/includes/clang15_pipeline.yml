@@ -12,7 +12,7 @@ include:
   variables:
     SPACK_ARCH: linux-ubuntu24.04-zen2
     BASE_COMPILER: gcc@12
-    COMPILER: clang@15.0.0
+    COMPILER: llvm@15.0.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH malloc=system cxxstd=$CXXSTD %${COMPILER} ^boost@1.80.0 \
                  ^hwloc@2.8.0"

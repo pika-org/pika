@@ -12,7 +12,7 @@ include:
   variables:
     SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
     BASE_COMPILER: gcc@12
-    COMPILER: clang@17.0.4
+    COMPILER: llvm@17.0.4
     CXXSTD: 20
     GPU_TARGET: '80'
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH +cuda cuda_arch=${GPU_TARGET} malloc=system cxxstd=$CXXSTD %${COMPILER} \

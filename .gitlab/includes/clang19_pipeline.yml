@@ -12,7 +12,7 @@ include:
   variables:
     SPACK_ARCH: linux-ubuntu24.04-zen2
     BASE_COMPILER: gcc@13
-    COMPILER: clang@19.1.0
+    COMPILER: llvm@19.1.0
     CXXSTD: 23
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH \
                  cxxflags=-stdlib=libc++ cxxflags=-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG \
