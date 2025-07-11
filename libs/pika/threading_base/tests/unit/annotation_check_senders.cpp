@@ -75,6 +75,15 @@ auto test_senders_schedule_no_parent_annotation()
             ex::continues_on(
                 ex::with_annotation(ex::thread_pool_scheduler{}, "2-schedule-no-parent-F")),
 
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
         // 2 x <unknown>
         ex::schedule(ex::thread_pool_scheduler{}) | ex::bulk(2, [](int) {}),
 
@@ -88,6 +97,11 @@ auto test_senders_schedule_no_parent_annotation()
         ex::schedule(ex::thread_pool_scheduler{}) |
             ex::bulk(2, pika::annotated_function([](int) {}, "2-schedule-no-parent-H"))
 
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic pop
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic pop
+#endif
     );
 }
 

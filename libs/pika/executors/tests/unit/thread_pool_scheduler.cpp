@@ -1206,6 +1206,15 @@ void test_detach()
     }
 }
 
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 void test_bulk()
 {
     std::vector<int> const ns = {0, 1, 10, 43};
@@ -1365,6 +1374,12 @@ void test_completion_scheduler()
             "the completion scheduler should be a thread_pool_scheduler");
     }
 }
+
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic pop
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic pop
+#endif
 
 void test_drop_value()
 {
