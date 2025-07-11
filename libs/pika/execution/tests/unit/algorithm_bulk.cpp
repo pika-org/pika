@@ -36,6 +36,13 @@ struct custom_bulk_operation
     }
 };
 
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 template <typename S>
 auto tag_invoke(ex::bulk_t, S&& s, int num, custom_bulk_operation t)
 {
