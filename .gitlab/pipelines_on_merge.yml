@@ -11,6 +11,7 @@ include:
   - local: '.gitlab/includes/gcc12_cuda12_pipeline.yml'
   - local: '.gitlab/includes/gcc12_hip5_pipeline.yml'
   - local: '.gitlab/includes/gcc14_pipeline.yml'
+  - local: '.gitlab/includes/gcc15_pipeline.yml'
   - local: '.gitlab/includes/clang13_pipeline.yml'
   - local: '.gitlab/includes/clang14_pipeline.yml'
   - local: '.gitlab/includes/clang15_pipeline.yml'
