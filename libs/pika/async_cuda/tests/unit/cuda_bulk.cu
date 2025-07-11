@@ -67,8 +67,21 @@ int pika_main()
             return p;
         };
 
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
         auto s = ex::just(device_ptr, n) | ex::continues_on(sched) | cu::then_with_stream(malloc) |
             ex::bulk(n, f) | cu::then_with_stream(memcpy) | cu::then_with_stream(free);
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic pop
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic pop
+#endif
         tt::sync_wait(std::move(s));
 
         for (element_type i = 0; i < n; ++i) { PIKA_TEST_EQ(host_vector[i], i); }

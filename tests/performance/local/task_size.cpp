@@ -189,7 +189,20 @@ double do_work_bulk(
     ex::unique_any_sender<> sender{ex::just()};
     for (std::uint64_t i = 0; i < tasks_per_thread; ++i)
     {
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
         sender = std::move(sender) | ex::continues_on(sched) | ex::bulk(num_threads, work);
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic pop
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic pop
+#endif
         // To avoid stack overflow when connecting, starting, or destroying the operation state,
         // eagerly start the chain of work periodically using ensure_started. The chosen frequency
         // is mostly arbitrary. It's done as often as reasonably possible to make the probability of
