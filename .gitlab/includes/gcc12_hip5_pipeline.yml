@@ -14,7 +14,7 @@ include:
     COMPILER: gcc@12.2.0
     CXXSTD: 20
     GPU_TARGET: 'gfx90a'
-    SPACK_SPEC: "pika@main arch=$SPACK_ARCH +rocm +stdexec amdgpu_target=${GPU_TARGET} \
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH +rocm +stdexec amdgpu_target==${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD %${COMPILER} ^boost@1.79.0 ^hwloc@2.6.0 ^hip@5.6 ^llvm~gold \
                  ^fmt@10.0.0 ^stdexec@24.09"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_HIP=ON -DPIKA_WITH_MALLOC=system \
