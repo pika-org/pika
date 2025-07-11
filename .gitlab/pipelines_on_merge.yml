@@ -6,7 +6,6 @@
 
 include:
   # The pipelines below are running only on main, release and on merge queues
-  - local: '.gitlab/includes/dockerhub_pipeline.yml'
   - local: '.gitlab/includes/gcc11_pipeline.yml'
   - local: '.gitlab/includes/gcc12_pipeline.yml'
   - local: '.gitlab/includes/gcc12_cuda12_pipeline.yml'
