@@ -31,7 +31,7 @@ jobs:
           rm /usr/local/bin/python3*
 
           export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-          brew pin swiftlint xcbeautify
+          brew pin xcbeautify
           brew upgrade
           brew update
           brew install boost cmake fmt hwloc ninja spdlog
