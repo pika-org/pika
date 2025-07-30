@@ -31,12 +31,16 @@ struct custom_transformer
     }
 };
 
+// Newer versions of stdexec no longer allow tag_invoke customization of algorithms, but we can't
+// reliably detect the version of stdexec that dropped support, so we completely exclude this test.
+#if !defined(PIKA_HAVE_STDEXEC)
 template <typename S>
 auto tag_invoke(ex::then_t, S&& s, custom_transformer t)
 {
     t.tag_invoke_overload_called = true;
     return ex::then(std::forward<S>(s), [t = std::move(t)]() { t(); });
 }
+#endif
 
 int main()
 {
@@ -167,6 +171,7 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     // tag_invoke overload
     {
         std::atomic<bool> receiver_set_value_called{false};
@@ -183,6 +188,7 @@ int main()
         PIKA_TEST(tag_invoke_overload_called);
         PIKA_TEST(custom_transformer_call_operator_called);
     }
+#endif
 
     // Failure path
     {
@@ -224,6 +230,7 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         std::atomic<bool> receiver_set_error_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
@@ -239,6 +246,7 @@ int main()
         PIKA_TEST(tag_invoke_overload_called);
         PIKA_TEST(custom_transformer_call_operator_called);
     }
+#endif
 
     return 0;
 }
