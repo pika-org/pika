@@ -12,7 +12,10 @@ function submit_logstash {
 
     array_of_objects_file=$(mktemp --tmpdir metadata.XXXXXXXXXX.json)
     jq --null-input '[inputs]' <"${1}" >"${array_of_objects_file}"
-    curl \
+    # Make sure the right libcurl.so is found. The container engine on Alps may inject a host
+    # libcurl.so which is incompatible with the curl was compiled against.
+    LD_LIBRARY_PATH=/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} \
+        curl \
         --silent \
         --show-error \
         --request POST \
