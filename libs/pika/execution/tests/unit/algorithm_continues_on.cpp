@@ -386,6 +386,7 @@ int main()
         PIKA_TEST(!scheduler_execute_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     // tag_invoke overloads
     {
         std::atomic<bool> set_value_called{false};
@@ -463,6 +464,7 @@ int main()
         PIKA_TEST(!destination_scheduler_schedule_called);
         PIKA_TEST(!destination_scheduler_execute_called);
     }
+#endif
 
     // Failure path
     {

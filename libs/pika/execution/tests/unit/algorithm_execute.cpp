@@ -116,6 +116,7 @@ int main()
         PIKA_TEST_EQ(tag_invoke_execute_calls, std::size_t(0));
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         scheduler_2 s2;
         pika::execution::experimental::execute(s2, f_struct_1{});
@@ -124,6 +125,7 @@ int main()
         PIKA_TEST_EQ(friend_tag_invoke_schedule_calls, std::size_t(3));
         PIKA_TEST_EQ(tag_invoke_execute_calls, std::size_t(3));
     }
+#endif
 
     return 0;
 }

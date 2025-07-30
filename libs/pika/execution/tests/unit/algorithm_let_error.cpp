@@ -18,6 +18,9 @@
 
 namespace ex = pika::execution::experimental;
 
+// Newer versions of stdexec no longer allow tag_invoke customization of algorithms, but we can't
+// reliably detect the version of stdexec that dropped support, so we completely exclude this test.
+#if !defined(PIKA_HAVE_STDEXEC)
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
 template <typename F>
@@ -26,6 +29,7 @@ auto tag_invoke(ex::let_error_t, custom_sender_tag_invoke s, F&&)
     s.tag_invoke_overload_called = true;
     return void_sender{};
 }
+#endif
 
 int main()
 {
@@ -152,6 +156,7 @@ int main()
         PIKA_TEST(let_error_callback_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     // tag_invoke overload
     {
         std::atomic<bool> tag_invoke_overload_called{false};
@@ -159,6 +164,7 @@ int main()
             ex::let_error([&](std::exception_ptr) { return ex::just(); });
         PIKA_TEST(tag_invoke_overload_called);
     }
+#endif
 
     // "Failure" path, i.e. let_error has no error to handle
     {

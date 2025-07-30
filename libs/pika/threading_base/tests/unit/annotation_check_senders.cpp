@@ -47,6 +47,15 @@ auto test_senders_execute_parent_annotation()
 
 auto test_senders_schedule_no_parent_annotation()
 {
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
     return ex::when_all(
         // <unknown>
         ex::schedule(ex::thread_pool_scheduler{}),
@@ -86,9 +95,13 @@ auto test_senders_schedule_no_parent_annotation()
         // 3-schedule-no-parent-H which does not show up in the call count (but
         // does show up in OTF2 files)
         ex::schedule(ex::thread_pool_scheduler{}) |
-            ex::bulk(2, pika::annotated_function([](int) {}, "2-schedule-no-parent-H"))
+            ex::bulk(2, pika::annotated_function([](int) {}, "2-schedule-no-parent-H")));
 
-    );
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic pop
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic pop
+#endif
 }
 
 auto test_senders_schedule_parent_annotation()

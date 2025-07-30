@@ -36,12 +36,23 @@ struct custom_bulk_operation
     }
 };
 
+// Ignore warnings about bulk without an execution policy being deprecated
+#if defined(PIKA_GCC_VERSION)
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(PIKA_CLANG_VERSION)
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
+// Newer versions of stdexec no longer allow tag_invoke customization of algorithms, but we can't
+// reliably detect the version of stdexec that dropped support, so we completely exclude this test.
+#if !defined(PIKA_HAVE_STDEXEC)
 template <typename S>
 auto tag_invoke(ex::bulk_t, S&& s, int num, custom_bulk_operation t)
 {
     t.tag_invoke_overload_called = true;
     return ex::bulk(std::forward<S>(s), num, [t = std::move(t)](int n) { t(n); });
 }
+#endif
 
 int main()
 {
@@ -158,6 +169,7 @@ int main()
         PIKA_TEST_EQ(set_value_count.load(), 40);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     // tag_invoke overload
     {
         std::atomic<bool> receiver_set_value_called{false};
@@ -176,6 +188,7 @@ int main()
         PIKA_TEST(custom_bulk_call_operator_called);
         PIKA_TEST_EQ(custom_bulk_call_count.load(), 10);
     }
+#endif
 
     // Failure path
     {
@@ -216,6 +229,7 @@ int main()
         PIKA_TEST(set_error_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         std::atomic<bool> receiver_set_error_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
@@ -233,6 +247,7 @@ int main()
         PIKA_TEST(custom_bulk_call_operator_called);
         PIKA_TEST_EQ(custom_bulk_call_count.load(), 3);
     }
+#endif
 
     {
         std::atomic<bool> set_error_called{false};

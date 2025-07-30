@@ -21,6 +21,9 @@
 
 namespace ex = pika::execution::experimental;
 
+// Newer versions of stdexec no longer allow tag_invoke customization of algorithms, but we can't
+// reliably detect the version of stdexec that dropped support, so we completely exclude this test.
+#if !defined(PIKA_HAVE_STDEXEC)
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
 template <typename... Ss>
@@ -29,6 +32,7 @@ auto tag_invoke(ex::when_all_t, custom_sender_tag_invoke s, Ss&&... ss)
     s.tag_invoke_overload_called = true;
     return ex::when_all(std::forward<Ss>(ss)...);
 }
+#endif
 
 int main()
 {
@@ -169,6 +173,7 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     {
         std::atomic<bool> receiver_set_value_called{false};
         std::atomic<bool> tag_invoke_overload_called{false};
@@ -180,6 +185,7 @@ int main()
         PIKA_TEST(receiver_set_value_called);
         PIKA_TEST(tag_invoke_overload_called);
     }
+#endif
 
     {
         std::atomic<bool> set_value_called{false};

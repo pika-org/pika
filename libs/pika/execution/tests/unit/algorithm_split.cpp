@@ -19,6 +19,9 @@
 namespace ex = pika::execution::experimental;
 namespace tt = pika::this_thread::experimental;
 
+// Newer versions of stdexec no longer allow tag_invoke customization of algorithms, but we can't
+// reliably detect the version of stdexec that dropped support, so we completely exclude this test.
+#if !defined(PIKA_HAVE_STDEXEC)
 // This overload is only used to check dispatching. It is not a useful
 // implementation.
 template <typename Allocator = pika::detail::internal_allocator<>>
@@ -27,6 +30,7 @@ auto tag_invoke(ex::split_t, custom_sender_tag_invoke s, Allocator const& = Allo
     s.tag_invoke_overload_called = true;
     return void_sender{};
 }
+#endif
 
 int main()
 {
@@ -98,6 +102,7 @@ int main()
         PIKA_TEST(set_value_called);
     }
 
+#if !defined(PIKA_HAVE_STDEXEC)
     // tag_invoke overload
     {
         std::atomic<bool> receiver_set_value_called{false};
@@ -110,6 +115,7 @@ int main()
         PIKA_TEST(receiver_set_value_called);
         PIKA_TEST(tag_invoke_overload_called);
     }
+#endif
 
     // Failure path
     {
