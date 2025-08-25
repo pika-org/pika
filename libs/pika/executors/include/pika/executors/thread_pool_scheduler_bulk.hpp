@@ -196,19 +196,19 @@ namespace pika::thread_pool_bulk_detail {
                         }
 
                         // Then steal from neighboring queues
-                        for (std::uint32_t offset = 1; offset < op_state->num_worker_threads;
-                             ++offset)
-                        {
-                            std::size_t neighbor_worker_thread =
-                                (task_f->worker_thread + offset) % op_state->num_worker_threads;
-                            auto& neighbor_queue = op_state->queues[neighbor_worker_thread].data_;
+                        // for (std::uint32_t offset = 1; offset < op_state->num_worker_threads;
+                        //      ++offset)
+                        // {
+                        //     std::size_t neighbor_worker_thread =
+                        //         (task_f->worker_thread + offset) % op_state->num_worker_threads;
+                        //     auto& neighbor_queue = op_state->queues[neighbor_worker_thread].data_;
 
-                            while ((index = neighbor_queue.pop_right()))
-                            {
-                                // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-                                do_work_chunk(ts, *index);
-                            }
-                        }
+                        //     while ((index = neighbor_queue.pop_right()))
+                        //     {
+                        //         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+                        //         do_work_chunk(ts, *index);
+                        //     }
+                        // }
                     }
                 };
 
