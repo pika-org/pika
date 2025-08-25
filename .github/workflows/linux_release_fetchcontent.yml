@@ -23,7 +23,7 @@ jobs:
     container: pikaorg/pika-ci-base:29
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Update apt repositories for ccache
         run: apt update
       - name: Setup ccache
