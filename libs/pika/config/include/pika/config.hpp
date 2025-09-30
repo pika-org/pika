@@ -33,9 +33,9 @@
 
 #include <boost/version.hpp>
 
-#if BOOST_VERSION < 107100
+#if BOOST_VERSION < 107700
 // Please update your Boost installation (see www.boost.org for details).
-# error pika cannot be compiled with a Boost version earlier than 1.71.0
+# error pika cannot be compiled with a Boost version earlier than 1.77.0
 #endif
 
 #include <pika/preprocessor/cat.hpp>
