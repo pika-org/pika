@@ -14,19 +14,23 @@ if(NOT TARGET pika_dependencies_boost)
   # cmake-format: off
   set(Boost_ADDITIONAL_VERSIONS
       ${Boost_ADDITIONAL_VERSIONS}
+      "1.88.0" "1.88"
+      "1.87.0" "1.87"
+      "1.86.0" "1.86"
+      "1.85.0" "1.85"
+      "1.84.0" "1.84"
+      "1.83.0" "1.83"
+      "1.82.0" "1.82"
+      "1.81.0" "1.81"
+      "1.80.0" "1.80"
+      "1.79.0" "1.79"
       "1.78.0" "1.78"
       "1.77.0" "1.77"
-      "1.76.0" "1.76"
-      "1.75.0" "1.75"
-      "1.74.0" "1.74"
-      "1.73.0" "1.73"
-      "1.72.0" "1.72"
-      "1.71.0" "1.71"
   )
   # cmake-format: on
   set(Boost_MINIMUM_VERSION
-      "1.71"
-      CACHE INTERNAL "1.71" FORCE
+      "1.77"
+      CACHE INTERNAL "1.77" FORCE
   )
 
   set(Boost_NO_BOOST_CMAKE ON) # disable the search for boost-cmake

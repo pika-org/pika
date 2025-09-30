@@ -4,18 +4,18 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-# We require at least C++17. However, if a higher standard is set by the user in CMAKE_CXX_STANDARD
+# We require at least C++20. However, if a higher standard is set by the user in CMAKE_CXX_STANDARD
 # that requirement has to be propagated to users of pika as well (i.e. pika can't be compiled with
-# C++20 and applications with C++17; the other way around is allowed). Ideally, users should not set
+# C++23 and applications with C++20; the other way around is allowed). Ideally, users should not set
 # CMAKE_CXX_STANDARD when building pika.
 pika_option(
-  PIKA_WITH_CXX_STANDARD STRING "C++ standard to use for compiling pika (default: 17)" "17"
+  PIKA_WITH_CXX_STANDARD STRING "C++ standard to use for compiling pika (default: 20)" "20"
   ADVANCED
 )
 
-if(PIKA_WITH_CXX_STANDARD LESS 17)
+if(PIKA_WITH_CXX_STANDARD LESS 20)
   pika_error(
-    "You've set PIKA_WITH_CXX_STANDARD to ${PIKA_WITH_CXX_STANDARD}, which is less than 17 which is the minimum required by pika"
+    "You've set PIKA_WITH_CXX_STANDARD to ${PIKA_WITH_CXX_STANDARD}, which is less than 20 which is the minimum required by pika"
   )
 endif()
 

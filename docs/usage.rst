@@ -49,7 +49,7 @@ supporting C++17:
 
 Additionally, pika depends on:
 
-- `header-only Boost <https://boost.org>`__ 1.71.0 or greater
+- `header-only Boost <https://boost.org>`__ 1.77.0 or greater
 - `hwloc <https://www-lb.open-mpi.org/projects/hwloc/>`__ 1.11.5 or greater
 - `fmt <https://fmt.dev/latest/index.html>`__ 9.0.0 or greater
 
