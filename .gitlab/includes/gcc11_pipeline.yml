@@ -14,7 +14,7 @@ include:
     COMPILER: gcc@11.4.0
     CXXSTD: 20
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH malloc=system cxxstd=$CXXSTD +apex %${COMPILER} \
-                 ^boost@1.71.0 ^hwloc@1.11.5 ^fmt@9 \
+                 ^boost@1.77.0 ^hwloc@1.11.5 ^fmt@9 \
                  ^apex@2.7.1 ~activeharmony~plugins~binutils~openmp~papi ^otf2@2.3"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MAX_CPU_COUNT=256 \
                   -DPIKA_WITH_MALLOC=system -DPIKA_WITH_APEX=ON \
