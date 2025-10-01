@@ -126,3 +126,10 @@ pika follows `Semantic Versioning <https://semver.org>`__.
 #. Delete your ``GITHUB_TOKEN`` if created only for the release.
 
 #. Announce the release on the #pika slack channel.
+
+Dashboard
+=========
+
+A `Grafana dashboard <https://observe.cscs.ch/d/cca1dcdf-23f1-4121-8de1-a58f0ef1a82e/pika>`_ is
+available for monitoring general metrics about pika. Currently it shows results for performance
+tests, lines of code, header build times, and test failures (flaky tests) on the ``main`` branch.
