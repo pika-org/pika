@@ -49,7 +49,7 @@ jobs:
     steps:
       - checkout:
           path: /pika/source
-          method: blobless
+          method: full
       - persist_to_workspace:
           root: /pika
           paths:
