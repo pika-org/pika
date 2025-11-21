@@ -26,7 +26,7 @@ jobs:
         build_type: ["Debug", "Release"]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Update apt repositories for ccache
         run: apt update
       - name: Setup ccache
