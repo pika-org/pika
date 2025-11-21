@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     container: pikaorg/pika-ci-hip:18
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Update apt repositories for ccache
         run: apt update
       - name: Setup ccache

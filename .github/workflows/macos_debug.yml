@@ -35,7 +35,7 @@ jobs:
           brew upgrade
           brew update
           brew install boost cmake fmt hwloc ninja spdlog
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
