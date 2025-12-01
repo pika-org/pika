@@ -497,3 +497,8 @@ pika has been presented at the following events and slides of the presentations 
   ``std::execution`` at the Swiss National Supercomputing Centre, covering uses of pika and HPX in
   DLA-Future, Octo-Tiger, and and Kokkos (`slides
   <https://drive.google.com/file/d/1rs-iosjFZJzBm1nsVwnhr6qjWbzdRmpc/view>`__)
+
+.. |pika_stdexec_mpi| replace:: *On the integration of lightweight tasks with MPI using the C++26 std::execution 'Senders' API*
+.. _pika_stdexec_mpi: https://dl.acm.org/doi/full/10.1145/3731599.3767394
+
+An in-depth look at how pika integrates with MPI can be found in |pika_stdexec_mpi|_.
