@@ -65,4 +65,4 @@ ENV PATH $SPACK_ROOT/bin:/root/.local/bin:$PATH
 
 RUN spack repo remove --scope defaults:base builtin \
     && spack repo add --scope site "$SPACK_PACKAGES_ROOT/repos/spack_repo/builtin" \
-    && spack external find --scope site --all --exclude python
+    && spack external find --scope site --all
