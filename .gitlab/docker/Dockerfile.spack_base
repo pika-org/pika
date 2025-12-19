@@ -56,13 +56,13 @@ ARG SPACK_PACKAGES_COMMIT
 ENV SPACK_PACKAGES_ROOT=/opt/spack-packages-$SPACK_PACKAGES_COMMIT
 RUN mkdir -p $SPACK_ROOT \
     && curl -OL $SPACK_REPO/archive/$SPACK_COMMIT.tar.gz \
-    && tar -xzvf $SPACK_COMMIT.tar.gz -C /opt && rm -f $SPACK_COMMIT.tar.gz \
+    && tar -xzvf $SPACK_COMMIT.tar.gz -C $SPACK_ROOT --strip-components=1 && rm -f $SPACK_COMMIT.tar.gz \
     && mkdir -p $SPACK_PACKAGES_ROOT \
     && curl -OL $SPACK_PACKAGES_REPO/archive/$SPACK_PACKAGES_COMMIT.tar.gz \
-    && tar -xzvf $SPACK_PACKAGES_COMMIT.tar.gz -C /opt && rm -f $SPACK_PACKAGES_COMMIT.tar.gz
+    && tar -xzvf $SPACK_PACKAGES_COMMIT.tar.gz -C $SPACK_PACKAGES_ROOT --strip-components=1 && rm -f $SPACK_PACKAGES_COMMIT.tar.gz
 
 ENV PATH $SPACK_ROOT/bin:/root/.local/bin:$PATH
 
-RUN spack repo remove --scope defaults builtin \
+RUN spack repo remove --scope defaults:base builtin \
     && spack repo add --scope site "$SPACK_PACKAGES_ROOT/repos/spack_repo/builtin" \
     && spack external find --scope site --all --exclude python
