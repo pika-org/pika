@@ -72,10 +72,17 @@ struct non_scheduler_3
 
 struct scheduler_1
 {
-    friend sender<scheduler_1> tag_invoke(ex::schedule_t const&, scheduler_1)
+    // member function for newer stdexec versions
+    sender<scheduler_1> schedule()
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
+    }
+
+    // backward compatibility with older stdexec versions
+    friend sender<scheduler_1> tag_invoke(ex::schedule_t const&, scheduler_1 s)
+    {
+        return s.schedule();
     }
 
     bool operator==(scheduler_1 const&) const noexcept { return true; }
@@ -85,16 +92,20 @@ struct scheduler_1
 
 struct scheduler_2
 {
+    // member function for newer stdexec versions
+    sender<scheduler_2> schedule()
+    {
+        ++tag_invoke_schedule_calls;
+        return {};
+    }
+
     bool operator==(scheduler_2 const&) const noexcept { return true; }
 
     bool operator!=(scheduler_2 const&) const noexcept { return false; }
 };
 
-sender<scheduler_2> tag_invoke(ex::schedule_t, scheduler_2)
-{
-    ++tag_invoke_schedule_calls;
-    return {};
-}
+// backward compatibility with older stdexec versions
+sender<scheduler_2> tag_invoke(ex::schedule_t, scheduler_2 s) { return s.schedule(); }
 
 int main()
 {
