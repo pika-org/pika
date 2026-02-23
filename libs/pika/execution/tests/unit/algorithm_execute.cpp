@@ -61,10 +61,17 @@ struct sender
 
 struct scheduler_1
 {
-    friend sender<scheduler_1> tag_invoke(pika::execution::experimental::schedule_t, scheduler_1)
+    // member function for newer stdexec versions
+    sender<scheduler_1> schedule()
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
+    }
+
+    // backward compatibility with older stdexec versions
+    friend sender<scheduler_1> tag_invoke(pika::execution::experimental::schedule_t, scheduler_1 s)
+    {
+        return s.schedule();
     }
 
     bool operator==(scheduler_1 const&) const noexcept { return true; }
@@ -74,10 +81,17 @@ struct scheduler_1
 
 struct scheduler_2
 {
-    friend sender<scheduler_2> tag_invoke(pika::execution::experimental::schedule_t, scheduler_2)
+    // member function for newer stdexec versions
+    sender<scheduler_2> schedule()
     {
         PIKA_TEST(false);
         return {};
+    }
+
+    // backward compatibility with older stdexec versions
+    friend sender<scheduler_2> tag_invoke(pika::execution::experimental::schedule_t, scheduler_2 s)
+    {
+        return s.schedule();
     }
 
     bool operator==(scheduler_2 const&) const noexcept { return true; }

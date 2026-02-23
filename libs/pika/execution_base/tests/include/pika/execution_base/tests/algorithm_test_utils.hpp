@@ -472,12 +472,22 @@ struct scheduler
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if defined(PIKA_HAVE_STDEXEC) && __has_include(<stdexec/__detail/__query.hpp>)
+            // member function for newer stdexec versions
+            template <class Tag>
+            scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+            {
+                return {schedule_called, execute_called, tag_invoke_overload_called};
+            }
+#else
+            // backward compatibility with older stdexec versions and pika's own implementation
             friend scheduler tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
                                             pika::execution::experimental::set_value_t>,
                 env const& e) noexcept
             {
                 return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
             }
+#endif
         };
 
         env get_env() const& noexcept
@@ -486,10 +496,17 @@ struct scheduler
         }
     };
 
+    // member function for newer stdexec versions
+    sender schedule()
+    {
+        schedule_called.get() = true;
+        return {schedule_called, execute_called, tag_invoke_overload_called};
+    }
+
+    // backward compatibility with older stdexec versions
     friend sender tag_invoke(pika::execution::experimental::schedule_t, scheduler s)
     {
-        s.schedule_called.get() = true;
-        return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+        return s.schedule();
     }
 
     bool operator==(scheduler const&) const noexcept { return true; }
@@ -549,12 +566,22 @@ struct scheduler2
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if defined(PIKA_HAVE_STDEXEC) && __has_include(<stdexec/__detail/__query.hpp>)
+            // member function for newer stdexec versions
+            template <class Tag>
+            scheduler2 query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+            {
+                return {schedule_called, execute_called, tag_invoke_overload_called};
+            }
+#else
+            // backward compatibility with older stdexec versions and pika's own implementation
             friend scheduler2 tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
                                              pika::execution::experimental::set_value_t>,
                 env const& e) noexcept
             {
                 return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
             }
+#endif
         };
 
         env get_env() const& noexcept
@@ -563,10 +590,17 @@ struct scheduler2
         }
     };
 
+    // member function for newer stdexec versions
+    sender schedule()
+    {
+        schedule_called.get() = true;
+        return {schedule_called, execute_called, tag_invoke_overload_called};
+    }
+
+    // backward compatibility with older stdexec versions
     friend sender tag_invoke(pika::execution::experimental::schedule_t, scheduler2 s)
     {
-        s.schedule_called.get() = true;
-        return {s.schedule_called, s.execute_called, s.tag_invoke_overload_called};
+        return s.schedule();
     }
 
     bool operator==(scheduler2 const&) const noexcept { return true; }
