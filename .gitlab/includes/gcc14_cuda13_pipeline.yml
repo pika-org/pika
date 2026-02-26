@@ -45,6 +45,8 @@ gcc14_cuda13_build:
     - .variables_gcc14_cuda13_config
     - .test_common_daint_gh200
     - .test_template
+  variables:
+    NVIDIA_REQUIRE_CUDA: "cuda>=13.0 driver>=580"
 
 gcc14_cuda13_test_release:
   extends: [.gcc14_cuda13_test_common]
