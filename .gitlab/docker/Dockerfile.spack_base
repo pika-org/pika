@@ -29,6 +29,7 @@ RUN apt-get update && apt-get -yqq install --no-install-recommends \
     libssl-dev \
     libtool \
     libncurses-dev \
+    libnuma-dev \
     locales \
     m4 \
     meson \
