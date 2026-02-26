@@ -1,6 +1,5 @@
 # noinshpect
-sphinx <8.2.0
+sphinx
 breathe
 recommonmark
-# https://github.com/jbms/sphinx-immaterial/pull/338
-sphinx_immaterial@git+https://github.com/jbms/sphinx-immaterial.git@1f2a86a133dc07eabf932d77644d04feddac53d7
+sphinx_immaterial
