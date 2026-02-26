@@ -1,5 +1,5 @@
 # noinshpect
-sphinx
+sphinx < 9
 breathe
 recommonmark
 sphinx_immaterial
