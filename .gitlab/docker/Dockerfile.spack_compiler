@@ -73,6 +73,7 @@ RUN echo "spack arch: $(spack arch)"; \
             --scope site \
             --path $(spack location -i $spack_compiler) gcc llvm; \
     fi; \
+    echo "packages:" >> "$SPACK_ROOT/etc/spack/packages.yaml"; \
     echo -e "  all:\n    require:\n    - one_of:" >> "$SPACK_ROOT/etc/spack/packages.yaml"; \
     echo "      - '%[when=%c]c=${COMPILER} %[when=%cxx]cxx=${COMPILER} %[when=%fortran]fortran=${COMPILER}'" \
         >> "$SPACK_ROOT/etc/spack/packages.yaml"; \

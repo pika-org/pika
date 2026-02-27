@@ -1,0 +1,57 @@
+# Copyright (c) 2023 ETH Zurich
+#
+# SPDX-License-Identifier: BSL-1.0
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file BOOST_LICENSE_1_0.rst or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+include:
+  - local: '.gitlab/includes/common_pipeline.yml'
+  - local: '.gitlab/includes/common_spack_pipeline.yml'
+
+.variables_gcc14_cuda13_config:
+  variables:
+    SPACK_ARCH: linux-ubuntu24.04-neoverse_v2
+    COMPILER: gcc@14.1.0
+    CXXSTD: 20
+    GPU_TARGET: 90a
+    SPACK_SPEC: "pika@main arch=$SPACK_ARCH +cuda cuda_arch=${GPU_TARGET} malloc=system \
+                 cxxstd=$CXXSTD +generic_coroutines %${COMPILER} \
+                 ^boost@1.82.0 ^hwloc@2.9.1 ^cuda@13"
+    CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_CUDA=ON -DPIKA_WITH_MALLOC=system \
+                  -DPIKA_WITH_SPINLOCK_DEADLOCK_DETECTION=ON \
+                  -DPIKA_WITH_BOOST_CONTEXT=ON -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON\
+                  -DCMAKE_CUDA_ARCHITECTURES=${GPU_TARGET}"
+
+gcc14_cuda13_spack_compiler_image:
+  extends:
+    - .variables_gcc14_cuda13_config
+    - .compiler_image_template_gh200
+
+gcc14_cuda13_spack_image:
+  needs: [gcc14_cuda13_spack_compiler_image]
+  extends:
+    - .variables_gcc14_cuda13_config
+    - .dependencies_image_template_gh200
+
+gcc14_cuda13_build:
+  needs: [gcc14_cuda13_spack_image]
+  extends:
+    - .variables_gcc14_cuda13_config
+    - .build_template_gh200
+
+.gcc14_cuda13_test_common:
+  needs: [gcc14_cuda13_build]
+  extends:
+    - .variables_gcc14_cuda13_config
+    - .test_common_daint_gh200
+    - .test_template
+  variables:
+    NVIDIA_REQUIRE_CUDA: "cuda>=13.0 driver>=580"
+
+gcc14_cuda13_test_release:
+  extends: [.gcc14_cuda13_test_common]
+  image: $PERSIST_IMAGE_NAME_RELEASE
+
+gcc14_cuda13_test_debug:
+  extends: [.gcc14_cuda13_test_common]
+  image: $PERSIST_IMAGE_NAME_DEBUG
