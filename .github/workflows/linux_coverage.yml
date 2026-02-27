@@ -79,7 +79,7 @@ jobs:
                 --ignore-not-existing \
                 --keep-only "*libs/pika/*/{src,include}/*"
       - name: Upload coverage report to GH artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: build/lcov.info
