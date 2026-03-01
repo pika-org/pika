@@ -419,7 +419,7 @@ namespace pika::execution::experimental {
     template <typename S, typename R>
     using connect_result_t = pika::detail::invoke_result_plain_function_t<connect_t, S, R>;
 
-    struct empty_env
+    struct env<>
     {
     };
 
@@ -445,11 +445,11 @@ namespace pika::execution::experimental {
                     "std::execution get_env member function must be noexcept");
                 return t.get_env();
             }
-            else if constexpr (is_sender_v<T>) { return empty_env{}; }
+            else if constexpr (is_sender_v<T>) { return env<>{}; }
             else
             {
                 static_assert(sizeof(T) == 0, "No environment for type T");
-                return empty_env{};
+                return env<>{};
             }
         }
     } get_env{};

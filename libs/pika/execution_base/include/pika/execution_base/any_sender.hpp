@@ -484,7 +484,7 @@ namespace pika::execution::experimental::detail {
             r.receiver->set_stopped();
         }
 
-        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+        constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender, typename... Ts>
@@ -970,7 +970,7 @@ namespace pika::execution::experimental {
         {
 #if defined(PIKA_HAVE_STDEXEC)
             using value_types_pack = pika::execution::experimental::value_types_of_t<Sender,
-                pika::execution::experimental::empty_env, pika::util::detail::pack,
+                pika::execution::experimental::env<>, pika::util::detail::pack,
                 pika::util::detail::pack>;
 #else
             using value_types_pack =

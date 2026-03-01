@@ -152,7 +152,7 @@ struct callback_receiver
         r.set_value_called = true;
     }
 
-    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+    constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
 };
 
 template <typename F>
@@ -185,7 +185,7 @@ struct error_callback_receiver
         PIKA_TEST(r.expect_set_value);
     }
 
-    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+    constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
 };
 
 template <typename F>

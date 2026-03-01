@@ -104,7 +104,7 @@ namespace pika::drop_op_state_detail {
             }
         }
 
-        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+        constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender, typename Receiver>
@@ -151,7 +151,7 @@ namespace pika::drop_op_state_detail {
 
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 value_types_helper>;

@@ -128,7 +128,7 @@ namespace pika {
                     std::move(r.op_state->receiver), std::forward<Ts>(ts)...);
             }
 
-            constexpr pika::execution::experimental::empty_env get_env() const& noexcept
+            constexpr pika::execution::experimental::env<> get_env() const& noexcept
             {
                 return {};
             }
@@ -212,7 +212,7 @@ namespace pika {
 #if defined(PIKA_HAVE_STDEXEC)
             using completion_signatures =
                 pika::execution::experimental::transform_completion_signatures_of<
-                    std::decay_t<Sender>, pika::execution::experimental::empty_env>;
+                    std::decay_t<Sender>, pika::execution::experimental::env<>>;
 #else
             template <template <typename...> class Tuple, template <typename...> class Variant>
             using value_types = typename pika::execution::experimental::sender_traits<

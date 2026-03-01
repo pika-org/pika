@@ -59,7 +59,7 @@ namespace pika::drop_value_detail {
             pika::execution::experimental::set_value(std::move(r.receiver));
         }
 
-        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+        constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
     };
 
     template <typename Sender>
@@ -76,7 +76,7 @@ namespace pika::drop_value_detail {
 
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<Sender,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<>, empty_set_value>;
 #else
         template <template <typename...> class Tuple, template <typename...> class Variant>

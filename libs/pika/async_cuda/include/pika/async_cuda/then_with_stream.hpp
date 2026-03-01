@@ -149,7 +149,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
 
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 invoke_result_helper>;
@@ -368,7 +368,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                         });
                 }
 
-                constexpr pika::execution::experimental::empty_env get_env() const& noexcept
+                constexpr pika::execution::experimental::env<> get_env() const& noexcept
                 {
                     return {};
                 }
@@ -389,7 +389,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
             using ts_type = pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
-                        pika::execution::experimental::empty_env, std::tuple,
+                        pika::execution::experimental::env<>, std::tuple,
                         pika::detail::variant>,
                     value_types_helper>,
                 pika::detail::monostate>;
@@ -435,7 +435,7 @@ namespace pika::cuda::experimental::then_with_stream_detail {
                 pika::util::detail::unique_t<pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         pika::execution::experimental::value_types_of_t<
-                            then_with_cuda_stream_sender, pika::execution::experimental::empty_env,
+                            then_with_cuda_stream_sender, pika::execution::experimental::env<>,
                             pika::util::detail::pack, pika::util::detail::pack>,
                         result_types_helper>,
                     pika::detail::monostate>>>;

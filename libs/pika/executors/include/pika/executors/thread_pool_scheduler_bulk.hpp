@@ -55,7 +55,7 @@ namespace pika::thread_pool_bulk_detail {
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::util::detail::transform_t<
             pika::execution::experimental::value_types_of_t<Sender,
-                pika::execution::experimental::empty_env, Tuple, Variant>,
+                pika::execution::experimental::env<>, Tuple, Variant>,
             value_types_helper>;
 #else
         template <template <typename...> class Tuple, template <typename...> class Variant>
@@ -376,7 +376,7 @@ namespace pika::thread_pool_bulk_detail {
                 r.do_work_local(r.op_state->shape, chunk_size, local_worker_thread);
             }
 
-            constexpr pika::execution::experimental::empty_env get_env() const& noexcept
+            constexpr pika::execution::experimental::env<> get_env() const& noexcept
             {
                 return {};
             }
@@ -461,7 +461,7 @@ namespace pika::thread_pool_bulk_detail {
 
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<Sender,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>>;
 #else

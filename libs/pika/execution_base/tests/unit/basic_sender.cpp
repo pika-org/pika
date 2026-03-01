@@ -72,7 +72,7 @@ struct receiver
     void set_error(std::exception_ptr) && noexcept {}
     void set_stopped() && noexcept {}
     void set_value(int v) && noexcept { i.get() = v; }
-    constexpr ex::empty_env get_env() const& noexcept { return {}; }
+    constexpr ex::env<> get_env() const& noexcept { return {}; }
 
     std::reference_wrapper<int> i;
 };
@@ -114,7 +114,7 @@ struct void_receiver
     void set_error(std::exception_ptr) && noexcept {}
     void set_stopped() && noexcept {}
     void set_value() && noexcept { ++void_receiver_set_value_calls; }
-    constexpr ex::empty_env get_env() const& noexcept { return {}; }
+    constexpr ex::env<> get_env() const& noexcept { return {}; }
 };
 
 #if !defined(PIKA_HAVE_STDEXEC)

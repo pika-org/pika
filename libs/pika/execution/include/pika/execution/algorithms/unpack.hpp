@@ -64,7 +64,7 @@ namespace pika::unpack_detail {
                 std::forward<Ts>(ts));
         }
 
-        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+        constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
     };
 
 #if defined(PIKA_HAVE_STDEXEC)
@@ -142,7 +142,7 @@ namespace pika::unpack_detail {
 #if defined(PIKA_HAVE_STDEXEC)
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<std::decay_t<Sender>,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 invoke_result_helper_t>;

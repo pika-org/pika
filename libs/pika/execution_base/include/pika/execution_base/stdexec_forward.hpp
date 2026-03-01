@@ -19,7 +19,7 @@ namespace pika::execution::experimental {
 # endif
 
 # if defined(PIKA_HAVE_STDEXEC_ENV)
-    using empty_env = stdexec::env<>;
+    using env<> = stdexec::env<>;
 # endif
 }    // namespace pika::execution::experimental
 #endif

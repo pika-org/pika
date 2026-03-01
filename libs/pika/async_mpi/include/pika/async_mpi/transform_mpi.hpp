@@ -65,7 +65,7 @@ namespace pika::transform_mpi_detail {
         using ts_type = pika::util::detail::prepend_t<
             pika::util::detail::transform_t<
                 pika::execution::experimental::value_types_of_t<std::decay_t<Sender>,
-                    pika::execution::experimental::empty_env, std::tuple, pika::detail::variant>,
+                    pika::execution::experimental::env<>, std::tuple, pika::detail::variant>,
                 value_types_helper>,
             pika::detail::monostate>;
 #else
@@ -269,7 +269,7 @@ namespace pika::transform_mpi_detail {
                     });
             }
 
-            constexpr ex::empty_env get_env() const& noexcept { return {}; }
+            constexpr ex::env<> get_env() const& noexcept { return {}; }
         };
 
         using operation_state_type = ex::connect_result_t<Sender, receiver>;
@@ -304,7 +304,7 @@ namespace pika::transform_mpi_detail {
         using no_value_completion = pika::execution::experimental::completion_signatures<>;
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<Sender,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_value_t(),
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,

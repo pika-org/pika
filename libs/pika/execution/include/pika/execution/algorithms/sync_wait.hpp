@@ -59,11 +59,11 @@ namespace pika::sync_wait_detail {
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using predecessor_value_types =
             pika::util::detail::unique_t<pika::execution::experimental::value_types_of_t<Sender,
-                pika::execution::experimental::empty_env, Tuple, Variant>>;
+                pika::execution::experimental::env<>, Tuple, Variant>>;
 
         template <template <typename...> class Variant>
         using predecessor_error_types = pika::execution::experimental::error_types_of_t<Sender,
-            pika::execution::experimental::empty_env, Variant>;
+            pika::execution::experimental::env<>, Variant>;
 
         // The type of the single void or non-void result that we store. If
         // there are multiple variants or multiple values sync_wait will
@@ -184,7 +184,7 @@ namespace pika::sync_wait_detail {
             r.signal_set_called();
         }
 
-        constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+        constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
     };
 }    // namespace pika::sync_wait_detail
 

@@ -8,7 +8,7 @@
 
 int main()
 {
-    // Earlier versions of stdexec only have empty_env, not env. We want to use env if it's
+    // Earlier versions of stdexec only have env<>, not env. We want to use env if it's
     // available.
     using stdexec::env;
 }

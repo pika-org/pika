@@ -74,7 +74,7 @@ struct check_context_receiver
         cond.notify_one();
     }
 
-    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+    constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
 };
 
 void test_sender_receiver_basic()
@@ -228,7 +228,7 @@ struct callback_receiver
         r.cond.notify_one();
     }
 
-    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+    constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
 };
 
 void test_transfer_basic()

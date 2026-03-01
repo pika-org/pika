@@ -48,7 +48,7 @@ namespace pika::when_all_vector_detail {
 #if defined(PIKA_HAVE_STDEXEC)
         using element_value_type =
             std::decay_t<pika::execution::experimental::detail::single_result_t<pika::execution::
-                    experimental::value_types_of_t<Sender, pika::execution::experimental::empty_env,
+                    experimental::value_types_of_t<Sender, pika::execution::experimental::env<>,
                         pika::util::detail::pack, pika::util::detail::pack>>>;
 
         // This sender sends any error types sent by the predecessor senders
@@ -56,7 +56,7 @@ namespace pika::when_all_vector_detail {
         template <template <typename...> class Variant>
         using error_types = pika::util::detail::unique_concat_t<
             pika::util::detail::transform_t<pika::execution::experimental::error_types_of_t<Sender,
-                                                pika::execution::experimental::empty_env, Variant>,
+                                                pika::execution::experimental::env<>, Variant>,
                 std::decay>,
             Variant<std::exception_ptr>>;
 #else
@@ -144,7 +144,7 @@ namespace pika::when_all_vector_detail {
                 r.op_state.finish();
             }
 
-            constexpr pika::execution::experimental::empty_env get_env() const& noexcept
+            constexpr pika::execution::experimental::env<> get_env() const& noexcept
             {
                 return {};
             }
@@ -343,7 +343,7 @@ namespace pika::when_all_vector_detail {
 
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<Sender,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
                 set_value_helper>;

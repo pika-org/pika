@@ -94,7 +94,7 @@ namespace pika::ensure_started_detail {
 
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<Sender,
-                pika::execution::experimental::empty_env,
+                pika::execution::experimental::env<>,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_stopped_t(),
                     pika::execution::experimental::set_error_t(std::exception_ptr)>,
@@ -152,14 +152,14 @@ namespace pika::ensure_started_detail {
             using value_type = pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     typename pika::execution::experimental::value_types_of_t<Sender,
-                        pika::execution::experimental::empty_env, std::tuple,
+                        pika::execution::experimental::env<>, std::tuple,
                         pika::detail::variant>,
                     value_types_helper>,
                 pika::detail::monostate>;
             using error_type = pika::util::detail::unique_t<pika::util::detail::prepend_t<
                 pika::util::detail::transform_t<
                     pika::execution::experimental::error_types_of_t<Sender,
-                        pika::execution::experimental::empty_env, pika::detail::variant>,
+                        pika::execution::experimental::env<>, pika::detail::variant>,
                     std::decay>,
                 std::exception_ptr>>;
 #else
@@ -212,7 +212,7 @@ namespace pika::ensure_started_detail {
                 using value_type = pika::util::detail::prepend_t<
                     pika::util::detail::transform_t<
                         typename pika::execution::experimental::value_types_of_t<Sender,
-                            pika::execution::experimental::empty_env, std::tuple,
+                            pika::execution::experimental::env<>, std::tuple,
                             pika::detail::variant>,
                         value_types_helper>,
                     pika::detail::monostate>;

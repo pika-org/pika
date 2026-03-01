@@ -30,7 +30,7 @@ namespace mylib {
 
         void set_value(int) && noexcept { value_called = true; }
 
-        constexpr ex::empty_env get_env() const& noexcept { return {}; }
+        constexpr ex::env<> get_env() const& noexcept { return {}; }
     };
 
     struct receiver_2
@@ -41,7 +41,7 @@ namespace mylib {
 
         void set_error(int) && noexcept { error_called = true; }
 
-        constexpr ex::empty_env get_env() const& noexcept { return {}; }
+        constexpr ex::env<> get_env() const& noexcept { return {}; }
     };
 
     struct receiver_3
@@ -54,7 +54,7 @@ namespace mylib {
 
         void set_value(int) && noexcept { value_called = true; }
 
-        constexpr ex::empty_env get_env() const& noexcept { return {}; }
+        constexpr ex::env<> get_env() const& noexcept { return {}; }
     };
 
     struct non_receiver_1
@@ -94,7 +94,7 @@ namespace mylib {
 
         void set_value(int) & noexcept { value_called = true; }
 
-        constexpr ex::empty_env get_env() const& noexcept { return {}; }
+        constexpr ex::env<> get_env() const& noexcept { return {}; }
     };
 
     struct non_receiver_5

@@ -40,23 +40,23 @@ int main()
 {
 #if defined(PIKA_HAVE_STDEXEC)
     static_assert(std::same_as<ex::value_types_of_t<decltype(ex::unpack(ex::just(std::tuple()))),
-                                   ex::empty_env, std::tuple, std::variant>,
+                                   ex::env<>, std::tuple, std::variant>,
         std::variant<std::tuple<>>>);
     static_assert(std::same_as<ex::value_types_of_t<decltype(ex::unpack(ex::just(std::tuple(42)))),
-                                   ex::empty_env, std::tuple, std::variant>,
+                                   ex::env<>, std::tuple, std::variant>,
         std::variant<std::tuple<int&&>>>);
     static_assert(
         std::same_as<ex::value_types_of_t<decltype(ex::unpack(std::declval<
                                               const_reference_sender<std::tuple<int>>>())),
-                         ex::empty_env, std::tuple, std::variant>,
+                         ex::env<>, std::tuple, std::variant>,
             std::variant<std::tuple<int const&>>>);
     static_assert(std::same_as<
         ex::value_types_of_t<decltype(ex::unpack(ex::just(std::declval<std::tuple<int&>>()))),
-            ex::empty_env, std::tuple, std::variant>,
+            ex::env<>, std::tuple, std::variant>,
         std::variant<std::tuple<int&>>>);
     static_assert(
         std::same_as<ex::value_types_of_t<decltype(ex::unpack(ex::just(std::tuple(42, 3.14f)))),
-                         ex::empty_env, std::tuple, std::variant>,
+                         ex::env<>, std::tuple, std::variant>,
             std::variant<std::tuple<int&&, float&&>>>);
 #else
     static_assert(

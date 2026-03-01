@@ -240,7 +240,7 @@ struct error_receiver
         PIKA_TEST(false);
     }
 
-    constexpr pika::execution::experimental::empty_env get_env() const& noexcept { return {}; }
+    constexpr pika::execution::experimental::env<> get_env() const& noexcept { return {}; }
 };
 
 template <template <typename...> typename Sender, typename... Ts, typename F>
