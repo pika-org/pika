@@ -12,7 +12,7 @@ include:
   variables:
     SPACK_ARCH: linux-ubuntu24.04-zen2
     COMPILER: gcc@14.1.0
-    CXXSTD: 20
+    CXXSTD: 23
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH malloc=system cxxstd=$CXXSTD +stdexec \
                  +generic_coroutines %${COMPILER} ^boost@1.82.0 ^hwloc@2.9.1 ^stdexec@24.09"
     CMAKE_FLAGS: "-DPIKA_WITH_CXX_STANDARD=$CXXSTD -DPIKA_WITH_MALLOC=system \
