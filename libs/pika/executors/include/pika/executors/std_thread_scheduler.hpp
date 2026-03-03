@@ -92,11 +92,11 @@ namespace pika::execution::experimental {
 
             struct env
             {
-#if defined(PIKA_HAVE_STDEXEC) && __has_include(<stdexec/__detail/__query.hpp>)
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
                 // member function for newer stdexec versions
                 template <class Tag>
-                constexpr std_thread_scheduler query(
-                    stdexec::get_completion_scheduler_t<Tag>) const noexcept
+                constexpr std_thread_scheduler
+                query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
                 {
                     return {};
                 }
@@ -112,6 +112,16 @@ namespace pika::execution::experimental {
 
             constexpr env get_env() const& noexcept { return {}; }
         };
+
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        constexpr std_thread_scheduler
+        query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return {};
+        }
+#endif
 
         // member function for newer stdexec versions
         sender schedule() const { return {}; }

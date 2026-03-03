@@ -472,7 +472,7 @@ struct scheduler
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
-#if defined(PIKA_HAVE_STDEXEC) && __has_include(<stdexec/__detail/__query.hpp>)
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
             // member function for newer stdexec versions
             template <class Tag>
             scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
@@ -495,6 +495,15 @@ struct scheduler
             return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
+
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+    // member function for newer stdexec versions
+    template <class Tag>
+    scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+    {
+        return {schedule_called, execute_called, tag_invoke_overload_called};
+    }
+#endif
 
     // member function for newer stdexec versions
     sender schedule()
@@ -566,7 +575,7 @@ struct scheduler2
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
-#if defined(PIKA_HAVE_STDEXEC) && __has_include(<stdexec/__detail/__query.hpp>)
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
             // member function for newer stdexec versions
             template <class Tag>
             scheduler2 query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
@@ -589,6 +598,15 @@ struct scheduler2
             return {schedule_called, execute_called, tag_invoke_overload_called};
         }
     };
+
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+    // member function for newer stdexec versions
+    template <class Tag>
+    scheduler2 query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+    {
+        return {schedule_called, execute_called, tag_invoke_overload_called};
+    }
+#endif
 
     // member function for newer stdexec versions
     sender schedule()
