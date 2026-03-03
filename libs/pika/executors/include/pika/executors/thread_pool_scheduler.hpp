@@ -218,7 +218,7 @@ namespace pika::execution::experimental {
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
-#if defined(PIKA_HAVE_STDEXEC) && __has_include(<stdexec/__detail/__query.hpp>)
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
                 // member function for newer stdexec versions
                 template <class Tag>
                 std::decay_t<Scheduler>
@@ -238,6 +238,15 @@ namespace pika::execution::experimental {
 
             env get_env() const& noexcept { return {scheduler}; }
         };
+
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        thread_pool_scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return *this;
+        }
+#endif
 
         // member function for newer stdexec versions
         sender<thread_pool_scheduler> schedule() && { return {std::move(*this)}; }

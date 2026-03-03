@@ -46,11 +46,21 @@ struct sender
 
     struct env
     {
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        Scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return {};
+        }
+#else
+        // backward compatibility with older stdexec versions and pika's own implementation
         friend Scheduler tag_invoke(
             ex::get_completion_scheduler_t<ex::set_value_t>, env const&) noexcept
         {
             return {};
         }
+#endif
     };
 
     env get_env() const& noexcept { return {}; }
