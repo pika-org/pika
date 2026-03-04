@@ -21,6 +21,10 @@
 #include <utility>
 
 namespace pika::cuda::experimental {
+    namespace detail {
+        class cuda_scheduler_sender;
+    }
+
     /// A scheduler for running work on a CUDA pool.
     ///
     /// Provides access to scheduling work on a CUDA context represented by a \ref cuda_pool. Models
@@ -86,6 +90,20 @@ namespace pika::cuda::experimental {
         {
             return scheduler.priority;
         }
+
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        cuda_scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return *this;
+        }
+#endif
+
+        // member function for newer stdexec versions
+        detail::cuda_scheduler_sender schedule() &&;
+        detail::cuda_scheduler_sender schedule() const&;
+
         /// \endcond
     };
 
@@ -160,6 +178,15 @@ namespace pika::cuda::experimental {
             {
                 cuda_scheduler scheduler;
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+                // member function for newer stdexec versions
+                template <class Tag>
+                cuda_scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+                {
+                    return scheduler;
+                }
+#else
+                // backward compatibility with older stdexec versions and pika's own implementation
                 friend cuda_scheduler tag_invoke(
                     pika::execution::experimental::get_completion_scheduler_t<
                         pika::execution::experimental::set_value_t>,
@@ -167,11 +194,23 @@ namespace pika::cuda::experimental {
                 {
                     return e.scheduler;
                 }
+#endif
             };
 
             env get_env() const& noexcept { return {scheduler}; }
         };
     }    // namespace detail
+
+    // member function for newer stdexec versions
+    inline detail::cuda_scheduler_sender cuda_scheduler::schedule() &&
+    {
+        return detail::cuda_scheduler_sender{std::move(*this)};
+    }
+
+    inline detail::cuda_scheduler_sender cuda_scheduler::schedule() const&
+    {
+        return detail::cuda_scheduler_sender{*this};
+    }
 
     /// Schedule subsequent work for execution on a CUDA device.
     inline auto tag_invoke(
