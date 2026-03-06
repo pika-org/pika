@@ -92,18 +92,41 @@ namespace pika::execution::experimental {
 
             struct env
             {
-                friend constexpr std_thread_scheduler tag_invoke(
-                    pika::execution::experimental::get_completion_scheduler_t<
-                        pika::execution::experimental::set_value_t>,
-                    env const&) noexcept
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+                // member function for newer stdexec versions
+                template <class Tag>
+                constexpr std_thread_scheduler
+                query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
                 {
                     return {};
                 }
+#else
+                // backward compatibility with older stdexec versions and pika's own implementation
+                friend constexpr std_thread_scheduler tag_invoke(
+                    get_completion_scheduler_t<set_value_t>, env const&) noexcept
+                {
+                    return {};
+                }
+#endif
             };
 
             constexpr env get_env() const& noexcept { return {}; }
         };
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        constexpr std_thread_scheduler
+        query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return {};
+        }
+#endif
+
+        // member function for newer stdexec versions
+        sender schedule() const { return {}; }
+
+        // backward compatibility with older stdexec versions
         friend sender tag_invoke(schedule_t, std_thread_scheduler const&) { return {}; }
         /// \endcond
     };

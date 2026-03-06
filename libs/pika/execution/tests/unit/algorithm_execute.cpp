@@ -48,12 +48,22 @@ struct sender
 
     struct env
     {
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        Scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return {};
+        }
+#else
+        // backward compatibility with older stdexec versions and pika's own implementation
         friend Scheduler tag_invoke(pika::execution::experimental::get_completion_scheduler_t<
                                         pika::execution::experimental::set_value_t>,
             env const&) noexcept
         {
             return {};
         }
+#endif
     };
 
     env get_env() const& noexcept { return {}; }
@@ -61,10 +71,17 @@ struct sender
 
 struct scheduler_1
 {
-    friend sender<scheduler_1> tag_invoke(pika::execution::experimental::schedule_t, scheduler_1)
+    // member function for newer stdexec versions
+    sender<scheduler_1> schedule()
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
+    }
+
+    // backward compatibility with older stdexec versions
+    friend sender<scheduler_1> tag_invoke(pika::execution::experimental::schedule_t, scheduler_1 s)
+    {
+        return s.schedule();
     }
 
     bool operator==(scheduler_1 const&) const noexcept { return true; }
@@ -74,10 +91,17 @@ struct scheduler_1
 
 struct scheduler_2
 {
-    friend sender<scheduler_2> tag_invoke(pika::execution::experimental::schedule_t, scheduler_2)
+    // member function for newer stdexec versions
+    sender<scheduler_2> schedule()
     {
         PIKA_TEST(false);
         return {};
+    }
+
+    // backward compatibility with older stdexec versions
+    friend sender<scheduler_2> tag_invoke(pika::execution::experimental::schedule_t, scheduler_2 s)
+    {
+        return s.schedule();
     }
 
     bool operator==(scheduler_2 const&) const noexcept { return true; }

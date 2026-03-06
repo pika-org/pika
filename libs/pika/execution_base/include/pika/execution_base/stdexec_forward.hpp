@@ -9,15 +9,30 @@
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_STDEXEC)
 # include <stdexec/execution.hpp>
+# if defined(PIKA_HAVE_STDEXEC_EXEC_EXECUTE)
+#  include <exec/execute.hpp>
+#  include <exec/split.hpp>
+# endif
 
 namespace pika::execution::experimental {
     using namespace stdexec;
+    using stdexec::get_completion_scheduler_t;
+# if defined(PIKA_HAVE_STDEXEC_EXEC_EXECUTE)
+    // https://github.com/NVIDIA/stdexec/pull/1830 and #1861 move execute and split to
+    // experimental::execution namespace.
+    using ::experimental::execution::execute;
+    using ::experimental::execution::split;
+    using ::experimental::execution::split_t;
+    using execute_t = ::experimental::execution::__execute_t;
+# endif
 
+    // continue_on_t has been renamed to continues_on_t (valid in version from 02.2026)
 # if !defined(PIKA_HAVE_STDEXEC_CONTINUES_ON)
     using continues_on_t = stdexec::continue_on_t;
     inline constexpr continues_on_t continues_on{};
 # endif
 
+    // empty_env is now deprecated in stdexec
 # if defined(PIKA_HAVE_STDEXEC_ENV)
     using empty_env = stdexec::env<>;
 # endif
