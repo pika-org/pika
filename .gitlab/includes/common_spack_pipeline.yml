@@ -135,7 +135,8 @@ base_spack_image_x86_64:
     - ls /usr/local/cuda-13.1/compat
     - export CTEST_XML=$PWD/ctest.xml
     - trap "${SOURCE_DIR}/.gitlab/scripts/collect_ctest_metrics.sh ${CTEST_XML}" EXIT
-    - spack -e pika_ci build-env $spack_spec -- bash -c "env LD_LIBRARY_PATH=/usr/local/cuda-13.1/compat ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout ${TEST_TIMEOUT} --output-on-failure --no-compress-output --no-tests=error"
+    - if [[ -n "${CUDA_COMPAT_VERSION}" ]]; then export pre_cmd="env LD_LIBRARY_PATH=/usr/local/cuda-${CUDA_COMPAT_VERSION}/compat"; fi
+    - spack -e pika_ci build-env $spack_spec -- bash -c "${pre_cmd:-} ctest --output-junit ${CTEST_XML} --label-exclude COMPILE_ONLY --test-dir ${BUILD_DIR} -j$(($(nproc)/2)) --timeout ${TEST_TIMEOUT} --output-on-failure --no-compress-output --no-tests=error"
     - export MIMALLOC_EAGER_COMMIT_DELAY=0
     - export MIMALLOC_ALLOW_LARGE_OS_PAGES=1
     - "${SOURCE_DIR}/.gitlab/scripts/run_performance_benchmarks.sh"
