@@ -88,3 +88,15 @@ RUN echo "spack arch: $(spack arch)"; \
             >> "$SPACK_ROOT/etc/spack/packages.yaml"; \
     fi; \
     spack clean --all
+
+# If CUDA_COMPAT_VERSION is set, install the corresponding CUDA driver forward compatibility
+# package: https://docs.nvidia.com/deploy/cuda-compatibility/.
+ARG CUDA_COMPAT_VERSION
+RUN if [ -n "$CUDA_COMPAT_VERSION" ]; then \
+        curl -OL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/sbsa/cuda-keyring_1.1-1_all.deb && \
+        dpkg -i cuda-keyring_1.1-1_all.deb && \
+        rm -f cuda-keyring_1.1-1_all.deb && \
+        apt-get update && \
+        apt-get -yqq install --no-install-recommends \
+        cuda-compat-$CUDA_COMPAT_VERSION; \
+    fi

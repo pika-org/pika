@@ -26,6 +26,8 @@ gcc14_cuda13_spack_compiler_image:
   extends:
     - .variables_gcc14_cuda13_config
     - .compiler_image_template_gh200
+  variables:
+    CUDA_COMPAT_VERSION: "13-1"
 
 gcc14_cuda13_spack_image:
   needs: [gcc14_cuda13_spack_compiler_image]
