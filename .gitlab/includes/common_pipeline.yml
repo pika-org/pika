@@ -20,6 +20,7 @@ variables:
                          -DPIKA_WITH_EXAMPLES=ON -DPIKA_WITH_TESTS=ON \
                          -DPIKA_WITH_PARALLEL_TESTS_BIND_NONE=ON \
                          -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,defs"
+
 .build_variables_common:
   variables:
     DOCKERFILE: .gitlab/docker/Dockerfile.spack_build
