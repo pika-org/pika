@@ -26,6 +26,7 @@ struct scheduler_schedule_from
     std::reference_wrapper<std::atomic<bool>> execute_called;
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if !defined(PIKA_HAVE_STDEXEC)
     template <typename F>
     friend void
     tag_invoke(pika::execution::experimental::execute_t, scheduler_schedule_from s, F&& f)
@@ -33,6 +34,7 @@ struct scheduler_schedule_from
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
     }
+#endif
 
     struct sender
     {
@@ -130,6 +132,7 @@ struct scheduler_continues_on
     std::reference_wrapper<std::atomic<bool>> execute_called;
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if !defined(PIKA_HAVE_STDEXEC)
     template <typename F>
     friend void
     tag_invoke(pika::execution::experimental::execute_t, scheduler_continues_on s, F&& f)
@@ -137,6 +140,7 @@ struct scheduler_continues_on
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
     }
+#endif
 
     struct sender
     {

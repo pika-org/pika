@@ -131,11 +131,13 @@ namespace pika::execution::experimental {
             threads::detail::register_work(data, pool_);
         }
 
+#if !defined(PIKA_HAVE_STDEXEC)
         template <typename F>
         friend void tag_invoke(execute_t, thread_pool_scheduler const& sched, F&& f)
         {
             sched.execute(std::forward<F>(f), sched.get_fallback_annotation());
         }
+#endif
 
         template <typename Scheduler, typename Receiver>
         struct operation_state

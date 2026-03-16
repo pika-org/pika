@@ -28,12 +28,14 @@ namespace pika::execution::experimental {
 
         bool operator!=(std_thread_scheduler const&) const noexcept { return false; }
 
+#if !defined(PIKA_HAVE_STDEXEC)
         template <typename F>
         friend void tag_invoke(execute_t, std_thread_scheduler const&, F&& f)
         {
             std::thread t{std::forward<F>(f)};
             t.detach();
         }
+#endif
 
         template <typename Receiver>
         struct operation_state

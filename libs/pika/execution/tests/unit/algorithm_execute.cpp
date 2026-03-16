@@ -109,11 +109,13 @@ struct scheduler_2
     bool operator!=(scheduler_2 const&) const noexcept { return false; }
 };
 
+#if !defined(PIKA_HAVE_STDEXEC)
 template <typename F>
 void tag_invoke(pika::execution::experimental::execute_t, scheduler_2, F&&)
 {
     ++tag_invoke_execute_calls;
 }
+#endif
 
 struct f_struct_1
 {
