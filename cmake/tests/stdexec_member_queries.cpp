@@ -5,6 +5,7 @@
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <stdexec/execution.hpp>
+#include <type_traits>
 
 // Earlier versions of stdexec only support tag_invoke for customization points. Newer versions
 // support a query() member function protocol. This test checks if get_completion_scheduler_t
@@ -39,6 +40,6 @@ int main()
 {
     my_scheduler s;
     auto snd = s.schedule();
-    [[maybe_unused]] auto cs =
-        stdexec::get_completion_scheduler<stdexec::set_value_t>(stdexec::get_env(snd));
+    auto cs = stdexec::get_completion_scheduler<stdexec::set_value_t>(stdexec::get_env(snd));
+    static_assert(std::is_same_v<decltype(cs), my_scheduler>);
 }
