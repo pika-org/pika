@@ -524,6 +524,15 @@ function(pika_check_for_stdexec_exec_execute)
 endfunction()
 
 # ##################################################################################################
+function(pika_check_for_stdexec_exec_split)
+  pika_add_config_test(
+    PIKA_WITH_STDEXEC_EXEC_SPLIT
+    SOURCE cmake/tests/stdexec_exec_split.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
 function(pika_check_for_mpix_continuations)
   pika_add_config_test(
     PIKA_WITH_MPIX_CONTINUATIONS

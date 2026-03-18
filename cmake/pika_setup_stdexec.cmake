@@ -38,6 +38,9 @@ if(PIKA_WITH_STDEXEC)
     pika_check_for_stdexec_exec_execute(
       DEFINITIONS PIKA_HAVE_STDEXEC_EXEC_EXECUTE INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
     )
+    pika_check_for_stdexec_exec_split(
+      DEFINITIONS PIKA_HAVE_STDEXEC_EXEC_SPLIT INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
   endif()
 
 endif()
