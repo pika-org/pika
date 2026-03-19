@@ -48,11 +48,19 @@ struct uncustomized_scheduler
 
 struct customized_scheduler : uncustomized_scheduler
 {
+#if defined(PIKA_HAVE_STDEXEC)
+    auto query(
+        ex::get_forward_progress_guarantee_t) const noexcept -> ex::forward_progress_guarantee
+    {
+        return ex::forward_progress_guarantee::concurrent;
+    }
+#else
     friend ex::forward_progress_guarantee tag_invoke(
         ex::get_forward_progress_guarantee_t, customized_scheduler) noexcept
     {
         return ex::forward_progress_guarantee::concurrent;
     }
+#endif
 };
 
 inline constexpr struct custom_scheduler_query_t
