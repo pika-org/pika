@@ -43,4 +43,10 @@ if(PIKA_WITH_STDEXEC)
     )
   endif()
 
+  # FIXME: stdexec deprecates some names (e.g. transfer_just, tag_invoke-based queries) that pika
+  # still uses. Allow deprecated declarations until we upgrade to a newer stdexec commit.
+  if(NOT PIKA_FIND_PACKAGE)
+    pika_add_compile_flag_if_available(-Wno-error=deprecated-declarations)
+  endif()
+
 endif()
