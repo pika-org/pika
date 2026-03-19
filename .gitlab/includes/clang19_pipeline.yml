@@ -42,6 +42,10 @@ clang19_build:
   extends:
     - .variables_clang19_config
     - .build_template_zen2
+  variables:
+    # clang with clang-tidy requires more memory than the default during the build
+    KUBERNETES_MEMORY_REQUEST: '64Gi'
+    KUBERNETES_MEMORY_LIMIT: '64Gi'
 
 .clang19_test_common:
   needs: [clang19_build]
