@@ -83,7 +83,7 @@ struct non_scheduler_3
 struct scheduler_1
 {
     // member function for newer stdexec versions
-    sender<scheduler_1> schedule()
+    sender<scheduler_1> schedule() const
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
@@ -103,7 +103,7 @@ struct scheduler_1
 struct scheduler_2
 {
     // member function for newer stdexec versions
-    sender<scheduler_2> schedule()
+    sender<scheduler_2> schedule() const
     {
         ++tag_invoke_schedule_calls;
         return {};

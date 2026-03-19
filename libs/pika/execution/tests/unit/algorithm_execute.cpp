@@ -72,7 +72,7 @@ struct sender
 struct scheduler_1
 {
     // member function for newer stdexec versions
-    sender<scheduler_1> schedule()
+    sender<scheduler_1> schedule() const
     {
         ++friend_tag_invoke_schedule_calls;
         return {};
@@ -92,7 +92,7 @@ struct scheduler_1
 struct scheduler_2
 {
     // member function for newer stdexec versions
-    sender<scheduler_2> schedule()
+    sender<scheduler_2> schedule() const
     {
         PIKA_TEST(false);
         return {};
