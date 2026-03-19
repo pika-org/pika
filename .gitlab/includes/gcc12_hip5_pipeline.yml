@@ -37,6 +37,10 @@ gcc12_hip5_build:
   extends:
     - .variables_gcc12_hip5_config
     - .build_template_zen2
+  variables:
+    # HIP requires more memory than the default during the build
+    KUBERNETES_MEMORY_REQUEST: '64Gi'
+    KUBERNETES_MEMORY_LIMIT: '64Gi'
 
 # Disabled until AMD GPU runners come back online
 # .gcc12_hip5_test_common:
