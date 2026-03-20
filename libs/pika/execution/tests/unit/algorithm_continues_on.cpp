@@ -26,6 +26,7 @@ struct scheduler_schedule_from
     std::reference_wrapper<std::atomic<bool>> execute_called;
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if !defined(PIKA_HAVE_STDEXEC)
     template <typename F>
     friend void
     tag_invoke(pika::execution::experimental::execute_t, scheduler_schedule_from s, F&& f)
@@ -33,6 +34,7 @@ struct scheduler_schedule_from
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
     }
+#endif
 
     struct sender
     {
@@ -81,11 +83,21 @@ struct scheduler_schedule_from
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+            // member function for newer stdexec versions
+            template <class Tag>
+            scheduler_schedule_from query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+            {
+                return {schedule_called, execute_called, tag_invoke_overload_called};
+            }
+#else
+            // backward compatibility with older stdexec versions and pika's own implementation
             friend scheduler_schedule_from tag_invoke(
                 ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
             {
                 return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
             }
+#endif
         };
 
         env get_env() const& noexcept
@@ -120,6 +132,7 @@ struct scheduler_continues_on
     std::reference_wrapper<std::atomic<bool>> execute_called;
     std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if !defined(PIKA_HAVE_STDEXEC)
     template <typename F>
     friend void
     tag_invoke(pika::execution::experimental::execute_t, scheduler_continues_on s, F&& f)
@@ -127,6 +140,7 @@ struct scheduler_continues_on
         s.execute_called.get() = true;
         PIKA_INVOKE(std::forward<F>(f), );
     }
+#endif
 
     struct sender
     {
@@ -175,11 +189,21 @@ struct scheduler_continues_on
             std::reference_wrapper<std::atomic<bool>> execute_called;
             std::reference_wrapper<std::atomic<bool>> tag_invoke_overload_called;
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+            // member function for newer stdexec versions
+            template <class Tag>
+            scheduler_continues_on query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+            {
+                return {schedule_called, execute_called, tag_invoke_overload_called};
+            }
+#else
+            // backward compatibility with older stdexec versions and pika's own implementation
             friend scheduler_continues_on tag_invoke(
                 ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
             {
                 return {e.schedule_called, e.execute_called, e.tag_invoke_overload_called};
             }
+#endif
         };
 
         env get_env() const& noexcept
@@ -220,11 +244,21 @@ struct sender_with_completion_scheduler : void_sender
     {
         scheduler_continues_on scheduler;
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        scheduler_continues_on query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return scheduler;
+        }
+#else
+        // backward compatibility with older stdexec versions and pika's own implementation
         friend scheduler_continues_on tag_invoke(
             ex::get_completion_scheduler_t<ex::set_value_t>, env const& e) noexcept
         {
             return e.scheduler;
         }
+#endif
     };
 
     env get_env() const& noexcept { return {sched}; }

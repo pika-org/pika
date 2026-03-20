@@ -131,11 +131,13 @@ namespace pika::execution::experimental {
             threads::detail::register_work(data, pool_);
         }
 
+#if !defined(PIKA_HAVE_STDEXEC)
         template <typename F>
         friend void tag_invoke(execute_t, thread_pool_scheduler const& sched, F&& f)
         {
             sched.execute(std::forward<F>(f), sched.get_fallback_annotation());
         }
+#endif
 
         template <typename Scheduler, typename Receiver>
         struct operation_state
@@ -218,18 +220,41 @@ namespace pika::execution::experimental {
             {
                 PIKA_NO_UNIQUE_ADDRESS std::decay_t<Scheduler> scheduler;
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+                // member function for newer stdexec versions
+                template <class Tag>
+                std::decay_t<Scheduler>
+                query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+                {
+                    return scheduler;
+                }
+#else
+                // backward compatibility with older stdexec versions and pika's own implementation
                 friend std::decay_t<Scheduler> tag_invoke(
-                    pika::execution::experimental::get_completion_scheduler_t<
-                        pika::execution::experimental::set_value_t>,
-                    env const& e) noexcept
+                    get_completion_scheduler_t<set_value_t>, env const& e) noexcept
                 {
                     return e.scheduler;
                 }
+#endif
             };
 
             env get_env() const& noexcept { return {scheduler}; }
         };
 
+#if defined(PIKA_HAVE_STDEXEC) && defined(PIKA_HAVE_STDEXEC_MEMBER_QUERIES)
+        // member function for newer stdexec versions
+        template <class Tag>
+        thread_pool_scheduler query(stdexec::get_completion_scheduler_t<Tag>) const noexcept
+        {
+            return *this;
+        }
+#endif
+
+        // member function for newer stdexec versions
+        sender<thread_pool_scheduler> schedule() && { return {std::move(*this)}; }
+        sender<thread_pool_scheduler> schedule() const& { return {*this}; }
+
+        // backward compatibility with older stdexec versions
         friend sender<thread_pool_scheduler> tag_invoke(schedule_t, thread_pool_scheduler&& sched)
         {
             return {std::move(sched)};

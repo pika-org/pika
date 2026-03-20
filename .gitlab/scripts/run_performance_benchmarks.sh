@@ -29,7 +29,9 @@ pika_targets=(
     "task_size_test"
     "task_size_test"
     "task_size_test"
-    "task_size_test"
+    # FIXME: task_size_test --method=bulk is disabled until pika's bulk customization is migrated
+    # from tag_invoke to stdexec's domain mechanism (see https://github.com/pika-org/pika/issues/1448)
+    # "task_size_test"
     "task_latency_test"
     "task_latency_test"
     "task_latency_test"
@@ -71,11 +73,13 @@ pika_test_options=(
 --target-efficiency=0.9 \
 --perftest-json"
 
-    "--method=bulk
---tasks-per-thread=1000 \
---task-size-growth-factor=1.05 \
---target-efficiency=0.5 \
---perftest-json"
+    # FIXME: task_size_test --method=bulk is disabled until pika's bulk customization is migrated
+    # from tag_invoke to stdexec's domain mechanism (see https://github.com/pika-org/pika/issues/1448)
+    # "--method=bulk
+    # --tasks-per-thread=1000 \
+    # --task-size-growth-factor=1.05 \
+    # --target-efficiency=0.5 \
+    # --perftest-json"
 
     "--repetitions=1000000
 --pika:threads=1

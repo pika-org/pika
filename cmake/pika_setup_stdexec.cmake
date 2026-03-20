@@ -19,4 +19,34 @@ if(PIKA_WITH_STDEXEC)
     target_link_libraries(pika_base_libraries INTERFACE STDEXEC::stdexec)
   endif()
 
+  if(NOT PIKA_FIND_PACKAGE)
+    get_target_property(_stdexec_include_dirs STDEXEC::stdexec INTERFACE_INCLUDE_DIRECTORIES)
+
+    pika_check_for_stdexec_sender_receiver_concepts(
+      DEFINITIONS PIKA_HAVE_STDEXEC_SENDER_RECEIVER_CONCEPTS INCLUDE_DIRECTORIES
+      ${_stdexec_include_dirs}
+    )
+    pika_check_for_stdexec_continues_on(
+      DEFINITIONS PIKA_HAVE_STDEXEC_CONTINUES_ON INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
+    pika_check_for_stdexec_env(
+      DEFINITIONS PIKA_HAVE_STDEXEC_ENV INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
+    pika_check_for_stdexec_member_queries(
+      DEFINITIONS PIKA_HAVE_STDEXEC_MEMBER_QUERIES INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
+    pika_check_for_stdexec_exec_execute(
+      DEFINITIONS PIKA_HAVE_STDEXEC_EXEC_EXECUTE INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
+    pika_check_for_stdexec_exec_split(
+      DEFINITIONS PIKA_HAVE_STDEXEC_EXEC_SPLIT INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
+    )
+  endif()
+
+  # FIXME: stdexec deprecates some names (e.g. transfer_just, tag_invoke-based queries) that pika
+  # still uses. Allow deprecated declarations until we upgrade to a newer stdexec commit.
+  if(NOT PIKA_FIND_PACKAGE)
+    pika_add_compile_flag_if_available(-Wno-error=deprecated-declarations)
+  endif()
+
 endif()
