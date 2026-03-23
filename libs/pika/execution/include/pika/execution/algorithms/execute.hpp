@@ -8,17 +8,28 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_STDEXEC)
-# include <pika/execution_base/stdexec_forward.hpp>
-#else
-# include <pika/execution/algorithms/start_detached.hpp>
-# include <pika/execution/algorithms/then.hpp>
-# include <pika/execution_base/sender.hpp>
+#include <pika/execution/algorithms/start_detached.hpp>
+#include <pika/execution/algorithms/then.hpp>
+#include <pika/execution_base/sender.hpp>
+#if !defined(PIKA_HAVE_STDEXEC)
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
+#endif
 
-# include <utility>
+#include <utility>
 
 namespace pika::execution::experimental {
+#if defined(PIKA_HAVE_STDEXEC)
+    // pika uses its own execute implementation because stdexec's execute is deprecated.
+    inline constexpr struct execute_t
+    {
+        template <typename Scheduler, typename F>
+        constexpr PIKA_FORCEINLINE auto operator()(Scheduler&& scheduler, F&& f) const
+        {
+            return start_detached(
+                then(schedule(std::forward<Scheduler>(scheduler)), std::forward<F>(f)));
+        }
+    } execute{};
+#else
     inline constexpr struct execute_t final : pika::functional::detail::tag_fallback<execute_t>
     {
     private:
@@ -30,5 +41,5 @@ namespace pika::execution::experimental {
                 then(schedule(std::forward<Scheduler>(scheduler)), std::forward<F>(f)));
         }
     } execute{};
-}    // namespace pika::execution::experimental
 #endif
+}    // namespace pika::execution::experimental
