@@ -515,15 +515,6 @@ function(pika_check_for_stdexec_member_queries)
 endfunction()
 
 # ##################################################################################################
-function(pika_check_for_stdexec_exec_execute)
-  pika_add_config_test(
-    PIKA_WITH_STDEXEC_EXEC_EXECUTE
-    SOURCE cmake/tests/stdexec_exec_execute.cpp
-    FILE ${ARGN}
-  )
-endfunction()
-
-# ##################################################################################################
 function(pika_check_for_stdexec_exec_split)
   pika_add_config_test(
     PIKA_WITH_STDEXEC_EXEC_SPLIT
