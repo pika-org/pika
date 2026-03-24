@@ -32,9 +32,11 @@ gcc12_hip6_spack_image:
     - .variables_gcc12_hip6_config
     - .dependencies_image_template_zen2
   variables:
-    # HIP requires more memory than the default during the build
+    # HIP requires more memory than the default during the build. Request more memory and fewer
+    # threads.
     KUBERNETES_MEMORY_REQUEST: '64Gi'
     KUBERNETES_MEMORY_LIMIT: '64Gi'
+    NUM_PROCS: 32
 
 gcc12_hip6_build:
   needs: [gcc12_hip6_spack_image]
