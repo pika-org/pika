@@ -10,37 +10,38 @@
 
 #if defined(PIKA_HAVE_STDEXEC)
 # include <pika/execution_base/stdexec_forward.hpp>
-#else
-# include <pika/allocator_support/allocator_deleter.hpp>
-# include <pika/allocator_support/internal_allocator.hpp>
-# include <pika/allocator_support/traits/is_allocator.hpp>
-# include <pika/assert.hpp>
-# include <pika/concepts/concepts.hpp>
-# include <pika/concurrency/spinlock.hpp>
-# include <pika/datastructures/detail/small_vector.hpp>
-# include <pika/datastructures/variant.hpp>
-# include <pika/execution/algorithms/detail/helpers.hpp>
-# include <pika/execution/algorithms/detail/partial_algorithm.hpp>
-# include <pika/execution_base/operation_state.hpp>
-# include <pika/execution_base/receiver.hpp>
-# include <pika/execution_base/sender.hpp>
-# include <pika/functional/bind_front.hpp>
-# include <pika/functional/detail/tag_fallback_invoke.hpp>
-# include <pika/functional/unique_function.hpp>
-# include <pika/memory/intrusive_ptr.hpp>
-# include <pika/thread_support/atomic_count.hpp>
-# include <pika/type_support/detail/with_result_of.hpp>
-# include <pika/type_support/pack.hpp>
+#endif
 
-# include <atomic>
-# include <cstddef>
-# include <exception>
-# include <memory>
-# include <mutex>
-# include <optional>
-# include <tuple>
-# include <type_traits>
-# include <utility>
+#include <pika/allocator_support/allocator_deleter.hpp>
+#include <pika/allocator_support/internal_allocator.hpp>
+#include <pika/allocator_support/traits/is_allocator.hpp>
+#include <pika/assert.hpp>
+#include <pika/concepts/concepts.hpp>
+#include <pika/concurrency/spinlock.hpp>
+#include <pika/datastructures/detail/small_vector.hpp>
+#include <pika/datastructures/variant.hpp>
+#include <pika/execution/algorithms/detail/helpers.hpp>
+#include <pika/execution/algorithms/detail/partial_algorithm.hpp>
+#include <pika/execution_base/operation_state.hpp>
+#include <pika/execution_base/receiver.hpp>
+#include <pika/execution_base/sender.hpp>
+#include <pika/functional/bind_front.hpp>
+#include <pika/functional/detail/tag_fallback_invoke.hpp>
+#include <pika/functional/unique_function.hpp>
+#include <pika/memory/intrusive_ptr.hpp>
+#include <pika/thread_support/atomic_count.hpp>
+#include <pika/type_support/detail/with_result_of.hpp>
+#include <pika/type_support/pack.hpp>
+
+#include <atomic>
+#include <cstddef>
+#include <exception>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace pika::split_detail {
     template <typename Receiver>
@@ -97,6 +98,18 @@ namespace pika::split_detail {
             using type = pika::util::detail::transform_t<Tuple, std::decay>;
         };
 
+#if defined(PIKA_HAVE_STDEXEC)
+        using value_type = pika::util::detail::transform_t<
+            pika::execution::experimental::value_types_of_t<Sender,
+                pika::execution::experimental::empty_env, std::tuple, pika::detail::variant>,
+            value_type_helper>;
+        using error_type = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+            pika::util::detail::transform_t<
+                pika::execution::experimental::error_types_of_t<Sender,
+                    pika::execution::experimental::empty_env, pika::detail::variant>,
+                std::decay>,
+            std::exception_ptr>>;
+#else
         using value_type = pika::util::detail::transform_t<
             typename pika::execution::experimental::sender_traits<Sender>::template value_types<
                 std::tuple, pika::detail::variant>,
@@ -107,6 +120,7 @@ namespace pika::split_detail {
                     pika::detail::variant>,
                 std::decay>,
             std::exception_ptr>>;
+#endif
         pika::detail::variant<pika::detail::monostate, pika::execution::detail::stopped_type,
             error_type, value_type>
             v;
@@ -116,7 +130,12 @@ namespace pika::split_detail {
 
         struct split_receiver
         {
+            PIKA_STDEXEC_RECEIVER_CONCEPT
             pika::intrusive_ptr<shared_state> state;
+
+#if defined(PIKA_HAVE_STDEXEC)
+            auto get_env() const noexcept { return pika::execution::experimental::empty_env{}; }
+#endif
 
             template <typename Error>
             void set_error(Error&& error) && noexcept
@@ -140,10 +159,17 @@ namespace pika::split_detail {
             {
                 using type = pika::util::detail::transform_t<Tuple, std::decay>;
             };
+#if defined(PIKA_HAVE_STDEXEC)
+            using value_type = pika::util::detail::transform_t<
+                pika::execution::experimental::value_types_of_t<Sender,
+                    pika::execution::experimental::empty_env, std::tuple, pika::detail::variant>,
+                value_type_helper>;
+#else
             using value_type = pika::util::detail::transform_t<
                 typename pika::execution::experimental::sender_traits<Sender>::template value_types<
                     std::tuple, pika::detail::variant>,
                 value_type_helper>;
+#endif
 
             template <typename... Ts>
             auto set_value(Ts&&... ts) && noexcept
@@ -342,6 +368,29 @@ namespace pika::split_detail {
             using type = pika::util::detail::transform_t<Tuple, add_const_lvalue_reference>;
         };
 
+#if defined(PIKA_HAVE_STDEXEC)
+        PIKA_STDEXEC_SENDER_CONCEPT
+
+        using completion_signatures =
+            pika::execution::experimental::transform_completion_signatures_of<Sender,
+                pika::execution::experimental::empty_env,
+                pika::execution::experimental::completion_signatures<
+                    pika::execution::experimental::set_error_t(std::exception_ptr),
+                    pika::execution::experimental::set_stopped_t()>>;
+
+        template <template <typename...> class Tuple, template <typename...> class Variant>
+        using value_types = pika::util::detail::transform_t<
+            pika::execution::experimental::value_types_of_t<Sender,
+                pika::execution::experimental::empty_env, Tuple, Variant>,
+            value_types_helper>;
+
+        template <template <typename...> class Variant>
+        using error_types = pika::util::detail::unique_t<pika::util::detail::prepend_t<
+            pika::util::detail::transform_t<pika::execution::experimental::error_types_of_t<Sender,
+                                                pika::execution::experimental::empty_env, Variant>,
+                add_const_lvalue_reference>,
+            std::exception_ptr>>;
+#else
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types =
             pika::util::detail::transform_t<typename pika::execution::experimental::sender_traits<
@@ -356,6 +405,7 @@ namespace pika::split_detail {
             std::exception_ptr>>;
 
         static constexpr bool sends_done = false;
+#endif
 
         using shared_state_type = shared_state<Sender, Allocator>;
         pika::intrusive_ptr<shared_state_type> state;
@@ -437,6 +487,7 @@ namespace pika::split_detail {
 }    // namespace pika::split_detail
 
 namespace pika::execution::experimental {
+    // pika uses its own split implementation even when stdexec is enabled
     inline constexpr struct split_t final : pika::functional::detail::tag_fallback<split_t>
     {
     private:
@@ -493,4 +544,3 @@ namespace pika::execution::experimental {
         }
     } split{};
 }    // namespace pika::execution::experimental
-#endif

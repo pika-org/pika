@@ -9,19 +9,9 @@
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_STDEXEC)
 # include <stdexec/execution.hpp>
-# if defined(PIKA_HAVE_STDEXEC_EXEC_SPLIT)
-#  include <exec/split.hpp>
-# endif
-
 namespace pika::execution::experimental {
     using namespace stdexec;
     using stdexec::get_completion_scheduler_t;
-    // https://github.com/NVIDIA/stdexec/pull/1830 and #1861 move split to
-    // experimental::execution namespace.
-# if defined(PIKA_HAVE_STDEXEC_EXEC_SPLIT)
-    using ::experimental::execution::split;
-    using ::experimental::execution::split_t;
-# endif
 
     // continue_on_t has been renamed to continues_on_t (valid in version from 02.2026)
 # if !defined(PIKA_HAVE_STDEXEC_CONTINUES_ON)
