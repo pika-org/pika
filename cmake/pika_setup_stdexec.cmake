@@ -35,6 +35,10 @@ if(PIKA_WITH_STDEXEC)
     pika_check_for_stdexec_member_queries(
       DEFINITIONS PIKA_HAVE_STDEXEC_MEMBER_QUERIES INCLUDE_DIRECTORIES ${_stdexec_include_dirs}
     )
+    pika_check_for_stdexec_transform_completion_signatures(
+      DEFINITIONS PIKA_HAVE_STDEXEC_TRANSFORM_COMPLETION_SIGNATURES INCLUDE_DIRECTORIES
+      ${_stdexec_include_dirs}
+    )
   endif()
 
 endif()
