@@ -334,7 +334,8 @@ namespace pika::split_detail {
             if (!start_called.exchange(true))
             {
                 PIKA_ASSERT(os.has_value());
-                pika::execution::experimental::start(*os);
+                pika::execution::experimental::start(
+                    *os);    // NOLINT(bugprone-unchecked-optional-access)
             }
         }
 
