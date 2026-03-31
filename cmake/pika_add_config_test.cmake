@@ -506,6 +506,15 @@ function(pika_check_for_stdexec_env)
 endfunction()
 
 # ##################################################################################################
+function(pika_check_for_stdexec_transform_completion_signatures_of)
+  pika_add_config_test(
+    PIKA_WITH_STDEXEC_TRANSFORM_COMPLETION_SIGNATURES_OF
+    SOURCE cmake/tests/stdexec_transform_completion_signatures_of.cpp
+    FILE ${ARGN}
+  )
+endfunction()
+
+# ##################################################################################################
 function(pika_check_for_stdexec_member_queries)
   pika_add_config_test(
     PIKA_WITH_STDEXEC_MEMBER_QUERIES

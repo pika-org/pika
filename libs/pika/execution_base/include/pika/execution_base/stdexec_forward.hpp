@@ -23,5 +23,16 @@ namespace pika::execution::experimental {
 # if defined(PIKA_HAVE_STDEXEC_ENV)
     using empty_env = stdexec::env<>;
 # endif
+
+    // transform_completion_signatures_of is deprecated in newer stdexec, use the non-deprecated
+    // internal version directly
+# if defined(PIKA_HAVE_STDEXEC_TRANSFORM_COMPLETION_SIGNATURES_OF)
+    template <class Sndr, class Env = empty_env, class MoreSigs = stdexec::completion_signatures<>,
+        template <class...> class ValueTransform = stdexec::__cmplsigs::__default_set_value,
+        template <class...> class ErrorTransform = stdexec::__cmplsigs::__default_set_error,
+        class StoppedSigs = stdexec::completion_signatures<stdexec::set_stopped_t()>>
+    using transform_completion_signatures_of = stdexec::__transform_completion_signatures_of_t<Sndr,
+        Env, MoreSigs, ValueTransform, ErrorTransform, StoppedSigs>;
+# endif
 }    // namespace pika::execution::experimental
 #endif
