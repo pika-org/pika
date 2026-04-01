@@ -8,16 +8,28 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_STDEXEC)
-# include <pika/execution_base/stdexec_forward.hpp>
-#else
-# include <pika/execution/algorithms/continues_on.hpp>
-# include <pika/execution/algorithms/just.hpp>
+#include <pika/execution/algorithms/continues_on.hpp>
+#include <pika/execution/algorithms/just.hpp>
+#if !defined(PIKA_HAVE_STDEXEC)
 # include <pika/functional/detail/tag_fallback_invoke.hpp>
+#endif
 
-# include <utility>
+#include <utility>
 
 namespace pika::execution::experimental {
+#if defined(PIKA_HAVE_STDEXEC)
+    // pika uses its own transfer_just implementation because stdexec's transfer_just is deprecated.
+    PIKA_DEPRECATED(
+        "transfer_just will be removed in the future, use transfer and just separately instead")
+    inline constexpr struct transfer_just_t
+    {
+        template <typename Scheduler, typename... Ts>
+        constexpr PIKA_FORCEINLINE auto operator()(Scheduler&& scheduler, Ts&&... ts) const
+        {
+            return continues_on(just(std::forward<Ts>(ts)...), std::forward<Scheduler>(scheduler));
+        }
+    } transfer_just{};
+#else
     PIKA_DEPRECATED(
         "transfer_just will be removed in the future, use transfer and just separately instead")
     inline constexpr struct transfer_just_t final
@@ -31,5 +43,5 @@ namespace pika::execution::experimental {
             return continues_on(just(std::forward<Ts>(ts)...), std::forward<Scheduler>(scheduler));
         }
     } transfer_just{};
-}    // namespace pika::execution::experimental
 #endif
+}    // namespace pika::execution::experimental

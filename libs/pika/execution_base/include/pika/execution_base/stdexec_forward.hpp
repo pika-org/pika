@@ -9,28 +9,9 @@
 #include <pika/config.hpp>
 #if defined(PIKA_HAVE_STDEXEC)
 # include <stdexec/execution.hpp>
-# if defined(PIKA_HAVE_STDEXEC_EXEC_EXECUTE)
-#  include <exec/execute.hpp>
-# endif
-# if defined(PIKA_HAVE_STDEXEC_EXEC_SPLIT)
-#  include <exec/split.hpp>
-# endif
-
 namespace pika::execution::experimental {
     using namespace stdexec;
     using stdexec::get_completion_scheduler_t;
-    // https://github.com/NVIDIA/stdexec/pull/1830 and #1861 move execute and split to
-    // experimental::execution namespace.
-# if defined(PIKA_HAVE_STDEXEC_EXEC_EXECUTE)
-    // execute and execute_t are deprecated in exec/execute.hpp, use __execute/__execute_t
-    // FIXME: remove those 2 when we update to a new stdexec
-    using execute_t = ::experimental::execution::__execute_t;
-    inline constexpr execute_t const& execute = ::experimental::execution::__execute;
-# endif
-# if defined(PIKA_HAVE_STDEXEC_EXEC_SPLIT)
-    using ::experimental::execution::split;
-    using ::experimental::execution::split_t;
-# endif
 
     // continue_on_t has been renamed to continues_on_t (valid in version from 02.2026)
 # if !defined(PIKA_HAVE_STDEXEC_CONTINUES_ON)
@@ -41,6 +22,17 @@ namespace pika::execution::experimental {
     // empty_env is now deprecated in stdexec
 # if defined(PIKA_HAVE_STDEXEC_ENV)
     using empty_env = stdexec::env<>;
+# endif
+
+    // transform_completion_signatures_of is deprecated in newer stdexec, use the non-deprecated
+    // internal version directly
+# if defined(PIKA_HAVE_STDEXEC_TRANSFORM_COMPLETION_SIGNATURES_OF)
+    template <class Sndr, class Env = empty_env, class MoreSigs = stdexec::completion_signatures<>,
+        template <class...> class ValueTransform = stdexec::__cmplsigs::__default_set_value,
+        template <class...> class ErrorTransform = stdexec::__cmplsigs::__default_set_error,
+        class StoppedSigs = stdexec::completion_signatures<stdexec::set_stopped_t()>>
+    using transform_completion_signatures_of = stdexec::__transform_completion_signatures_of_t<Sndr,
+        Env, MoreSigs, ValueTransform, ErrorTransform, StoppedSigs>;
 # endif
 }    // namespace pika::execution::experimental
 #endif
