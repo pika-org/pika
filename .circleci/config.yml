@@ -286,6 +286,8 @@ jobs:
           command: |
               if [[ -n "$CIRCLE_PULL_REQUEST" ]]; then
                   cd /pika/source
+                  mkdir -p ~/.ssh
+                  ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
                   codespell --version
                   codespell --ignore-words tools/.codespell_whitelist --skip='*.h5,*.png' $(git diff --name-only origin/main...) > /tmp/spelling_suggestions.txt
                   if [ -s /tmp/spelling_suggestions.txt ]; then exit 1; fi
