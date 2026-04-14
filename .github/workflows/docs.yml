@@ -46,7 +46,7 @@ jobs:
             doxygen docs/Doxyfile
             sphinx-build -W -a -b html docs $PWD/build/docs
       - name: Upload HTML output as artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: build/docs
 
