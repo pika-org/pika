@@ -12,7 +12,6 @@ import logging
 import sys
 import textwrap
 
-
 _logger = logging.getLogger("pyutils")
 _logger.setLevel(logging.DEBUG)
 
