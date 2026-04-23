@@ -372,12 +372,26 @@ namespace pika::split_detail {
 #if defined(PIKA_HAVE_STDEXEC)
         PIKA_STDEXEC_SENDER_CONCEPT
 
+        // Value/error transforms that add const& to each argument, matching the shape used by
+        // value_types / error_types below. Without this, newer stdexec flags a mismatch between
+        // completion_signatures (raw T) and the receiver (which expects T const&).
+        template <typename... Ts>
+        using set_value_const_ref = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_value_t(
+                std::add_lvalue_reference_t<std::add_const_t<Ts>>...)>;
+
+        template <typename T>
+        using set_error_const_ref = pika::execution::experimental::completion_signatures<
+            pika::execution::experimental::set_error_t(
+                std::add_lvalue_reference_t<std::add_const_t<T>>)>;
+
         using completion_signatures =
             pika::execution::experimental::transform_completion_signatures_of<Sender,
                 pika::execution::experimental::empty_env,
                 pika::execution::experimental::completion_signatures<
                     pika::execution::experimental::set_error_t(std::exception_ptr),
-                    pika::execution::experimental::set_stopped_t()>>;
+                    pika::execution::experimental::set_stopped_t()>,
+                set_value_const_ref, set_error_const_ref>;
 
         template <template <typename...> class Tuple, template <typename...> class Variant>
         using value_types = pika::util::detail::transform_t<
