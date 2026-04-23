@@ -34,12 +34,38 @@ namespace pika::execution::experimental {
     // stable API. The leading :: is required because we are inside pika::execution::experimental,
     // where unqualified `experimental` would resolve to the enclosing namespace.
 # if defined(PIKA_HAVE_STDEXEC_TRANSFORM_COMPLETION_SIGNATURES)
-    template <class Sndr, class Env = empty_env, class MoreSigs = stdexec::completion_signatures<>>
+    namespace detail {
+        // Default template-template transforms: keep each completion as-is, matching stdexec's
+        // deprecated __cmplsigs::__default_set_value / __default_set_error.
+        template <class... Ts>
+        using default_set_value = stdexec::completion_signatures<stdexec::set_value_t(Ts...)>;
+
+        template <class... Errs>
+        using default_set_error = stdexec::completion_signatures<stdexec::set_error_t(Errs...)>;
+
+        // The new exec::transform_completion_signatures takes function-object transforms. The
+        // deprecated transform_completion_signatures_of took template-template transforms that
+        // map a pack to a completion_signatures alias. This adapter lets callers keep the old
+        // template-template API while forwarding to the new function-object API.
+        template <template <class...> class F>
+        struct template_alias_to_fn
+        {
+            template <class... Args>
+            consteval auto operator()() const noexcept
+            {
+                return F<Args...>{};
+            }
+        };
+    }    // namespace detail
+
+    template <class Sndr, class Env = empty_env, class MoreSigs = stdexec::completion_signatures<>,
+        template <class...> class ValueTransform = detail::default_set_value,
+        template <class...> class ErrorTransform = detail::default_set_error>
     using transform_completion_signatures_of =
         decltype(::experimental::execution::transform_completion_signatures(
             stdexec::get_completion_signatures<Sndr, Env>(),
-            ::experimental::execution::keep_completion<stdexec::set_value_t>{},
-            ::experimental::execution::keep_completion<stdexec::set_error_t>{},
+            detail::template_alias_to_fn<ValueTransform>{},
+            detail::template_alias_to_fn<ErrorTransform>{},
             ::experimental::execution::keep_completion<stdexec::set_stopped_t>{}, MoreSigs{}));
 # endif
 }    // namespace pika::execution::experimental
