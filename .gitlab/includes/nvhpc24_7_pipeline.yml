@@ -15,6 +15,8 @@ include:
     NVHPC_COMPILER: nvhpc@24.7
     CXXSTD: 20
     GPU_TARGET: '60'
+    KUBERNETES_MEMORY_REQUEST: 256Gi
+    KUBERNETES_MEMORY_LIMIT: 256Gi
     SPACK_SPEC: "pika@main arch=$SPACK_ARCH +stdexec +mpi +cuda cuda_arch=${GPU_TARGET} \
                  malloc=system cxxstd=$CXXSTD +apex %cxx=${NVHPC_COMPILER} %mpi=openmpi %boost@1.78.0 %hwloc@2.7.0 \
                  %stdexec@24.09 %cuda@12.4 %apex@2.7.1 ~activeharmony~plugins~binutils~gperftools~kokkos~openmp~otf2~papi"
