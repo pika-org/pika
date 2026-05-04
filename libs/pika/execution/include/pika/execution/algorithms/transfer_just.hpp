@@ -8,16 +8,14 @@
 
 #include <pika/config.hpp>
 
-#if defined(PIKA_HAVE_STDEXEC)
-# include <pika/execution_base/stdexec_forward.hpp>
-#else
-# include <pika/execution/algorithms/continues_on.hpp>
-# include <pika/execution/algorithms/just.hpp>
-# include <pika/functional/detail/tag_fallback_invoke.hpp>
+#include <pika/execution/algorithms/continues_on.hpp>
+#include <pika/execution/algorithms/just.hpp>
+#include <pika/functional/detail/tag_fallback_invoke.hpp>
 
-# include <utility>
+#include <utility>
 
 namespace pika::execution::experimental {
+    // pika uses its own transfer_just implementation because stdexec's transfer_just is deprecated.
     PIKA_DEPRECATED(
         "transfer_just will be removed in the future, use transfer and just separately instead")
     inline constexpr struct transfer_just_t final
@@ -32,4 +30,3 @@ namespace pika::execution::experimental {
         }
     } transfer_just{};
 }    // namespace pika::execution::experimental
-#endif
