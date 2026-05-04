@@ -18,5 +18,4 @@ include:
   - local: '.gitlab/includes/clang16_pipeline.yml'
   - local: '.gitlab/includes/clang18_pipeline.yml'
   - local: '.gitlab/includes/clang19_pipeline.yml'
-  - local: '.gitlab/includes/nvhpc24_7_pipeline.yml'
   - local: '.gitlab/includes/nvhpc24_9_pipeline.yml'
