@@ -30,7 +30,7 @@ jobs:
         build_type: ["Debug", "RelWithDebInfo"]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Update apt repositories for ccache
         run: apt update
       - name: Setup ccache
