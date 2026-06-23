@@ -120,6 +120,7 @@ jobs:
       - name: Test blacklisted tests
         if: always()
         continue-on-error: true
+        timeout-minutes: 120
         shell: bash
         run: |
             # See above.
